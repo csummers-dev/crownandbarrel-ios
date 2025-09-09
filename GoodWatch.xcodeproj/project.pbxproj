@@ -1,0 +1,828 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		025C51CB1D501DA9A4DDC39D /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13878D0F445A3A551D91ABAF /* Watch.swift */; };
+		07FB8BD6F27D9465E499BEF5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203D819767AD2584C7FF3A92 /* Colors.swift */; };
+		0B1ABCABE1E0AB5055A5E51D /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 028FE56F8ADF3236CF1E8EB2 /* Enums.swift */; };
+		160956B393C193F558CA9E48 /* Placeholders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B81E61440997ECB9FB4CC50 /* Placeholders.swift */; };
+		1A619E29FE310281C4B951B9 /* AddWatchFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A37BDAE0975E54558DCB1EA /* AddWatchFlowUITests.swift */; };
+		298AD8405ED07BEE6C902B1F /* WatchFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C138FA6416FF5BD189D1D688 /* WatchFormViewModel.swift */; };
+		32033A025EBEC4FF1662D3E7 /* Mappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2F9F22D1FC1FD39F3D55AA /* Mappers.swift */; };
+		398B6C855DCF32607FEF6990 /* GoodWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4501143FD67CADB56AC49 /* GoodWatchApp.swift */; };
+		3C1E6C874C046DF2062334C8 /* FullScreenLaunchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4ABA8A263528CF441B87BA /* FullScreenLaunchUITests.swift */; };
+		3D60E9E8481BBD924E92E8D8 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C0AAFAE9246FF5E56DF56EB /* Spacing.swift */; };
+		3F5A67AFB0F8F336DA3D413E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D057E891CFB85FD8E1082A0 /* SettingsView.swift */; };
+		44638D2B7B5833359473B4C2 /* WearEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE68FCFF477012D2408803 /* WearEntry.swift */; };
+		44C3F20C4B8528D593B12ECF /* WatchFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B5B6A0FC2CC39095E7C16F /* WatchFormView.swift */; };
+		496357973A1839FFFDB8384E /* StatsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E69BB42EE3A9F780376573E7 /* StatsUITests.swift */; };
+		4FC43FE5ED82D981D12F6379 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF30A1901C6E10DA9F64C4D3 /* CoreDataStack.swift */; };
+		5E9BAC458FD83AFFAAF3669E /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AF9ADACEA9DD11AFBF50E /* Typography.swift */; };
+		619C8D4F81DBAFBF36D7596D /* ExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A473B1A63CB02097A5AC9D /* ExampleUITests.swift */; };
+		63BCB1BCC47205C7F63EBA9D /* DetailWornTodayUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8581A96299256A6B2EAF6E2 /* DetailWornTodayUITests.swift */; };
+		66679A950A976D2F9AD038B9 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 6E4D73256B548D3C99D9DBDD /* ZIPFoundation */; };
+		6C31BE5AB4F49449995454C8 /* WatchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3913A439C545D486AB18B4 /* WatchRepository.swift */; };
+		77BD0388AB11D2F6BBAB1382 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC2CC726C9186634E4CD9A9 /* SampleData.swift */; };
+		79ACB738C0184DF4066F1494 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC088C4E378035EAE6734423 /* LaunchScreen.storyboard */; };
+		7AF2443714504D6331493DF9 /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7A99A0B8D0EA29CAB9BFB2 /* DateUtils.swift */; };
+		7C3BFE0046F4AC993EB737ED /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21092F8CA44074563B13D787 /* ImageStore.swift */; };
+		816B470EED3936E4088C68D3 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F8FE39AEB0F7EA537C6D2E /* RootView.swift */; };
+		982792506062BF41FE3C85BA /* AppDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D166DFE675E2F68B0D16EC94 /* AppDataView.swift */; };
+		9BA59B6479D3EB0E7BAF8120 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BDE71E683159A1F585B450 /* ThemeManager.swift */; };
+		A2284AA3E9F753F719D1AEB0 /* FiltersAndBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613E070DDA6FFEEB529F383F /* FiltersAndBackupTests.swift */; };
+		A29DB011965B0F178ADAAF3D /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AB97104D81CFBEB57745E8 /* CollectionViewModel.swift */; };
+		A5C1A5AC2F489510142D64C0 /* ExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81335EB8CE0C17538790C7BF /* ExampleTests.swift */; };
+		AB94120AC1C60EE996BA3E26 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21E80A3E7B884DA543EFB5F /* StatsView.swift */; };
+		AE47043EF8BB14AD66A5B590 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8F66F98BEA7AC7BBD9D650 /* Haptics.swift */; };
+		B9ED2F2F3CB1C4917B218C5C /* WatchRepositoryCoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793DBE4B6FDC344C52C8D501 /* WatchRepositoryCoreData.swift */; };
+		BDDBC718404D1ACC564AF564 /* BackupRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 578577506C634EDAE4D2300D /* BackupRepository.swift */; };
+		BFCB04B4A1218D13588290E8 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 201B16D657B672D22E0BEA40 /* CalendarView.swift */; };
+		C1C323D2CC44F7C720197C77 /* CalendarAndDetailUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D7B306CC06DE36342987663 /* CalendarAndDetailUITests.swift */; };
+		C954BFA1BB1819D39C81A041 /* WatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F76B75C4A60F4CEC2583AA7 /* WatchDetailView.swift */; };
+		CAA3ECAF366AFFFF1A896ADC /* WatchRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFDFCCC1385CE6B6527460A /* WatchRepositoryTests.swift */; };
+		CDE069D9AF6C21303B68A3B8 /* Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78FF1C619EA8F169A393766A /* Icons.swift */; };
+		D2D39432C577D0EDBC16CD8B /* BackupRepositoryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = A32B2A84901357E934C99ABA /* BackupRepositoryFile.swift */; };
+		E2786299AF75BA5E950C015F /* MoreRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDB9A18D5A999A7081160A8 /* MoreRepositoryTests.swift */; };
+		E38DE87891EF5E6F33702231 /* LaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F5306AE3FBCC7E038E17E0 /* LaunchConfigurationTests.swift */; };
+		EC094EF9E471194D135CAB07 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D283E67D2E5505C6CD3D44B /* AppError.swift */; };
+		FDFD04D05A55C17743ABDC78 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E0EE1C6F312D3E0F56B87D /* CollectionView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A1585A3FA981DE71AF2BC241 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D9927CAA71E709F80AC13CFC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EEB2505B1EB95356A19335E3;
+			remoteInfo = GoodWatch;
+		};
+		C30EC977D841E31DD3393E1D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D9927CAA71E709F80AC13CFC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EEB2505B1EB95356A19335E3;
+			remoteInfo = GoodWatch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		028FE56F8ADF3236CF1E8EB2 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		0869AD29A254EBA53E089797 /* GoodWatchTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GoodWatchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C0AAFAE9246FF5E56DF56EB /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
+		0DDB9A18D5A999A7081160A8 /* MoreRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreRepositoryTests.swift; sourceTree = "<group>"; };
+		0E2F9F22D1FC1FD39F3D55AA /* Mappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mappers.swift; sourceTree = "<group>"; };
+		13878D0F445A3A551D91ABAF /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
+		201B16D657B672D22E0BEA40 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		203D819767AD2584C7FF3A92 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		21092F8CA44074563B13D787 /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
+		25BDE71E683159A1F585B450 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		2A37BDAE0975E54558DCB1EA /* AddWatchFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWatchFlowUITests.swift; sourceTree = "<group>"; };
+		31F5306AE3FBCC7E038E17E0 /* LaunchConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchConfigurationTests.swift; sourceTree = "<group>"; };
+		39E0EE1C6F312D3E0F56B87D /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
+		3CFDFCCC1385CE6B6527460A /* WatchRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepositoryTests.swift; sourceTree = "<group>"; };
+		3D7B306CC06DE36342987663 /* CalendarAndDetailUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarAndDetailUITests.swift; sourceTree = "<group>"; };
+		4B7A99A0B8D0EA29CAB9BFB2 /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
+		55AE68FCFF477012D2408803 /* WearEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WearEntry.swift; sourceTree = "<group>"; };
+		578577506C634EDAE4D2300D /* BackupRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepository.swift; sourceTree = "<group>"; };
+		5B81E61440997ECB9FB4CC50 /* Placeholders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholders.swift; sourceTree = "<group>"; };
+		5D057E891CFB85FD8E1082A0 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		613E070DDA6FFEEB529F383F /* FiltersAndBackupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersAndBackupTests.swift; sourceTree = "<group>"; };
+		6D283E67D2E5505C6CD3D44B /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
+		78FF1C619EA8F169A393766A /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
+		793DBE4B6FDC344C52C8D501 /* WatchRepositoryCoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepositoryCoreData.swift; sourceTree = "<group>"; };
+		7EC2CC726C9186634E4CD9A9 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		81335EB8CE0C17538790C7BF /* ExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleTests.swift; sourceTree = "<group>"; };
+		909AF9ADACEA9DD11AFBF50E /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		93F8FE39AEB0F7EA537C6D2E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		9F76B75C4A60F4CEC2583AA7 /* WatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDetailView.swift; sourceTree = "<group>"; };
+		A04700CDA2D3C3213B9E1420 /* GoodWatchUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GoodWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A32B2A84901357E934C99ABA /* BackupRepositoryFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepositoryFile.swift; sourceTree = "<group>"; };
+		A6A473B1A63CB02097A5AC9D /* ExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUITests.swift; sourceTree = "<group>"; };
+		AC088C4E378035EAE6734423 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AF30A1901C6E10DA9F64C4D3 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		BA3913A439C545D486AB18B4 /* WatchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepository.swift; sourceTree = "<group>"; };
+		BC45A9D7DFD02E9B3719AF66 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		C138FA6416FF5BD189D1D688 /* WatchFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormViewModel.swift; sourceTree = "<group>"; };
+		CD46058E9A26DFAED1D0A4A2 /* GoodWatch.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GoodWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D166DFE675E2F68B0D16EC94 /* AppDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataView.swift; sourceTree = "<group>"; };
+		D21E80A3E7B884DA543EFB5F /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		D3A4501143FD67CADB56AC49 /* GoodWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoodWatchApp.swift; sourceTree = "<group>"; };
+		D8B5B6A0FC2CC39095E7C16F /* WatchFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormView.swift; sourceTree = "<group>"; };
+		E69BB42EE3A9F780376573E7 /* StatsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsUITests.swift; sourceTree = "<group>"; };
+		E6AB97104D81CFBEB57745E8 /* CollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewModel.swift; sourceTree = "<group>"; };
+		EC4ABA8A263528CF441B87BA /* FullScreenLaunchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenLaunchUITests.swift; sourceTree = "<group>"; };
+		ED8F66F98BEA7AC7BBD9D650 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		F8581A96299256A6B2EAF6E2 /* DetailWornTodayUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailWornTodayUITests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		913D0EAE8C5AA20053E5205A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66679A950A976D2F9AD038B9 /* ZIPFoundation in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0C5A006BBC33B051A9F98BF6 /* Collection */ = {
+			isa = PBXGroup;
+			children = (
+				39E0EE1C6F312D3E0F56B87D /* CollectionView.swift */,
+				E6AB97104D81CFBEB57745E8 /* CollectionViewModel.swift */,
+			);
+			path = Collection;
+			sourceTree = "<group>";
+		};
+		110D0A289A10D6D7AF8E4B41 /* GoodWatchApp */ = {
+			isa = PBXGroup;
+			children = (
+				D3A4501143FD67CADB56AC49 /* GoodWatchApp.swift */,
+				5B81E61440997ECB9FB4CC50 /* Placeholders.swift */,
+				93F8FE39AEB0F7EA537C6D2E /* RootView.swift */,
+			);
+			path = GoodWatchApp;
+			sourceTree = "<group>";
+		};
+		13A3865F58EFBCB0C4BF6A0E /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				578577506C634EDAE4D2300D /* BackupRepository.swift */,
+				BA3913A439C545D486AB18B4 /* WatchRepository.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		17432647F0A45DFF8E5072B6 /* Stats */ = {
+			isa = PBXGroup;
+			children = (
+				D21E80A3E7B884DA543EFB5F /* StatsView.swift */,
+			);
+			path = Stats;
+			sourceTree = "<group>";
+		};
+		17457641243AA456971F3395 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				203D819767AD2584C7FF3A92 /* Colors.swift */,
+				78FF1C619EA8F169A393766A /* Icons.swift */,
+				0C0AAFAE9246FF5E56DF56EB /* Spacing.swift */,
+				25BDE71E683159A1F585B450 /* ThemeManager.swift */,
+				909AF9ADACEA9DD11AFBF50E /* Typography.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		1AC0088A8A06E50C9457DE14 /* Unit */ = {
+			isa = PBXGroup;
+			children = (
+				81335EB8CE0C17538790C7BF /* ExampleTests.swift */,
+				613E070DDA6FFEEB529F383F /* FiltersAndBackupTests.swift */,
+				31F5306AE3FBCC7E038E17E0 /* LaunchConfigurationTests.swift */,
+				0DDB9A18D5A999A7081160A8 /* MoreRepositoryTests.swift */,
+				3CFDFCCC1385CE6B6527460A /* WatchRepositoryTests.swift */,
+			);
+			name = Unit;
+			path = Tests/Unit;
+			sourceTree = "<group>";
+		};
+		1E806F0DB51AD7F3477597BF /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				FCCF95810574C4C413952F1C /* Utilities */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		1FC4FCEA2087C2B0EDA050E8 /* AppResources */ = {
+			isa = PBXGroup;
+			children = (
+				BC45A9D7DFD02E9B3719AF66 /* Info.plist */,
+				AC088C4E378035EAE6734423 /* LaunchScreen.storyboard */,
+			);
+			path = AppResources;
+			sourceTree = "<group>";
+		};
+		2FA5135B5E80B087A3C1C074 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				1E806F0DB51AD7F3477597BF /* Common */,
+				17457641243AA456971F3395 /* DesignSystem */,
+				AF6F534C2E9FCA5C61011831 /* Domain */,
+				C8203E6C45BB320A190A8B1A /* Features */,
+				110D0A289A10D6D7AF8E4B41 /* GoodWatchApp */,
+				F403CBB82114CE5B072B7E98 /* Persistence */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		3EA27100E65FCF66D353CC84 /* WatchForm */ = {
+			isa = PBXGroup;
+			children = (
+				D8B5B6A0FC2CC39095E7C16F /* WatchFormView.swift */,
+				C138FA6416FF5BD189D1D688 /* WatchFormViewModel.swift */,
+			);
+			path = WatchForm;
+			sourceTree = "<group>";
+		};
+		4686EF051051248D795FA58C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CD46058E9A26DFAED1D0A4A2 /* GoodWatch.app */,
+				0869AD29A254EBA53E089797 /* GoodWatchTests.xctest */,
+				A04700CDA2D3C3213B9E1420 /* GoodWatchUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6A0AC23B665B24FD424BC508 /* WatchDetail */ = {
+			isa = PBXGroup;
+			children = (
+				9F76B75C4A60F4CEC2583AA7 /* WatchDetailView.swift */,
+			);
+			path = WatchDetail;
+			sourceTree = "<group>";
+		};
+		71F81F8FB1EC5CE7B2C831F7 /* Errors */ = {
+			isa = PBXGroup;
+			children = (
+				6D283E67D2E5505C6CD3D44B /* AppError.swift */,
+			);
+			path = Errors;
+			sourceTree = "<group>";
+		};
+		9268276D40A2D9390B19390E /* UITests */ = {
+			isa = PBXGroup;
+			children = (
+				2A37BDAE0975E54558DCB1EA /* AddWatchFlowUITests.swift */,
+				3D7B306CC06DE36342987663 /* CalendarAndDetailUITests.swift */,
+				F8581A96299256A6B2EAF6E2 /* DetailWornTodayUITests.swift */,
+				A6A473B1A63CB02097A5AC9D /* ExampleUITests.swift */,
+				EC4ABA8A263528CF441B87BA /* FullScreenLaunchUITests.swift */,
+				E69BB42EE3A9F780376573E7 /* StatsUITests.swift */,
+			);
+			name = UITests;
+			path = Tests/UITests;
+			sourceTree = "<group>";
+		};
+		ACFAF15DAFD25585A6447D87 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				201B16D657B672D22E0BEA40 /* CalendarView.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		AF26BC73140D3E07B625A364 = {
+			isa = PBXGroup;
+			children = (
+				1FC4FCEA2087C2B0EDA050E8 /* AppResources */,
+				2FA5135B5E80B087A3C1C074 /* Sources */,
+				9268276D40A2D9390B19390E /* UITests */,
+				1AC0088A8A06E50C9457DE14 /* Unit */,
+				4686EF051051248D795FA58C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AF6F534C2E9FCA5C61011831 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				71F81F8FB1EC5CE7B2C831F7 /* Errors */,
+				CBC60C0675BC50D22F467BF1 /* Models */,
+				13A3865F58EFBCB0C4BF6A0E /* Protocols */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		C8203E6C45BB320A190A8B1A /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				ACFAF15DAFD25585A6447D87 /* Calendar */,
+				0C5A006BBC33B051A9F98BF6 /* Collection */,
+				E1093774D5C30FA484FE3A19 /* Settings */,
+				17432647F0A45DFF8E5072B6 /* Stats */,
+				6A0AC23B665B24FD424BC508 /* WatchDetail */,
+				3EA27100E65FCF66D353CC84 /* WatchForm */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		CBC60C0675BC50D22F467BF1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				028FE56F8ADF3236CF1E8EB2 /* Enums.swift */,
+				13878D0F445A3A551D91ABAF /* Watch.swift */,
+				55AE68FCFF477012D2408803 /* WearEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		E1093774D5C30FA484FE3A19 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D166DFE675E2F68B0D16EC94 /* AppDataView.swift */,
+				5D057E891CFB85FD8E1082A0 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		F403CBB82114CE5B072B7E98 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				A32B2A84901357E934C99ABA /* BackupRepositoryFile.swift */,
+				AF30A1901C6E10DA9F64C4D3 /* CoreDataStack.swift */,
+				0E2F9F22D1FC1FD39F3D55AA /* Mappers.swift */,
+				793DBE4B6FDC344C52C8D501 /* WatchRepositoryCoreData.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		FCCF95810574C4C413952F1C /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				4B7A99A0B8D0EA29CAB9BFB2 /* DateUtils.swift */,
+				ED8F66F98BEA7AC7BBD9D650 /* Haptics.swift */,
+				21092F8CA44074563B13D787 /* ImageStore.swift */,
+				7EC2CC726C9186634E4CD9A9 /* SampleData.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2B5305331601E725419C0CCF /* GoodWatchUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3038D7E3D65C78F788FB7C45 /* Build configuration list for PBXNativeTarget "GoodWatchUITests" */;
+			buildPhases = (
+				05021D397626D803DA81EEA4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				28B676E2CC332FBCF0CB648C /* PBXTargetDependency */,
+			);
+			name = GoodWatchUITests;
+			packageProductDependencies = (
+			);
+			productName = GoodWatchUITests;
+			productReference = A04700CDA2D3C3213B9E1420 /* GoodWatchUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		EEB2505B1EB95356A19335E3 /* GoodWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2708ECFF80D30E9B25542BC8 /* Build configuration list for PBXNativeTarget "GoodWatch" */;
+			buildPhases = (
+				1009502488F273EE362AFC6E /* Sources */,
+				03BDE09BEE00A46802070321 /* Resources */,
+				913D0EAE8C5AA20053E5205A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GoodWatch;
+			packageProductDependencies = (
+				6E4D73256B548D3C99D9DBDD /* ZIPFoundation */,
+			);
+			productName = GoodWatch;
+			productReference = CD46058E9A26DFAED1D0A4A2 /* GoodWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F6D5C4C5E4655C87169ED141 /* GoodWatchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3DCAFDB1C8DC68819D1BA5C /* Build configuration list for PBXNativeTarget "GoodWatchTests" */;
+			buildPhases = (
+				BF377A5D81887133473F024A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F66F902F1B98D0FE526D19E1 /* PBXTargetDependency */,
+			);
+			name = GoodWatchTests;
+			packageProductDependencies = (
+			);
+			productName = GoodWatchTests;
+			productReference = 0869AD29A254EBA53E089797 /* GoodWatchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D9927CAA71E709F80AC13CFC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					2B5305331601E725419C0CCF = {
+						TestTargetID = EEB2505B1EB95356A19335E3;
+					};
+				};
+			};
+			buildConfigurationList = 5403DED1FB10F62892436AC3 /* Build configuration list for PBXProject "GoodWatch" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = AF26BC73140D3E07B625A364;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B149FECCC23386874BC4A53C /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EEB2505B1EB95356A19335E3 /* GoodWatch */,
+				F6D5C4C5E4655C87169ED141 /* GoodWatchTests */,
+				2B5305331601E725419C0CCF /* GoodWatchUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		03BDE09BEE00A46802070321 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				79ACB738C0184DF4066F1494 /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		05021D397626D803DA81EEA4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A619E29FE310281C4B951B9 /* AddWatchFlowUITests.swift in Sources */,
+				C1C323D2CC44F7C720197C77 /* CalendarAndDetailUITests.swift in Sources */,
+				63BCB1BCC47205C7F63EBA9D /* DetailWornTodayUITests.swift in Sources */,
+				619C8D4F81DBAFBF36D7596D /* ExampleUITests.swift in Sources */,
+				3C1E6C874C046DF2062334C8 /* FullScreenLaunchUITests.swift in Sources */,
+				496357973A1839FFFDB8384E /* StatsUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1009502488F273EE362AFC6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				982792506062BF41FE3C85BA /* AppDataView.swift in Sources */,
+				EC094EF9E471194D135CAB07 /* AppError.swift in Sources */,
+				BDDBC718404D1ACC564AF564 /* BackupRepository.swift in Sources */,
+				D2D39432C577D0EDBC16CD8B /* BackupRepositoryFile.swift in Sources */,
+				BFCB04B4A1218D13588290E8 /* CalendarView.swift in Sources */,
+				FDFD04D05A55C17743ABDC78 /* CollectionView.swift in Sources */,
+				A29DB011965B0F178ADAAF3D /* CollectionViewModel.swift in Sources */,
+				07FB8BD6F27D9465E499BEF5 /* Colors.swift in Sources */,
+				4FC43FE5ED82D981D12F6379 /* CoreDataStack.swift in Sources */,
+				7AF2443714504D6331493DF9 /* DateUtils.swift in Sources */,
+				0B1ABCABE1E0AB5055A5E51D /* Enums.swift in Sources */,
+				398B6C855DCF32607FEF6990 /* GoodWatchApp.swift in Sources */,
+				AE47043EF8BB14AD66A5B590 /* Haptics.swift in Sources */,
+				CDE069D9AF6C21303B68A3B8 /* Icons.swift in Sources */,
+				7C3BFE0046F4AC993EB737ED /* ImageStore.swift in Sources */,
+				32033A025EBEC4FF1662D3E7 /* Mappers.swift in Sources */,
+				160956B393C193F558CA9E48 /* Placeholders.swift in Sources */,
+				816B470EED3936E4088C68D3 /* RootView.swift in Sources */,
+				77BD0388AB11D2F6BBAB1382 /* SampleData.swift in Sources */,
+				3F5A67AFB0F8F336DA3D413E /* SettingsView.swift in Sources */,
+				3D60E9E8481BBD924E92E8D8 /* Spacing.swift in Sources */,
+				AB94120AC1C60EE996BA3E26 /* StatsView.swift in Sources */,
+				9BA59B6479D3EB0E7BAF8120 /* ThemeManager.swift in Sources */,
+				5E9BAC458FD83AFFAAF3669E /* Typography.swift in Sources */,
+				025C51CB1D501DA9A4DDC39D /* Watch.swift in Sources */,
+				C954BFA1BB1819D39C81A041 /* WatchDetailView.swift in Sources */,
+				44C3F20C4B8528D593B12ECF /* WatchFormView.swift in Sources */,
+				298AD8405ED07BEE6C902B1F /* WatchFormViewModel.swift in Sources */,
+				6C31BE5AB4F49449995454C8 /* WatchRepository.swift in Sources */,
+				B9ED2F2F3CB1C4917B218C5C /* WatchRepositoryCoreData.swift in Sources */,
+				44638D2B7B5833359473B4C2 /* WearEntry.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BF377A5D81887133473F024A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A5C1A5AC2F489510142D64C0 /* ExampleTests.swift in Sources */,
+				A2284AA3E9F753F719D1AEB0 /* FiltersAndBackupTests.swift in Sources */,
+				E38DE87891EF5E6F33702231 /* LaunchConfigurationTests.swift in Sources */,
+				E2786299AF75BA5E950C015F /* MoreRepositoryTests.swift in Sources */,
+				CAA3ECAF366AFFFF1A896ADC /* WatchRepositoryTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		28B676E2CC332FBCF0CB648C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EEB2505B1EB95356A19335E3 /* GoodWatch */;
+			targetProxy = C30EC977D841E31DD3393E1D /* PBXContainerItemProxy */;
+		};
+		F66F902F1B98D0FE526D19E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EEB2505B1EB95356A19335E3 /* GoodWatch */;
+			targetProxy = A1585A3FA981DE71AF2BC241 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		05F5564DFD6B947B8497E17C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GoodWatch;
+			};
+			name = Release;
+		};
+		1B476AF2E680F1265EE65CCE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoodWatch.app/GoodWatch";
+			};
+			name = Debug;
+		};
+		2020C6130B1B254F54F4762D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		96B5E210749DF992D873C4C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = GoodWatch;
+			};
+			name = Debug;
+		};
+		9E732DC91A6BA6615B50D3CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoodWatch.app/GoodWatch";
+			};
+			name = Release;
+		};
+		9F9EF9EBE068E73E9D37BAA1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		A58AAF59B2E3F74FCB580FD4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = AppResources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.goodwatch.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E66FC038C1DD7B0F55FDF09B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = AppResources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.goodwatch.app;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2708ECFF80D30E9B25542BC8 /* Build configuration list for PBXNativeTarget "GoodWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A58AAF59B2E3F74FCB580FD4 /* Debug */,
+				E66FC038C1DD7B0F55FDF09B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3038D7E3D65C78F788FB7C45 /* Build configuration list for PBXNativeTarget "GoodWatchUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96B5E210749DF992D873C4C6 /* Debug */,
+				05F5564DFD6B947B8497E17C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5403DED1FB10F62892436AC3 /* Build configuration list for PBXProject "GoodWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2020C6130B1B254F54F4762D /* Debug */,
+				9F9EF9EBE068E73E9D37BAA1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C3DCAFDB1C8DC68819D1BA5C /* Build configuration list for PBXNativeTarget "GoodWatchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B476AF2E680F1265EE65CCE /* Debug */,
+				9E732DC91A6BA6615B50D3CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B149FECCC23386874BC4A53C /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6E4D73256B548D3C99D9DBDD /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B149FECCC23386874BC4A53C /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = D9927CAA71E709F80AC13CFC /* Project object */;
+}

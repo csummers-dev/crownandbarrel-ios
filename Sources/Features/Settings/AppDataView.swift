@@ -1,0 +1,116 @@
+import SwiftUI
+import UniformTypeIdentifiers
+
+/// AppDataView centralizes data-management operations such as backup/export,
+/// restore/import (replace-only), and destructive delete-all actions.
+/// - What: Provides buttons and flows to export a `.goodwatch` archive, import
+///   one to fully replace on-device data, seed debug data, and delete all.
+/// - Why: Consolidating these capabilities improves discoverability and keeps
+///   risky actions behind explicit user intent and confirmations.
+/// - How: Uses async functions backed by `BackupRepositoryFile` and
+///   `WatchRepositoryCoreData`. Export returns a temporary URL which is then
+///   passed to a `FileDocument` for the system share/export sheet. Import uses
+///   `.fileImporter` and calls `importBackup(replace: true)` to enforce
+///   replace-only semantics as requested. Delete all is gated by a two-step
+///   confirmation dialog.
+
+struct AppDataView: View {
+    /// Transient error message presented in an alert when operations fail.
+    @State private var errorMessage: String? = nil
+    /// Controls presentation of the file exporter once an export URL is ready.
+    @State private var isExporting: Bool = false
+    /// Holds the exported file URL to be handed to the exporter.
+    @State private var exportURL: URL? = nil
+    /// Controls presentation of the importer sheet.
+    @State private var isImporting: Bool = false
+    /// First confirmation step for destructive delete.
+    @State private var confirmDeleteStep1: Bool = false
+    /// Second confirmation step for destructive delete.
+    @State private var confirmDeleteStep2: Bool = false
+    /// Concrete repository handling archive creation and import.
+    private let backup: BackupRepository = BackupRepositoryFile()
+    /// Concrete repository for seeding sample data during debug.
+    private let repo: WatchRepository = WatchRepositoryCoreData()
+
+    var body: some View {
+        Form {
+            Section("Backup") {
+                Button("Export backup") { Task { await export() } }
+                    .fileExporter(isPresented: Binding(get: { isExporting }, set: { _ in }), document: exportDoc, contentType: UTType(filenameExtension: "goodwatch") ?? .data, defaultFilename: "GoodWatchBackup") { _ in }
+                #if DEBUG
+                Button("Load sample data") { Task { await seedSampleData() } }
+                #endif
+            }
+            Section("Restore") {
+                Button("Import backup") { isImporting = true }
+            }
+            Section("Danger zone") {
+                Button(role: .destructive) { confirmDeleteStep1 = true } label: { Text("Delete all data") }
+            }
+        }
+        .navigationTitle("App Data")
+        .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
+        .fileImporter(isPresented: $isImporting, allowedContentTypes: [UTType(filenameExtension: "goodwatch") ?? .data], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                if let url = urls.first { Task { await importBackup(url) } }
+            case .failure(let error):
+                errorMessage = error.localizedDescription
+            }
+        }
+        .confirmationDialog("Delete all data?", isPresented: $confirmDeleteStep1, titleVisibility: .visible) {
+            Button("Yes, continue", role: .destructive) { confirmDeleteStep2 = true }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This permanently deletes all collection data.")
+        }
+        .confirmationDialog("Are you absolutely sure?", isPresented: $confirmDeleteStep2, titleVisibility: .visible) {
+            Button("Delete everything", role: .destructive) { Task { await deleteAll() } }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This cannot be undone.")
+        }
+    }
+
+    /// Wraps the export URL into a `FileDocument` that the exporter can write.
+    private var exportDoc: ExportedFile? { exportURL.map(ExportedFile.init(url:)) }
+
+    /// Triggers backup export via repository and presents the exporter sheet.
+    private func export() async {
+        do { exportURL = try await backup.exportBackup(); isExporting = true }
+        catch { errorMessage = error.localizedDescription }
+    }
+
+    /// Imports a previously exported archive. Uses replace-only semantics to
+    /// prevent merges, honoring the product decision to keep data authoritative
+    /// to the backup.
+    private func importBackup(_ url: URL) async {
+        do { try await backup.importBackup(from: url, replace: true) }
+        catch { errorMessage = error.localizedDescription }
+    }
+
+    /// Seeds a handful of watches in debug to speed up UI iteration and tests.
+    private func seedSampleData() async {
+        do {
+            for watch in SampleData.makeWatches(count: 8) { try await repo.upsert(watch) }
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    /// Deletes all persisted data after a two-step confirmation.
+    private func deleteAll() async {
+        do { try await backup.deleteAll() }
+        catch { errorMessage = error.localizedDescription }
+    }
+}
+
+/// A lightweight `FileDocument` wrapper that hands an existing file URL to the
+/// system exporter without loading large data blobs into memory.
+private struct ExportedFile: FileDocument {
+    static var readableContentTypes: [UTType] { [] }
+    let url: URL
+    init(url: URL) { self.url = url }
+    init(configuration: ReadConfiguration) throws { self.url = URL(fileURLWithPath: "") }
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { try FileWrapper(url: url, options: .immediate) }
+}
+
+

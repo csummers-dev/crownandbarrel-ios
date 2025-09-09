@@ -1,0 +1,23 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Build and test
+        run: |
+          xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' build test | xcpretty
+        shell: bash
+
+
