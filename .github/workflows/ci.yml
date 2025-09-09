@@ -11,13 +11,21 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16'
       - name: Install XcodeGen
         run: brew install xcodegen
+      - name: Install xcpretty
+        run: gem install xcpretty --no-document
+      - name: Clean any committed project
+        run: rm -rf GoodWatch.xcodeproj
       - name: Generate Xcode project
         run: xcodegen generate
       - name: Build and test
         run: |
-          xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' build test | xcpretty
+          xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 16' build test | xcpretty
         shell: bash
 
 
