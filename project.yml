@@ -23,6 +23,8 @@ targets:
       - package: ZIPFoundation
     info:
       path: AppResources/Info.plist
+      properties:
+        UILaunchStoryboardName: LaunchScreen
 
   GoodWatchTests:
     type: bundle.unit-test

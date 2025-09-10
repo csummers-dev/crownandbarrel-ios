@@ -10,6 +10,9 @@ public enum AppTypography {
     public static let heading = Font.system(.headline, design: .rounded)
     public static let body = Font.system(.body)
     public static let caption = Font.system(.caption)
+
+    /// Compact title suitable for inline navigation bar usage.
+    public static let titleCompact = Font.system(size: 17, weight: .semibold, design: .rounded)
 }
 
 

@@ -7,29 +7,59 @@ import SwiftUI
 
 struct RootView: View {
     var body: some View {
-        NavigationStack {
-            TabView {
+        TabView {
+            NavigationStack {
                 CollectionView()
-                    .tabItem { Label("Collection", systemImage: "rectangle.grid.2x2") }
-
-                StatsView()
-                    .tabItem { Label("Stats", systemImage: "chart.bar") }
-
-                CalendarView()
-                    .tabItem { Label("Calendar", systemImage: "calendar") }
-            }
-            .navigationTitle("Good Watch")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        NavigationLink("Settings") { SettingsView() }
-                        NavigationLink("App Data") { AppDataView() }
-                        NavigationLink("Privacy Policy") { PrivacyPolicyView() }
-                        NavigationLink("About") { AboutView() }
-                    } label: {
-                        Image(systemName: "gearshape")
+                    .navigationTitle("Good Watch")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        settingsToolbar
+                        ToolbarItem(placement: .principal) {
+                            Text("Good Watch")
+                                .font(AppTypography.titleCompact)
+                                .foregroundStyle(AppColors.brandGold)
+                        }
                     }
-                }
+            }
+            .tabItem { Label("Collection", systemImage: "rectangle.grid.2x2") }
+
+            NavigationStack {
+                StatsView()
+                    .navigationTitle("Stats")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        settingsToolbar
+                        ToolbarItem(placement: .principal) {
+                            Text("Stats").font(AppTypography.titleCompact).foregroundStyle(AppColors.brandGold)
+                        }
+                    }
+            }
+            .tabItem { Label("Stats", systemImage: "chart.bar") }
+
+            NavigationStack {
+                CalendarView()
+                    .navigationTitle("Calendar")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        settingsToolbar
+                        ToolbarItem(placement: .principal) {
+                            Text("Calendar").font(AppTypography.titleCompact).foregroundStyle(AppColors.brandGold)
+                        }
+                    }
+            }
+            .tabItem { Label("Calendar", systemImage: "calendar") }
+        }
+    }
+
+    private var settingsToolbar: some ToolbarContent {
+        ToolbarItem(placement: .navigationBarTrailing) {
+            Menu {
+                NavigationLink("Settings") { SettingsView() }
+                NavigationLink("App Data") { AppDataView() }
+                NavigationLink("Privacy Policy") { PrivacyPolicyView() }
+                NavigationLink("About") { AboutView() }
+            } label: {
+                Image(systemName: "gearshape")
             }
         }
     }

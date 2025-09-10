@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// The main application entry point.
 /// - What: Composes the root window and applies the theme (light/dark/system) via a small theme manager.
@@ -13,6 +14,13 @@ struct GoodWatchApp: App {
         WindowGroup {
             RootView()
                 .preferredColorScheme(theme.preferredColorScheme)
+                .onAppear {
+                    let appearance = UITabBarAppearance()
+                    appearance.configureWithDefaultBackground()
+                    appearance.shadowColor = UIColor(AppColors.tabBarHairline)
+                    UITabBar.appearance().standardAppearance = appearance
+                    UITabBar.appearance().scrollEdgeAppearance = appearance
+                }
         }
     }
 }

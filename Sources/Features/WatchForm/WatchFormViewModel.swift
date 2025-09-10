@@ -65,8 +65,9 @@ final class WatchFormViewModel: ObservableObject {
         do {
             var assetId: String? = imageAssetId
             if let image = selectedImage {
+                let squared = ImageStore.squareCropped(image)
                 let id = UUID().uuidString
-                _ = try ImageStore.saveImage(image, assetId: id)
+                _ = try ImageStore.saveImage(squared, assetId: id)
                 assetId = id
             }
 

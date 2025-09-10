@@ -20,7 +20,7 @@ final class FiltersAndBackupTests: XCTestCase {
         // What: Verify sort by most worn surfaces the highest wear count first.
         // Why: Validates aggregation and ordering logic for stats surfaces.
         let repo = makeRepo()
-        var w1 = Watch(manufacturer: "A"); var w2 = Watch(manufacturer: "B")
+        let w1 = Watch(manufacturer: "A"); let w2 = Watch(manufacturer: "B")
         try await repo.upsert(w1); try await repo.upsert(w2)
         try await repo.incrementWear(for: w2.id, on: Date())
         let result = try await repo.search(filter: WatchFilter(searchText: "", sortOption: .mostWorn))

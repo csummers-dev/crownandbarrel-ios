@@ -3,6 +3,11 @@ Good Watch
 
 An open-source iOS app to manage a watch collection, track wear history, and visualize data insights.
 
+![Branch: feature/ui-redesign](https://img.shields.io/badge/branch-feature--ui--redesign-1E90FF?style=flat&logo=github)
+[![Build/Test CI](https://github.com/csummers-dev/goodwatch-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/goodwatch-ios/actions/workflows/ci.yml)
+![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
+![Latest release](https://img.shields.io/github/v/release/csummers-dev/goodwatch-ios)
+
 Key decisions
 - iOS 17 minimum, iPhone only (portrait). Rationale: ensures modern full-screen behavior on iPhone devices, simplifies API surface (e.g., updated onChange), and avoids legacy compatibility modes. Landscape mode a consideration for future updates.
 - Local persistence via Core Data
@@ -15,15 +20,42 @@ Architecture
 - Swift Charts for statistics, UICalendarView (wrapped) for calendar
 - Design System for colors, typography, spacing, icons, and theme management
 
+Redesign 2025-09 highlights
+- Navigation: Inline titles on all tabs; per-tab NavigationStacks isolate behavior (e.g., search only on Collection).
+- Tab bar: Subtle top hairline using UITabBarAppearance for visual separation.
+- Stats: Replaced bar charts with full pie charts (SectorMark, iOS 17+) and a metallic-inspired palette (gold, silver, steel blue, emerald, graphite). Legends shown on trailing side.
+- Collection: Compact sort/layout controls with reduced vertical spacing and small control size.
+- Calendar: On date selection, the entries area animates a slight (4pt) downward offset; empty-state CTA reads “No watches worn this day. Add one?” which opens the add-worn sheet.
+  - Divider spacing is fixed at ~4pt between calendar and entries to prevent overlap with the last week.
+  - Entries list rows: compact watch thumbnail + “Manufacturer - Model”; manufacturer bolded, model regular.
+  - After adding a worn entry, the list refreshes immediately.
+- Tokens: Added `AppColors.chartPalette`, `AppColors.tabBarHairline`, `AppTypography.titleCompact`, and `AppSpacing.xxs` for finer tuning.
+
+Assets (images)
+- Preferred: Add a theme-aware placeholder in the asset catalog at `AppResources/Assets.xcassets/WatchEntryPlaceholder.imageset` (supports Light/Dark variants automatically).
+- Fallback (raw files):
+  - Light mode: `AppResources/Images/WatchEntryPlaceholder-LightMode-1000.png`
+  - Dark mode: `AppResources/Images/WatchEntryPlaceholder-DarkMode-1000.png`
+- Notes:
+  - Use square PNGs (1000×1000 recommended) with transparent background.
+  - The loader tries the asset catalog first (“WatchEntryPlaceholder”), then falls back to the raw Light/Dark PNGs.
+
+Future enhancements
+- Theming: Expand metallic theme application across headers and accents; user-selectable accent color.
+- Accessibility: VoiceOver summaries for pie segments; high-contrast fallback palette.
+- Visual polish: Donut labels for pies; refined legends and spacing with tokens.
+- Calendar depth: Per-day summaries and quick-add favorites.
+
 Modules (source layout)
-- Sources/GoodWatchApp: app entry, root navigation
-- Sources/DesignSystem: colors, typography, spacing, icons, theme
-- Sources/Domain: models, errors, protocols (repository interfaces)
-- Sources/Common: shared components and utilities
-- Persistence and feature code will be added in subsequent steps
+- `Sources/GoodWatchApp`: app entry, root navigation, tab scaffolding
+- `Sources/DesignSystem`: colors, typography, spacing, icons, theme manager
+- `Sources/Domain`: models, errors, repository protocols
+- `Sources/Common`: shared components and utilities (e.g., `WatchImageView`, `ImageStore`)
+- `Sources/Features`: feature UIs (Collection, Stats, Calendar, Watch Detail, Watch Form)
+- `Sources/Persistence`: Core Data stack, repositories, mappers
 
 Getting started
-1) Prerequisites: Xcode 15+ (or Xcode 16), macOS runner with command line tools
+1) Prerequisites: Xcode 16+, macOS with command line tools
 2) Generate the Xcode project with XcodeGen (recommended)
    - Install: `brew install xcodegen`
    - Generate: `xcodegen generate`
@@ -32,9 +64,10 @@ Getting started
 3) Build & run on iPhone simulator (iOS 17+)
 
 Testing
-- Unit test target covers domain, repositories, filters, and backup/restore. Includes a launch configuration check (skips if not applicable) explaining the why behind modern launch settings.
-- UI tests cover collection, form, detail, calendar, stats, settings, and a full-screen launch heuristic (validates modern layout on iPhone 16 family).
-- CI (GitHub Actions) will be configured to run `xcodebuild test`
+- Unit test target covers domain, repositories, filters, and backup/restore. Includes a launch configuration check that guards against legacy letterboxing.
+- UI tests cover collection, form, detail, calendar, stats, and full-screen launch behavior.
+- Unit tests validate the app icon presence, theme-aware placeholders, and the square-cropping utility.
+- CI (GitHub Actions): see build/test badge above; workflow runs `xcodebuild test`.
 - Run locally: `xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 16' test`
 
 Platform and device support
@@ -45,6 +78,15 @@ Platform and device support
 
 Launch and full-screen behavior
 - Uses a modern Launch Screen (UILaunchStoryboardName) to signal contemporary device support; prevents letterboxing on iPhone 16/16 Pro. Safe areas are respected throughout (NavigationStack, TabView, safeAreaInset where needed).
+- Ensure Info.plist contains:
+  - `UILaunchStoryboardName` = `LaunchScreen` (file at `AppResources/LaunchScreen.storyboard`).
+
+Image selection and cropping
+- All watch images are enforced to be square:
+  - Selection: images are center-cropped to square on import.
+  - Persistence: images are re-validated as square before saving.
+  - Display: grid tiles (120×120) and list thumbnails (56×56) use a fixed square size with `.scaledToFill()` in a rounded container.
+  - Detail: watch pages show an image header (user image or theme-aware placeholder) above details.
 
 ### App icon
 - **Place base 1024px PNG**: `AppResources/AppIcon-1024.png` (square, no rounded corners).
@@ -109,19 +151,19 @@ Roadmap (high → low)
 
 Troubleshooting (paths and project generation)
 - XcodeGen: “Decoding failed at "path": Nothing found”
-  - Ensure referenced folders exist before generating: `Sources`, `Tests/Unit`, `Tests/UITests`, and `Resources` (if listed in `project.yml`).
+  - Ensure referenced folders exist before generating: `Sources`, `Tests/Unit`, `Tests/UITests`, and `AppResources` (if listed in `project.yml`).
     - Check quickly:
       ```bash
-      ls -la; ls -la Sources; ls -la Tests; ls -la Resources
+      ls -la; ls -la Sources; ls -la Tests; ls -la AppResources
       ```
-  - If you recently added a new folder (e.g., `Resources`), create it first, then run `xcodegen generate` again.
+  - If you recently added a new folder (e.g., `AppResources`), create it first, then run `xcodegen generate` again.
   - Verify YAML indentation uses spaces (no tabs) and keys are correctly spelled:
     ```yaml
     targets:
       GoodWatch:
         sources:
           - path: Sources
-          - path: Resources
+          - path: AppResources
     ```
   - Try a minimal spec temporarily to isolate the issue, then add entries back:
     ```yaml
@@ -149,14 +191,21 @@ Troubleshooting (paths and project generation)
     xcodegen generate
     ```
 
-- Resources not copied/recognized
-  - Ensure `Resources/` is listed under `targets.GoodWatch.sources` and exists on disk.
-  - For Launch Screen, include `Resources/LaunchScreen.storyboard` and set in `project.yml`:
+- App resources not copied/recognized
+  - Ensure `AppResources/` is listed under `targets.GoodWatch.sources` and exists on disk.
+  - For Launch Screen, include `AppResources/LaunchScreen.storyboard` and set in `project.yml`:
     ```yaml
     info:
       properties:
         UILaunchStoryboardName: LaunchScreen
     ```
+  - Letterboxed/legacy appearance on iPhone 16/Pro:
+    - Verify `AppResources/Info.plist` includes:
+      ```xml
+      <key>UILaunchStoryboardName</key>
+      <string>LaunchScreen</string>
+      ```
+    - Clean build folder and rebuild. If the simulator still shows letterboxing, erase the simulator content (Device → Erase All Content and Settings) and relaunch.
 
 - Simulator destination not found
   - Pick an available simulator shown by:
@@ -178,7 +227,7 @@ Minimal project.yml example
 name: GoodWatch
 options:
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
 targets:
   GoodWatch:
     type: application
@@ -200,7 +249,7 @@ set -euo pipefail
 mkdir -p Sources \
          Tests/Unit \
          Tests/UITests \
-         Resources
+         AppResources
 
 # Optional: ensure a minimal project.yml exists
 if [ ! -f project.yml ]; then
@@ -208,13 +257,14 @@ if [ ! -f project.yml ]; then
 name: GoodWatch
 options:
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "17.0"
 targets:
   GoodWatch:
     type: application
     platform: iOS
     sources:
       - path: Sources
+      - path: AppResources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.goodwatch.app

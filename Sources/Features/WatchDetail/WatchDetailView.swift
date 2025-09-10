@@ -15,6 +15,7 @@ struct WatchDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                imageHeader
                 header
                 stats
                 details
@@ -38,6 +39,7 @@ struct WatchDetailView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(AppColors.brandGold)
             .padding()
             .disabled(isSavingWear)
             .accessibilityLabel("Mark worn today")
@@ -46,6 +48,20 @@ struct WatchDetailView: View {
             Button("OK") { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "")
+        }
+    }
+
+    private var imageHeader: some View {
+        VStack {
+            WatchImageView(imageAssetId: watch.imageAssetId)
+                .frame(maxWidth: .infinity)
+                .frame(height: 240)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(AppColors.brandSilver.opacity(0.6), lineWidth: 0.5)
+                )
+                .accessibilityLabel("Watch image")
         }
     }
 

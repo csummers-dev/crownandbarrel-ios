@@ -5,7 +5,8 @@ final class StatsUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         app.tabBars.buttons["Stats"].tap()
-        XCTAssertTrue(app.staticTexts["Most worn"].exists || true)
+        XCTAssertTrue(app.staticTexts["Most worn"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.staticTexts["Least worn"].exists)
     }
 }
 

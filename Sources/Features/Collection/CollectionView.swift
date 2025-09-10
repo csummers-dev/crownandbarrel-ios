@@ -12,11 +12,12 @@ struct CollectionView: View {
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
-            VStack(spacing: 8) {
+            VStack(spacing: AppSpacing.xs) {
                 sortAndLayoutBar
                 content
             }
-            .padding([.horizontal, .top])
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.top, AppSpacing.sm)
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic))
             .task { await viewModel.load() }
             .onChange(of: viewModel.isPresentingAdd) { isPresented, _ in
@@ -35,7 +36,7 @@ struct CollectionView: View {
     }
 
     private var sortAndLayoutBar: some View {
-        HStack {
+        HStack(spacing: AppSpacing.sm) {
             Picker("Sort", selection: $viewModel.sortOption) {
                 Text("Entry ↑").tag(WatchSortOption.entryDateAscending)
                 Text("Entry ↓").tag(WatchSortOption.entryDateDescending)
@@ -54,7 +55,8 @@ struct CollectionView: View {
                 Image(systemName: "list.bullet").tag(CollectionViewMode.list)
             }
             .pickerStyle(.segmented)
-            .frame(maxWidth: 180)
+            .controlSize(.small)
+            .frame(maxWidth: 160)
         }
     }
 
@@ -85,9 +87,9 @@ struct CollectionView: View {
         Button(action: { viewModel.isPresentingAdd = true }) {
             Image(systemName: "plus")
                 .font(.system(size: 22, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(AppColors.brandWhite)
                 .padding(18)
-                .background(Circle().fill(AppColors.accent))
+                .background(Circle().fill(AppColors.brandGold))
                 .shadow(radius: 6)
         }
         .padding()
@@ -98,10 +100,16 @@ struct CollectionView: View {
     }
 }
 
+// moved to Common/Components/WatchImageView
+
 private struct GridCell: View {
     let watch: Watch
 
     var body: some View {
+        let tileSize: CGFloat = 120
+        // What: Grid tile showing name and a square image with subtle border
+        // Why: Maintains visual uniformity across all items, regardless of image aspect ratio
+        // How: Use `WatchImageView` scaledToFill and clip to a rounded rect of fixed size
         VStack(alignment: .leading, spacing: 6) {
             Text(watch.manufacturer)
                 .font(.headline)
@@ -111,13 +119,16 @@ private struct GridCell: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
             ZStack {
-                Rectangle()
+                RoundedRectangle(cornerRadius: 10)
                     .fill(Color(.secondarySystemBackground))
-                    .frame(height: 120)
+                    .frame(width: tileSize, height: tileSize)
+                WatchImageView(imageAssetId: watch.imageAssetId)
+                    .frame(width: tileSize, height: tileSize)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                Image(systemName: "watch.case")
-                    .font(.system(size: 28))
-                    .foregroundStyle(.secondary)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(AppColors.brandSilver.opacity(0.6), lineWidth: 0.5)
+                    )
             }
             Text(watch.timesWorn > 0 ? "Worn \(watch.timesWorn)x" : "Not worn yet")
                 .font(.footnote)
@@ -135,14 +146,23 @@ private struct ListRow: View {
     let watch: Watch
 
     var body: some View {
+        let thumbSize: CGFloat = 56
+        // What: Compact row with square thumbnail and key metadata
+        // Why: Improves scan-ability and keeps heights consistent between rows
+        // How: Thumbnail uses the same image component and clipped fixed frame
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color(.secondarySystemBackground))
-                    .frame(width: 56, height: 56)
-                Image(systemName: "watch")
-                    .foregroundStyle(.secondary)
+                WatchImageView(imageAssetId: watch.imageAssetId)
+                    .frame(width: thumbSize, height: thumbSize)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
+            .frame(width: thumbSize, height: thumbSize)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppColors.brandSilver.opacity(0.6), lineWidth: 0.5)
+            )
             VStack(alignment: .leading, spacing: 4) {
                 Text(watch.manufacturer)
                     .font(.body)
