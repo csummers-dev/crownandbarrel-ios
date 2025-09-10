@@ -85,13 +85,15 @@ struct WatchFormView: View {
         .navigationTitle(viewModel.existingWatchId == nil ? "Add Watch" : "Edit Watch")
         .navigationBarItems(
             leading: Button("Cancel") { dismiss() },
-            trailing: Button("Save") { Task { if await viewModel.save() { dismiss() } } }.disabled(viewModel.isSaving)
+            trailing: Button("Save") { Task { if await viewModel.save() { dismiss() } } }.disabled(viewModel.isSaving).tint(AppColors.brandGold)
         )
         .onChange(of: pickerItem) { newValue, _ in
             guard let item = newValue else { return }
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
-                    viewModel.selectedImage = image
+                    // Enforce square crop on selection
+                    let cropped = ImageStore.squareCropped(image)
+                    viewModel.selectedImage = cropped
                 }
             }
         }

@@ -12,7 +12,7 @@ public enum AppIcons {
     public static let favorite = Image(systemName: "star")
     public static let favoriteFilled = Image(systemName: "star.fill")
     public static let add = Image(systemName: "plus")
-    public static let watch = Image(systemName: "watch.case")
+    public static let watch = Image(systemName: "applewatch")
 }
 
 

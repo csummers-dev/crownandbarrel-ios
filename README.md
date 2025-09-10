@@ -15,6 +15,33 @@ Architecture
 - Swift Charts for statistics, UICalendarView (wrapped) for calendar
 - Design System for colors, typography, spacing, icons, and theme management
 
+Redesign 2025-09 highlights
+- Navigation: Inline titles on all tabs; per-tab NavigationStacks isolate behavior (e.g., search only on Collection).
+- Tab bar: Subtle top hairline using UITabBarAppearance for visual separation.
+- Stats: Replaced bar charts with full pie charts (SectorMark, iOS 17+) and a metallic-inspired palette (gold, silver, steel blue, emerald, graphite). Legends shown on trailing side.
+- Collection: Compact sort/layout controls with reduced vertical spacing and small control size.
+- Calendar: On date selection, the entries area animates a slight (4pt) downward offset; empty-state CTA reads “No watches worn this day. Add one?” which opens the add-worn sheet.
+  - Divider spacing is fixed at ~4pt between calendar and entries to prevent overlap with the last week.
+  - Entries list rows: compact watch thumbnail + “Manufacturer - Model”; manufacturer bolded, model regular.
+  - After adding a worn entry, the list refreshes immediately.
+- Tokens: Added `AppColors.chartPalette`, `AppColors.tabBarHairline`, `AppTypography.titleCompact`, and `AppSpacing.xxs` for finer tuning.
+
+Assets (images)
+- Place placeholder image at: `AppResources/Images/WatchEntryPlaceholder-1000.png`
+  - This will be used for watches without an image.
+  - The file should be a square PNG (1000x1000 recommended) with transparent background.
+  - Theme-aware placeholders supported:
+    - Light mode: `AppResources/Images/WatchEntryPlaceholder-LightMode-1000.png`
+    - Dark mode: `AppResources/Images/WatchEntryPlaceholder-DarkMode-1000.png`
+  - Legacy fallback (if present): `AppResources/Assets.xcassets/WatchEntryPlaceholder.imageset` (optional).
+  - The loader tries asset names first, then raw files by the names above.
+
+Future enhancements
+- Theming: Expand metallic theme application across headers and accents; user-selectable accent color.
+- Accessibility: VoiceOver summaries for pie segments; high-contrast fallback palette.
+- Visual polish: Donut labels for pies; refined legends and spacing with tokens.
+- Calendar depth: Per-day summaries and quick-add favorites.
+
 Modules (source layout)
 - Sources/GoodWatchApp: app entry, root navigation
 - Sources/DesignSystem: colors, typography, spacing, icons, theme
@@ -34,6 +61,7 @@ Getting started
 Testing
 - Unit test target covers domain, repositories, filters, and backup/restore. Includes a launch configuration check (skips if not applicable) explaining the why behind modern launch settings.
 - UI tests cover collection, form, detail, calendar, stats, settings, and a full-screen launch heuristic (validates modern layout on iPhone 16 family).
+- Unit tests validate presence of app icon and theme-aware placeholders, plus the square-cropping utility.
 - CI (GitHub Actions) will be configured to run `xcodebuild test`
 - Run locally: `xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 16' test`
 
@@ -45,6 +73,15 @@ Platform and device support
 
 Launch and full-screen behavior
 - Uses a modern Launch Screen (UILaunchStoryboardName) to signal contemporary device support; prevents letterboxing on iPhone 16/16 Pro. Safe areas are respected throughout (NavigationStack, TabView, safeAreaInset where needed).
+- Ensure Info.plist contains:
+  - `UILaunchStoryboardName` = `LaunchScreen` (file at `AppResources/LaunchScreen.storyboard`).
+
+Image selection and cropping
+- All watch images are enforced to be square:
+  - Selection: images are center-cropped to square on import.
+  - Persistence: images are re-validated as square before saving.
+  - Display: grid tiles (120×120) and list thumbnails (56×56) use a fixed square size with `.scaledToFill()` in a rounded container.
+  - Detail: watch pages show an image header (user image or theme-aware placeholder) above details.
 
 ### App icon
 - **Place base 1024px PNG**: `AppResources/AppIcon-1024.png` (square, no rounded corners).
@@ -157,6 +194,13 @@ Troubleshooting (paths and project generation)
       properties:
         UILaunchStoryboardName: LaunchScreen
     ```
+  - Letterboxed/legacy appearance on iPhone 16/Pro:
+    - Verify `AppResources/Info.plist` includes:
+      ```xml
+      <key>UILaunchStoryboardName</key>
+      <string>LaunchScreen</string>
+      ```
+    - Clean build folder and rebuild. If the simulator still shows letterboxing, erase the simulator content (Device → Erase All Content and Settings) and relaunch.
 
 - Simulator destination not found
   - Pick an available simulator shown by:

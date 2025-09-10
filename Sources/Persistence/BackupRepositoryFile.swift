@@ -80,7 +80,7 @@ public final class BackupRepositoryFile: BackupRepository {
 
         // Replace store: delete all entities then re-insert
         try await deleteAll()
-        try await stack.viewContext.perform { [self] in
+        await stack.viewContext.perform { [self] in
             for w in watches {
                 let obj = CDWatch(entity: NSEntityDescription.entity(forEntityName: "CDWatch", in: self.stack.viewContext)!, insertInto: self.stack.viewContext)
                 Mappers.update(obj, from: w)
@@ -111,7 +111,7 @@ public final class BackupRepositoryFile: BackupRepository {
     /// Deletes all persisted objects and clears image files.
     /// - Why: Useful for reset scenarios and for preparing to restore a backup.
     public func deleteAll() async throws {
-        try await stack.viewContext.perform { [self] in
+        await stack.viewContext.perform { [self] in
             for entityName in ["CDWearEntry", "CDWatch", "CDAppSettings"] {
                 let fetch = NSFetchRequest<NSManagedObject>(entityName: entityName)
                 let objects = try? self.stack.viewContext.fetch(fetch)

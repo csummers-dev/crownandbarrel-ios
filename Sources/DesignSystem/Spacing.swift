@@ -6,6 +6,7 @@ import SwiftUI
 /// - How: Reference tokens (xs–xl) instead of literals.
 
 public enum AppSpacing {
+    public static let xxs: CGFloat = 2
     public static let xs: CGFloat = 4
     public static let sm: CGFloat = 8
     public static let md: CGFloat = 12

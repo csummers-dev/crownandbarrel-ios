@@ -1,5 +1,9 @@
 import SwiftUI
 
+/// Persists and exposes the user's theme preference.
+/// - What: Bridges a stored preference to SwiftUI's `ColorScheme?` for `.preferredColorScheme`.
+/// - Why: Allows forcing light/dark or following the system across the entire app.
+/// - How: Uses `@AppStorage` to persist a simple enum in UserDefaults.
 public struct ThemeManager {
     @AppStorage("themePreference") private var themeRaw: String = ThemePreference.system.rawValue
     public init() {}
