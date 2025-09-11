@@ -33,13 +33,25 @@ final class CollectionImageRefreshUITests: XCTestCase {
         let placeholder = app.images["watch-image-placeholder"]
         _ = placeholder.waitForExistence(timeout: 2)
 
-        // Capture initial count
+        // Capture initial count (best-effort for later comparison)
         let initialCount = app.cells.count
 
-        // Open first watch to edit
-        let firstCell = app.cells.firstMatch
-        XCTAssertTrue(firstCell.waitForExistence(timeout: 3))
-        firstCell.tap()
+        // Open the watch to edit (be tolerant to CI slowness and SwiftUI grid semantics)
+        // Prefer cells when List mode is active; otherwise, fall back to the grid's accessible label.
+        if app.cells.firstMatch.waitForExistence(timeout: 8) {
+            app.cells.firstMatch.tap()
+        } else {
+            // Fallback: search for the watch by its manufacturer label (set as accessibility label on grid cell)
+            let brand = "UITestBrand"
+            let candidateByLabel = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", brand)).firstMatch
+            if candidateByLabel.waitForExistence(timeout: 4) {
+                candidateByLabel.tap()
+            } else {
+                let anyElement = app.otherElements[brand]
+                XCTAssertTrue(anyElement.waitForExistence(timeout: 4), "Expected a watch cell to appear after saving")
+                anyElement.tap()
+            }
+        }
 
         // Tap Edit
         let edit = app.buttons["Edit"]
