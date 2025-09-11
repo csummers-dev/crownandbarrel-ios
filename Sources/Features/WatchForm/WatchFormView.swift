@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import UIKit
 
 /// Watch creation/edit form.
 /// - What: Presents fields for core details, expandable additional details, and optional image selection.
@@ -10,6 +11,7 @@ struct WatchFormView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = WatchFormViewModel()
     @State private var pickerItem: PhotosPickerItem? = nil
+    @State private var isConfirmingDelete: Bool = false
 
     init(existingWatch: Watch? = nil) {
         _prefill = State(initialValue: existingWatch)
@@ -23,7 +25,7 @@ struct WatchFormView: View {
                 TextField("Manufacturer", text: $viewModel.manufacturer)
                 TextField("Model", text: $viewModel.model)
 
-                Picker("Category", selection: Binding(
+                Picker("Category", selection: Binding<WatchCategory>(
                     get: { viewModel.category ?? .other },
                     set: { viewModel.category = $0 }
                 )) {
@@ -35,7 +37,7 @@ struct WatchFormView: View {
                 TextField("Serial number", text: $viewModel.serialNumber)
                 TextField("Reference number", text: $viewModel.referenceNumber)
 
-                Picker("Movement", selection: Binding(
+                Picker("Movement", selection: Binding<WatchMovement>(
                     get: { viewModel.movement ?? .other },
                     set: { viewModel.movement = $0 }
                 )) {
@@ -70,15 +72,46 @@ struct WatchFormView: View {
             }
 
             Section("Image") {
+                // Shows the existing image (if any). Once a new image is picked,
+                // the preview switches to `selectedImage` immediately so users can
+                // confirm the change prior to saving.
                 if let image = viewModel.selectedImage {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFit()
                         .frame(maxHeight: 200)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else if let assetId = viewModel.imageAssetId {
+                    WatchImageView(imageAssetId: assetId)
+                        .frame(maxHeight: 200)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 PhotosPicker(selection: $pickerItem, matching: .images, photoLibrary: .shared()) {
                     Label("Select from Photos", systemImage: "photo")
+                }
+                #if DEBUG
+                if ProcessInfo.processInfo.arguments.contains("UITEST_INJECT_IMAGE") {
+                    Button("Inject Test Image") {
+                        let size = CGSize(width: 128, height: 128)
+                        UIGraphicsBeginImageContextWithOptions(size, false, 1)
+                        UIColor.green.setFill()
+                        UIRectFill(CGRect(origin: .zero, size: size))
+                        let img = UIGraphicsGetImageFromCurrentImageContext()
+                        UIGraphicsEndImageContext()
+                        if let ui = img { viewModel.selectedImage = ui }
+                    }
+                }
+                #endif
+            }
+
+            // Danger Zone
+            if viewModel.existingWatchId != nil {
+                Section("Danger Zone") {
+                    Button(role: .destructive) {
+                        isConfirmingDelete = true
+                    } label: {
+                        Text("Delete watch")
+                    }
                 }
             }
         }
@@ -87,7 +120,7 @@ struct WatchFormView: View {
             leading: Button("Cancel") { dismiss() },
             trailing: Button("Save") { Task { if await viewModel.save() { dismiss() } } }.disabled(viewModel.isSaving).tint(AppColors.brandGold)
         )
-        .onChange(of: pickerItem) { newValue, _ in
+        .onChange(of: pickerItem) { _, newValue in
             guard let item = newValue else { return }
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
@@ -95,17 +128,26 @@ struct WatchFormView: View {
                     let cropped = ImageStore.squareCropped(image)
                     viewModel.selectedImage = cropped
                 }
+                // Reset picker selection so user can pick again next time without stale state
+                DispatchQueue.main.async { pickerItem = nil }
             }
         }
-        .onAppear {
-            if let w = prefill, viewModel.existingWatchId == nil {
-                viewModel.configure(with: w)
-            }
-        }
+        .onAppear { configureIfNeeded() }
+        .onChange(of: prefill) { _, _ in configureIfNeeded() }
         .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
             Button("OK") { viewModel.errorMessage = nil }
         } message: {
             Text(viewModel.errorMessage ?? "")
+        }
+        .confirmationDialog("Delete this watch?", isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                Task {
+                    if await viewModel.delete() { dismiss() }
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This action cannot be undone.")
         }
     }
 }
@@ -116,6 +158,24 @@ private func bindingDate(_ source: Binding<Date?>, default defaultValue: Date = 
         get: { source.wrappedValue ?? defaultValue },
         set: { source.wrappedValue = $0 }
     )
+}
+
+private extension WatchFormView {
+    @State private static var _confirmDeleteHolder: Bool = false
+    var confirmDelete: Binding<Bool> {
+        Binding<Bool>(
+            get: { WatchFormView._confirmDeleteHolder },
+            set: { WatchFormView._confirmDeleteHolder = $0 }
+        )
+    }
+    func configureIfNeeded() {
+        if let w = prefill {
+            if viewModel.existingWatchId != w.id {
+                viewModel.configure(with: w)
+                viewModel.selectedImage = nil
+            }
+        }
+    }
 }
 
 

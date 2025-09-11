@@ -37,6 +37,7 @@ final class WatchFormViewModel: ObservableObject {
     // UI
     @Published var errorMessage: String? = nil
     @Published var isSaving: Bool = false
+    @Published var isDeleting: Bool = false
 
     private let repository: WatchRepository
 
@@ -56,6 +57,8 @@ final class WatchFormViewModel: ObservableObject {
     }
 
     /// Saves the watch (insert/update) and persists an image if provided.
+    /// - Behavior: If `selectedImage` is set, it will be square-cropped and saved to
+    ///   disk, and `imageAssetId` will be updated to reference the new asset.
     /// - Returns: True on success; false on validation or persistence error (with `errorMessage`).
     func save() async -> Bool {
         guard validate() else { return false }
@@ -97,6 +100,26 @@ final class WatchFormViewModel: ObservableObject {
             )
 
             try await repository.upsert(watch)
+            NotificationCenter.default.post(name: Notification.Name("watchUpserted"), object: watch.id)
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
+        }
+    }
+
+    /// Deletes the existing watch entry.
+    /// - Returns: True on success; false on failure (with `errorMessage`).
+    func delete() async -> Bool {
+        guard let id = existingWatchId else {
+            errorMessage = "Cannot delete: watch identifier missing."
+            return false
+        }
+        isDeleting = true
+        defer { isDeleting = false }
+        do {
+            try await repository.delete(id)
+            NotificationCenter.default.post(name: Notification.Name("watchDeleted"), object: id)
             return true
         } catch {
             errorMessage = error.localizedDescription

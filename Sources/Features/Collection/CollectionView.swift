@@ -20,13 +20,28 @@ struct CollectionView: View {
             .padding(.top, AppSpacing.sm)
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .automatic))
             .task { await viewModel.load() }
-            .onChange(of: viewModel.isPresentingAdd) { isPresented, _ in
-                if isPresented == false {
+            .onAppear { Task { await viewModel.load() } }
+            .onChange(of: viewModel.isPresentingAdd) { _, newValue in
+                if newValue == false {
                     Task { await viewModel.load() }
                 }
             }
 
             addButton
+        }
+        .overlay(alignment: .bottom) {
+            if let msg = viewModel.infoMessage {
+                ToastBanner(message: msg)
+                    .padding(.bottom, 90)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.spring(response: 0.35, dampingFraction: 0.9), value: viewModel.infoMessage)
+            }
+        }
+        .onChange(of: viewModel.infoMessage) { _, newValue in
+            guard newValue != nil else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation { viewModel.infoMessage = nil }
+            }
         }
         .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
             Button("OK") { viewModel.errorMessage = nil }
@@ -178,6 +193,28 @@ private struct ListRow: View {
                 .accessibilityLabel(watch.isFavorite ? "Favorite" : "Not favorite")
         }
         .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Toast
+private struct ToastBanner: View {
+    enum ToastStyle { case info, success, warning, error }
+    let message: String
+    var style: ToastStyle = .info
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(AppColors.brandGold)
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(AppColors.textPrimary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial, in: Capsule())
+        .shadow(radius: 4)
+        .accessibilityLabel(message)
     }
 }
 

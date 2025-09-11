@@ -6,11 +6,6 @@ import UIKit
 /// - Why: A calendar is a natural mental model for tracking usage over time.
 /// - How: Wraps `UICalendarView` in a `UIViewRepresentable` and wires selection via a Coordinator.
 
-/// Calendar screen showing wear entries by day.
-/// - What: Presents an iOS native calendar and a compact list of watches worn on the selected day.
-/// - Why: A calendar is a familiar mental model; the list below provides at-a-glance details.
-/// - How: Bridges `UICalendarView` selection into SwiftUI state; queries entries and renders rows
-///        as a bold manufacturer with a regular-weight model and a compact thumbnail.
 struct CalendarView: View {
     @State private var selectedDate: Date = Date()
     @State private var entries: [WearEntry] = []

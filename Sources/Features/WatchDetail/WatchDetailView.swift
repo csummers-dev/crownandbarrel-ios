@@ -6,11 +6,16 @@ import SwiftUI
 /// - How: Uses a simple repository to add wear entries, with error surfaced via alert.
 
 struct WatchDetailView: View {
-    let watch: Watch
+    @State private var watch: Watch
     @State private var errorMessage: String? = nil
     @State private var isEditing: Bool = false
     @State private var isSavingWear: Bool = false
+    @Environment(\.dismiss) private var dismiss
     private let repository: WatchRepository = WatchRepositoryCoreData()
+
+    init(watch: Watch) {
+        self._watch = State(initialValue: watch)
+    }
 
     var body: some View {
         ScrollView {
@@ -29,8 +34,13 @@ struct WatchDetailView: View {
                 Button("Edit") { isEditing = true }
             }
         }
-        .sheet(isPresented: $isEditing) {
-            NavigationStack { WatchFormView(existingWatch: watch) }
+        .sheet(isPresented: $isEditing, onDismiss: { Task { await reloadWatch() } }) {
+            NavigationStack { WatchFormView(existingWatch: watch).id(watch.id) }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: Notification.Name("watchDeleted"))) { notification in
+            if let deletedId = notification.object as? UUID, deletedId == watch.id {
+                dismiss()
+            }
         }
         .safeAreaInset(edge: .bottom) {
             Button(action: { Task { await wearToday() } }) {
@@ -108,6 +118,20 @@ struct WatchDetailView: View {
             try await repository.incrementWear(for: watch.id, on: Date())
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+    /// Reloads the current watch from persistence after edits.
+    /// - Why: Ensures image and fields reflect the latest saved state without
+    ///   reloading the entire collection.
+    /// - How: Uses the repository's `fetchById(_:)` for a targeted refresh.
+    private func reloadWatch() async {
+        do {
+            let repo: WatchRepository = WatchRepositoryCoreData()
+            if let updated = try await repo.fetchById(watch.id) {
+                self.watch = updated
+            }
+        } catch {
+            // no-op: keep existing data on failure
         }
     }
 }

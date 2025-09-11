@@ -25,6 +25,12 @@ public protocol WatchRepository {
     /// Returns all watches, typically sorted by creation date descending.
     func fetchAll() async throws -> [Watch]
 
+    /// Fetches a single watch by id or returns nil if not found.
+    /// - Use: Prefer this over scanning results from `search` when you only need
+    ///   to refresh one item (e.g., after editing a watch) to avoid unnecessary I/O.
+    /// - Performance: Implementations should fetch with a predicate and `fetchLimit = 1`.
+    func fetchById(_ id: UUID) async throws -> Watch?
+
     /// Inserts or updates a watch by `id`.
     func upsert(_ watch: Watch) async throws
 

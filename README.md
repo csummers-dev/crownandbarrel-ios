@@ -3,7 +3,7 @@ Good Watch
 
 An open-source iOS app to manage a watch collection, track wear history, and visualize data insights.
 
-![Branch: feature/ui-redesign](https://img.shields.io/badge/branch-feature--ui--redesign-1E90FF?style=flat&logo=github)
+![Branch: feature/ui-updates](https://img.shields.io/badge/branch-feature--ui--updates-1E90FF?style=flat&logo=github)
 [![Build/Test CI](https://github.com/csummers-dev/goodwatch-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/goodwatch-ios/actions/workflows/ci.yml)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
 ![Latest release](https://img.shields.io/github/v/release/csummers-dev/goodwatch-ios)
@@ -65,7 +65,7 @@ Getting started
 
 Testing
 - Unit test target covers domain, repositories, filters, and backup/restore. Includes a launch configuration check that guards against legacy letterboxing.
-- UI tests cover collection, form, detail, calendar, stats, and full-screen launch behavior.
+- UI tests cover collection, form, detail, calendar, stats, and full-screen launch behavior. Includes a collection image refresh verification after saving edits.
 - Unit tests validate the app icon presence, theme-aware placeholders, and the square-cropping utility.
 - CI (GitHub Actions): see build/test badge above; workflow runs `xcodebuild test`.
 - Run locally: `xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 16' test`

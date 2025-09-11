@@ -24,6 +24,19 @@ public final class WatchRepositoryCoreData: WatchRepository {
         }
     }
 
+    /// Fetches a single watch by id.
+    /// - Note: Uses a direct Core Data fetch with `fetchLimit = 1` for efficiency.
+    ///   Prefer this for detail refreshes instead of a broader `search` query.
+    public func fetchById(_ id: UUID) async throws -> Watch? {
+        try await stack.viewContext.perform { [stack] in
+            let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
+            request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+            request.fetchLimit = 1
+            let obj = try stack.viewContext.fetch(request).first
+            return obj.map(Mappers.toDomain)
+        }
+    }
+
     /// Inserts or updates a watch based on `id` and updates derived fields as needed.
     public func upsert(_ watch: Watch) async throws {
         try await stack.viewContext.perform { [stack] in
