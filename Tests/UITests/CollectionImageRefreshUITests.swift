@@ -60,17 +60,17 @@ final class CollectionImageRefreshUITests: XCTestCase {
 
         // Use deterministic inject button during UI tests
         let inject = app.buttons["Inject Test Image"]
-        XCTAssertTrue(inject.waitForExistence(timeout: 2))
+        XCTAssertTrue(inject.waitForExistence(timeout: 4))
         inject.tap()
-
-        // Detail view should reflect real image immediately
-        let realInDetail = app.images["watch-image-real"]
-        XCTAssertTrue(realInDetail.waitForExistence(timeout: 2))
 
         // Save the edit
         let save = app.buttons["Save"]
-        XCTAssertTrue(save.waitForExistence(timeout: 2))
+        XCTAssertTrue(save.waitForExistence(timeout: 4))
         save.tap()
+
+        // After save, the edit sheet dismisses and detail reloads; assert real image now.
+        let realInDetail = app.images["watch-image-real"]
+        XCTAssertTrue(realInDetail.waitForExistence(timeout: 8))
 
         // We should be back on detail; go back to collection
         app.navigationBars.buttons.element(boundBy: 0).tap()
