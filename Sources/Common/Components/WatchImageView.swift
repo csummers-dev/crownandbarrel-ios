@@ -18,18 +18,21 @@ public struct WatchImageView: View {
                 Image(uiImage: img)
                     .resizable()
                     .scaledToFill()
+                    .accessibilityIdentifier("watch-image-real")
             } else {
                 let style: UIUserInterfaceStyle = (colorScheme == .dark) ? .dark : .light
                 if let ui = ImageStore.loadPlaceholder(colorScheme: style) {
                     Image(uiImage: ui)
                         .resizable()
                         .scaledToFill()
+                        .accessibilityIdentifier("watch-image-placeholder")
                 } else {
                     Image(systemName: "applewatch")
                         .resizable()
                         .scaledToFit()
                         .foregroundStyle(.secondary)
                         .padding(16)
+                        .accessibilityIdentifier("watch-image-placeholder")
                 }
             }
         }

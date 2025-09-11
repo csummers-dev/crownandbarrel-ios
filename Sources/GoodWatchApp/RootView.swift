@@ -22,6 +22,7 @@ struct RootView: View {
                     }
             }
             .tabItem { Label("Collection", systemImage: "rectangle.grid.2x2") }
+            .tint(AppColors.brandGold)
 
             NavigationStack {
                 StatsView()
@@ -35,6 +36,7 @@ struct RootView: View {
                     }
             }
             .tabItem { Label("Stats", systemImage: "chart.bar") }
+            .tint(AppColors.brandGold)
 
             NavigationStack {
                 CalendarView()
@@ -48,6 +50,7 @@ struct RootView: View {
                     }
             }
             .tabItem { Label("Calendar", systemImage: "calendar") }
+            .tint(AppColors.brandGold)
         }
     }
 
@@ -59,7 +62,7 @@ struct RootView: View {
                 NavigationLink("Privacy Policy") { PrivacyPolicyView() }
                 NavigationLink("About") { AboutView() }
             } label: {
-                Image(systemName: "gearshape")
+                Image(systemName: "gearshape").foregroundStyle(AppColors.brandGold)
             }
         }
     }

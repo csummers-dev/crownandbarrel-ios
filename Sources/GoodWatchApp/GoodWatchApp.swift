@@ -14,12 +14,42 @@ struct GoodWatchApp: App {
         WindowGroup {
             RootView()
                 .preferredColorScheme(theme.preferredColorScheme)
+                .tint(AppColors.brandGold)
                 .onAppear {
-                    let appearance = UITabBarAppearance()
-                    appearance.configureWithDefaultBackground()
-                    appearance.shadowColor = UIColor(AppColors.tabBarHairline)
-                    UITabBar.appearance().standardAppearance = appearance
-                    UITabBar.appearance().scrollEdgeAppearance = appearance
+                    // Tab bar appearance
+                    let tabAppearance = UITabBarAppearance()
+                    tabAppearance.configureWithDefaultBackground()
+                    tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+                    UITabBar.appearance().standardAppearance = tabAppearance
+                    UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+                    UITabBar.appearance().tintColor = UIColor(AppColors.brandGold)
+                    UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
+
+                    // Navigation bar appearance
+                    let navAppearance = UINavigationBarAppearance()
+                    navAppearance.configureWithDefaultBackground()
+                    navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+                    navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textPrimary)]
+                    navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.textPrimary)]
+                    UINavigationBar.appearance().standardAppearance = navAppearance
+                    UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+                    UINavigationBar.appearance().tintColor = UIColor(AppColors.brandGold)
+
+                    // Global control tint (UIKit hosting)
+                    UIView.appearance().tintColor = UIColor(AppColors.brandGold)
+
+                    // Segmented control (used in Collection view toggle)
+                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.brandGold)
+                    UISegmentedControl.appearance().setTitleTextAttributes([
+                        .foregroundColor: UIColor(AppColors.brandWhite)
+                    ], for: .selected)
+                    UISegmentedControl.appearance().setTitleTextAttributes([
+                        .foregroundColor: UIColor(AppColors.textPrimary)
+                    ], for: .normal)
+
+                    // Common button/bar button tint
+                    UIBarButtonItem.appearance().tintColor = UIColor(AppColors.brandGold)
+                    UIButton.appearance().tintColor = UIColor(AppColors.brandGold)
                 }
         }
     }

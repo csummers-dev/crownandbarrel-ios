@@ -13,6 +13,7 @@ final class CollectionViewModel: ObservableObject {
     @Published var viewMode: CollectionViewMode = .grid
     @Published var isPresentingAdd: Bool = false
     @Published var errorMessage: String?
+    @Published var infoMessage: String?
 
     private let repository: WatchRepository
     private var cancellables: Set<AnyCancellable> = []
@@ -28,6 +29,23 @@ final class CollectionViewModel: ObservableObject {
         // Sort changes
         $sortOption
             .sink { [weak self] _ in Task { await self?.load() } }
+            .store(in: &cancellables)
+
+        // Optimistic refresh on save from any edit form via NotificationCenter
+        NotificationCenter.default.publisher(for: Notification.Name("watchUpserted"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                Task { await self?.load() }
+            }
+            .store(in: &cancellables)
+
+        // Reload when a watch is deleted anywhere
+        NotificationCenter.default.publisher(for: Notification.Name("watchDeleted"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.infoMessage = "Watch deleted"
+                Task { await self?.load() }
+            }
             .store(in: &cancellables)
     }
 

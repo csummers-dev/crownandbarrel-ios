@@ -40,6 +40,24 @@ final class WatchRepositoryTests: XCTestCase {
         try await repo.incrementWear(for: watch.id, on: Date())
         await XCTAssertThrowsErrorAsync(try await repo.incrementWear(for: watch.id, on: Date()))
     }
+
+    func testFetchByIdReturnsInsertedWatch() async throws {
+        let repo = makeRepo()
+        let watch = Watch(manufacturer: "FetchByIdBrand")
+        try await repo.upsert(watch)
+        let fetched = try await repo.fetchById(watch.id)
+        XCTAssertEqual(fetched?.id, watch.id)
+        XCTAssertEqual(fetched?.manufacturer, "FetchByIdBrand")
+    }
+
+    func testDeleteRemovesWatch() async throws {
+        let repo = makeRepo()
+        let watch = Watch(manufacturer: "DeleteBrand")
+        try await repo.upsert(watch)
+        try await repo.delete(watch.id)
+        let fetched = try await repo.fetchById(watch.id)
+        XCTAssertNil(fetched)
+    }
 }
 
 extension XCTestCase {
