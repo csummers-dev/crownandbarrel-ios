@@ -23,6 +23,7 @@ struct WatchFormView: View {
         Form {
             Section("Details") {
                 TextField("Manufacturer", text: $viewModel.manufacturer)
+                    .accessibilityIdentifier("manufacturerField")
                 TextField("Model", text: $viewModel.model)
 
                 Picker("Category", selection: Binding<WatchCategory>(
