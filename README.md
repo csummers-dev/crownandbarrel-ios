@@ -4,9 +4,9 @@ Crown & Barrel
 An open-source iOS app to manage a watch collection, track wear history, and visualize data insights.
 
 ![Branch: feature/ui-updates](https://img.shields.io/badge/branch-feature--ui--updates-1E90FF?style=flat&logo=github)
-[![Build/Test CI](https://github.com/csummers-dev/goodwatch-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/goodwatch-ios/actions/workflows/ci.yml)
+[![Build/Test CI](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
-![Latest release](https://img.shields.io/github/v/release/csummers-dev/goodwatch-ios)
+![Latest release](https://img.shields.io/github/v/release/csummers-dev/crownandbarrel-ios)
 
 Key decisions
 - iOS 17 minimum, iPhone only (portrait). Rationale: ensures modern full-screen behavior on iPhone devices, simplifies API surface (e.g., updated onChange), and avoids legacy compatibility modes. Landscape mode a consideration for future updates.
