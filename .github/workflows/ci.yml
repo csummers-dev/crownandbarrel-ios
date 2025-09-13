@@ -20,12 +20,12 @@ jobs:
       - name: Install xcpretty
         run: gem install xcpretty --no-document
       - name: Clean any committed project
-        run: rm -rf GoodWatch.xcodeproj
+        run: rm -rf CrownAndBarrel.xcodeproj
       - name: Generate Xcode project
         run: xcodegen generate
       - name: Build and test
         run: |
-          xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 16' build test | xcpretty
+          xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' build test | xcpretty
         shell: bash
 
 
