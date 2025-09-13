@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		013D271A3E3367AF1808FEF6 /* Themes.json in Resources */ = {isa = PBXBuildFile; fileRef = FD809A1B23B48C5EEF0988C4 /* Themes.json */; };
 		025C51CB1D501DA9A4DDC39D /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13878D0F445A3A551D91ABAF /* Watch.swift */; };
 		07EDDC3C1E7CA8AB8EAA02F1 /* WatchImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 117C7E66F8FD057F3FBDAF31 /* WatchImageView.swift */; };
 		07FB8BD6F27D9465E499BEF5 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 203D819767AD2584C7FF3A92 /* Colors.swift */; };
@@ -14,6 +15,7 @@
 		160956B393C193F558CA9E48 /* Placeholders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B81E61440997ECB9FB4CC50 /* Placeholders.swift */; };
 		1A619E29FE310281C4B951B9 /* AddWatchFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A37BDAE0975E54558DCB1EA /* AddWatchFlowUITests.swift */; };
 		298AD8405ED07BEE6C902B1F /* WatchFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C138FA6416FF5BD189D1D688 /* WatchFormViewModel.swift */; };
+		318F471855B34C27AD9DFCAF /* ContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F829AD837ADBD1CCB3CAD85 /* ContrastTests.swift */; };
 		32033A025EBEC4FF1662D3E7 /* Mappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E2F9F22D1FC1FD39F3D55AA /* Mappers.swift */; };
 		398B6C855DCF32607FEF6990 /* GoodWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3A4501143FD67CADB56AC49 /* GoodWatchApp.swift */; };
 		3C1E6C874C046DF2062334C8 /* FullScreenLaunchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC4ABA8A263528CF441B87BA /* FullScreenLaunchUITests.swift */; };
@@ -26,16 +28,20 @@
 		5311CBBF77754A016AF83648 /* WatchEntryPlaceholder-DarkMode-1000.png in Resources */ = {isa = PBXBuildFile; fileRef = A4CB7D2323C0E2E542C9E0A0 /* WatchEntryPlaceholder-DarkMode-1000.png */; };
 		5E9BAC458FD83AFFAAF3669E /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 909AF9ADACEA9DD11AFBF50E /* Typography.swift */; };
 		619C8D4F81DBAFBF36D7596D /* ExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A473B1A63CB02097A5AC9D /* ExampleUITests.swift */; };
+		631C8F96351CC9DCF1C41BC5 /* CollectionImageRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D705F8C20D80E222CE64A84 /* CollectionImageRefreshUITests.swift */; };
 		63BCB1BCC47205C7F63EBA9D /* DetailWornTodayUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8581A96299256A6B2EAF6E2 /* DetailWornTodayUITests.swift */; };
 		66679A950A976D2F9AD038B9 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 6E4D73256B548D3C99D9DBDD /* ZIPFoundation */; };
+		6A02273E06FBDF278DF42DAF /* ThemeToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEDD35C54D16F7EDAAB4D5D0 /* ThemeToken.swift */; };
 		6C31BE5AB4F49449995454C8 /* WatchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA3913A439C545D486AB18B4 /* WatchRepository.swift */; };
 		6D58CE82190581D637F863DE /* AssetsPresenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5ED76C90279868E4007A3C0 /* AssetsPresenceTests.swift */; };
+		700A0226318C3252B8459C96 /* AppEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918CF5A9A8277D4EFB8B2AA0 /* AppEvents.swift */; };
 		77BD0388AB11D2F6BBAB1382 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EC2CC726C9186634E4CD9A9 /* SampleData.swift */; };
 		79ACB738C0184DF4066F1494 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC088C4E378035EAE6734423 /* LaunchScreen.storyboard */; };
 		7AF2443714504D6331493DF9 /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B7A99A0B8D0EA29CAB9BFB2 /* DateUtils.swift */; };
 		7C3BFE0046F4AC993EB737ED /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21092F8CA44074563B13D787 /* ImageStore.swift */; };
 		816B470EED3936E4088C68D3 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F8FE39AEB0F7EA537C6D2E /* RootView.swift */; };
 		982792506062BF41FE3C85BA /* AppDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D166DFE675E2F68B0D16EC94 /* AppDataView.swift */; };
+		9B987B8C745ABA50EE8A0D72 /* ThemeCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D83EFAAA912A6586D04F653C /* ThemeCatalogTests.swift */; };
 		9BA59B6479D3EB0E7BAF8120 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BDE71E683159A1F585B450 /* ThemeManager.swift */; };
 		A2284AA3E9F753F719D1AEB0 /* FiltersAndBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 613E070DDA6FFEEB529F383F /* FiltersAndBackupTests.swift */; };
 		A29DB011965B0F178ADAAF3D /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6AB97104D81CFBEB57745E8 /* CollectionViewModel.swift */; };
@@ -57,6 +63,7 @@
 		E2786299AF75BA5E950C015F /* MoreRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DDB9A18D5A999A7081160A8 /* MoreRepositoryTests.swift */; };
 		E38DE87891EF5E6F33702231 /* LaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F5306AE3FBCC7E038E17E0 /* LaunchConfigurationTests.swift */; };
 		EC094EF9E471194D135CAB07 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D283E67D2E5505C6CD3D44B /* AppError.swift */; };
+		FDA7EAE8400D431B65581B3A /* ThemeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19650976A44099179F6933D5 /* ThemeCatalog.swift */; };
 		FDFD04D05A55C17743ABDC78 /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E0EE1C6F312D3E0F56B87D /* CollectionView.swift */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +92,7 @@
 		0E2F9F22D1FC1FD39F3D55AA /* Mappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mappers.swift; sourceTree = "<group>"; };
 		117C7E66F8FD057F3FBDAF31 /* WatchImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchImageView.swift; sourceTree = "<group>"; };
 		13878D0F445A3A551D91ABAF /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
+		19650976A44099179F6933D5 /* ThemeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalog.swift; sourceTree = "<group>"; };
 		201B16D657B672D22E0BEA40 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		203D819767AD2584C7FF3A92 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		21092F8CA44074563B13D787 /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
@@ -95,6 +103,7 @@
 		39E0EE1C6F312D3E0F56B87D /* CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		3CFDFCCC1385CE6B6527460A /* WatchRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepositoryTests.swift; sourceTree = "<group>"; };
 		3D7B306CC06DE36342987663 /* CalendarAndDetailUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarAndDetailUITests.swift; sourceTree = "<group>"; };
+		3F829AD837ADBD1CCB3CAD85 /* ContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContrastTests.swift; sourceTree = "<group>"; };
 		4B7A99A0B8D0EA29CAB9BFB2 /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		55AE68FCFF477012D2408803 /* WearEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WearEntry.swift; sourceTree = "<group>"; };
 		578577506C634EDAE4D2300D /* BackupRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepository.swift; sourceTree = "<group>"; };
@@ -105,9 +114,11 @@
 		6D283E67D2E5505C6CD3D44B /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		78FF1C619EA8F169A393766A /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
 		793DBE4B6FDC344C52C8D501 /* WatchRepositoryCoreData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepositoryCoreData.swift; sourceTree = "<group>"; };
+		7D705F8C20D80E222CE64A84 /* CollectionImageRefreshUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionImageRefreshUITests.swift; sourceTree = "<group>"; };
 		7EC2CC726C9186634E4CD9A9 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		81335EB8CE0C17538790C7BF /* ExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleTests.swift; sourceTree = "<group>"; };
 		909AF9ADACEA9DD11AFBF50E /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		918CF5A9A8277D4EFB8B2AA0 /* AppEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEvents.swift; sourceTree = "<group>"; };
 		93F8FE39AEB0F7EA537C6D2E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		9F76B75C4A60F4CEC2583AA7 /* WatchDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchDetailView.swift; sourceTree = "<group>"; };
 		A04700CDA2D3C3213B9E1420 /* GoodWatchUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = GoodWatchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -116,6 +127,7 @@
 		A6A473B1A63CB02097A5AC9D /* ExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUITests.swift; sourceTree = "<group>"; };
 		AC088C4E378035EAE6734423 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AEB427A341FC00760FE229C1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AEDD35C54D16F7EDAAB4D5D0 /* ThemeToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeToken.swift; sourceTree = "<group>"; };
 		AF30A1901C6E10DA9F64C4D3 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		BA3913A439C545D486AB18B4 /* WatchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepository.swift; sourceTree = "<group>"; };
 		BB569C78315FD6D48B7ADB27 /* ImageStoreCropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStoreCropTests.swift; sourceTree = "<group>"; };
@@ -125,6 +137,7 @@
 		D166DFE675E2F68B0D16EC94 /* AppDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataView.swift; sourceTree = "<group>"; };
 		D21E80A3E7B884DA543EFB5F /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		D3A4501143FD67CADB56AC49 /* GoodWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoodWatchApp.swift; sourceTree = "<group>"; };
+		D83EFAAA912A6586D04F653C /* ThemeCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalogTests.swift; sourceTree = "<group>"; };
 		D8B5B6A0FC2CC39095E7C16F /* WatchFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormView.swift; sourceTree = "<group>"; };
 		E69BB42EE3A9F780376573E7 /* StatsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsUITests.swift; sourceTree = "<group>"; };
 		E6AB97104D81CFBEB57745E8 /* CollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewModel.swift; sourceTree = "<group>"; };
@@ -132,6 +145,7 @@
 		ED8F66F98BEA7AC7BBD9D650 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		F5ED76C90279868E4007A3C0 /* AssetsPresenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsPresenceTests.swift; sourceTree = "<group>"; };
 		F8581A96299256A6B2EAF6E2 /* DetailWornTodayUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailWornTodayUITests.swift; sourceTree = "<group>"; };
+		FD809A1B23B48C5EEF0988C4 /* Themes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Themes.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,7 +202,9 @@
 				203D819767AD2584C7FF3A92 /* Colors.swift */,
 				78FF1C619EA8F169A393766A /* Icons.swift */,
 				0C0AAFAE9246FF5E56DF56EB /* Spacing.swift */,
+				19650976A44099179F6933D5 /* ThemeCatalog.swift */,
 				25BDE71E683159A1F585B450 /* ThemeManager.swift */,
+				AEDD35C54D16F7EDAAB4D5D0 /* ThemeToken.swift */,
 				909AF9ADACEA9DD11AFBF50E /* Typography.swift */,
 			);
 			path = DesignSystem;
@@ -198,11 +214,13 @@
 			isa = PBXGroup;
 			children = (
 				F5ED76C90279868E4007A3C0 /* AssetsPresenceTests.swift */,
+				3F829AD837ADBD1CCB3CAD85 /* ContrastTests.swift */,
 				81335EB8CE0C17538790C7BF /* ExampleTests.swift */,
 				613E070DDA6FFEEB529F383F /* FiltersAndBackupTests.swift */,
 				BB569C78315FD6D48B7ADB27 /* ImageStoreCropTests.swift */,
 				31F5306AE3FBCC7E038E17E0 /* LaunchConfigurationTests.swift */,
 				0DDB9A18D5A999A7081160A8 /* MoreRepositoryTests.swift */,
+				D83EFAAA912A6586D04F653C /* ThemeCatalogTests.swift */,
 				3CFDFCCC1385CE6B6527460A /* WatchRepositoryTests.swift */,
 			);
 			name = Unit;
@@ -225,6 +243,7 @@
 				62241B444F73D8475BD3C97F /* icongen.sh */,
 				BC45A9D7DFD02E9B3719AF66 /* Info.plist */,
 				AC088C4E378035EAE6734423 /* LaunchScreen.storyboard */,
+				FD809A1B23B48C5EEF0988C4 /* Themes.json */,
 				84AFC7D06D7284FD9E00FD44 /* Images */,
 			);
 			path = AppResources;
@@ -300,6 +319,7 @@
 			children = (
 				2A37BDAE0975E54558DCB1EA /* AddWatchFlowUITests.swift */,
 				3D7B306CC06DE36342987663 /* CalendarAndDetailUITests.swift */,
+				7D705F8C20D80E222CE64A84 /* CollectionImageRefreshUITests.swift */,
 				F8581A96299256A6B2EAF6E2 /* DetailWornTodayUITests.swift */,
 				A6A473B1A63CB02097A5AC9D /* ExampleUITests.swift */,
 				EC4ABA8A263528CF441B87BA /* FullScreenLaunchUITests.swift */,
@@ -384,6 +404,7 @@
 		FCCF95810574C4C413952F1C /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				918CF5A9A8277D4EFB8B2AA0 /* AppEvents.swift */,
 				4B7A99A0B8D0EA29CAB9BFB2 /* DateUtils.swift */,
 				ED8F66F98BEA7AC7BBD9D650 /* Haptics.swift */,
 				21092F8CA44074563B13D787 /* ImageStore.swift */,
@@ -496,6 +517,7 @@
 			files = (
 				E07E4F118CE04B9181208534 /* Assets.xcassets in Resources */,
 				79ACB738C0184DF4066F1494 /* LaunchScreen.storyboard in Resources */,
+				013D271A3E3367AF1808FEF6 /* Themes.json in Resources */,
 				5311CBBF77754A016AF83648 /* WatchEntryPlaceholder-DarkMode-1000.png in Resources */,
 				CF13DE60C5AFCB445017E32D /* WatchEntryPlaceholder-LightMode-1000.png in Resources */,
 				A9937788BCF0151D67F4386D /* icongen.sh in Resources */,
@@ -511,6 +533,7 @@
 			files = (
 				1A619E29FE310281C4B951B9 /* AddWatchFlowUITests.swift in Sources */,
 				C1C323D2CC44F7C720197C77 /* CalendarAndDetailUITests.swift in Sources */,
+				631C8F96351CC9DCF1C41BC5 /* CollectionImageRefreshUITests.swift in Sources */,
 				63BCB1BCC47205C7F63EBA9D /* DetailWornTodayUITests.swift in Sources */,
 				619C8D4F81DBAFBF36D7596D /* ExampleUITests.swift in Sources */,
 				3C1E6C874C046DF2062334C8 /* FullScreenLaunchUITests.swift in Sources */,
@@ -524,6 +547,7 @@
 			files = (
 				982792506062BF41FE3C85BA /* AppDataView.swift in Sources */,
 				EC094EF9E471194D135CAB07 /* AppError.swift in Sources */,
+				700A0226318C3252B8459C96 /* AppEvents.swift in Sources */,
 				BDDBC718404D1ACC564AF564 /* BackupRepository.swift in Sources */,
 				D2D39432C577D0EDBC16CD8B /* BackupRepositoryFile.swift in Sources */,
 				BFCB04B4A1218D13588290E8 /* CalendarView.swift in Sources */,
@@ -544,7 +568,9 @@
 				3F5A67AFB0F8F336DA3D413E /* SettingsView.swift in Sources */,
 				3D60E9E8481BBD924E92E8D8 /* Spacing.swift in Sources */,
 				AB94120AC1C60EE996BA3E26 /* StatsView.swift in Sources */,
+				FDA7EAE8400D431B65581B3A /* ThemeCatalog.swift in Sources */,
 				9BA59B6479D3EB0E7BAF8120 /* ThemeManager.swift in Sources */,
+				6A02273E06FBDF278DF42DAF /* ThemeToken.swift in Sources */,
 				5E9BAC458FD83AFFAAF3669E /* Typography.swift in Sources */,
 				025C51CB1D501DA9A4DDC39D /* Watch.swift in Sources */,
 				C954BFA1BB1819D39C81A041 /* WatchDetailView.swift in Sources */,
@@ -562,11 +588,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D58CE82190581D637F863DE /* AssetsPresenceTests.swift in Sources */,
+				318F471855B34C27AD9DFCAF /* ContrastTests.swift in Sources */,
 				A5C1A5AC2F489510142D64C0 /* ExampleTests.swift in Sources */,
 				A2284AA3E9F753F719D1AEB0 /* FiltersAndBackupTests.swift in Sources */,
 				CF5C4561D9D87974DCF7CF7C /* ImageStoreCropTests.swift in Sources */,
 				E38DE87891EF5E6F33702231 /* LaunchConfigurationTests.swift in Sources */,
 				E2786299AF75BA5E950C015F /* MoreRepositoryTests.swift in Sources */,
+				9B987B8C745ABA50EE8A0D72 /* ThemeCatalogTests.swift in Sources */,
 				CAA3ECAF366AFFFF1A896ADC /* WatchRepositoryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -787,7 +815,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.goodwatch.app;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -804,7 +832,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.goodwatch.app;
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

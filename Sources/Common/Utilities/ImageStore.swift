@@ -51,14 +51,34 @@ public enum ImageStore {
     public static func loadPlaceholder(colorScheme: UIUserInterfaceStyle, variantKey: String? = nil) -> UIImage? {
         // Prefer asset catalog which auto-picks light/dark variants
         if let asset = UIImage(named: "WatchEntryPlaceholder") { return asset }
-        // Fallback raw file names
-        let rawName = (colorScheme == .dark) ? "WatchEntryPlaceholder-DarkMode-1000" : "WatchEntryPlaceholder-LightMode-1000"
-        if let url = Bundle.main.url(forResource: rawName, withExtension: "png"),
-           let data = try? Data(contentsOf: url),
-           let ui = UIImage(data: data) {
-            return ui
+        // Fallback: generate a simple themed placeholder (watch glyph in a rounded rect)
+        let size = CGSize(width: 200, height: 200)
+        let renderer = UIGraphicsImageRenderer(size: size, format: UIGraphicsImageRendererFormat.default())
+        let image = renderer.image { ctx in
+            let rect = CGRect(origin: .zero, size: size)
+            // Background based on theme
+            let bgColor = UIColor(AppColors.secondaryBackground)
+            let fgColor = UIColor(AppColors.textSecondary)
+            UIBezierPath(roundedRect: rect, cornerRadius: 24).addClip()
+            bgColor.setFill()
+            ctx.fill(rect)
+
+            // Draw system watch glyph centered
+            let config = UIImage.SymbolConfiguration(pointSize: 72, weight: .regular)
+            let symbol = UIImage(systemName: "watch.case", withConfiguration: config)
+            let tint = symbol?.withTintColor(fgColor, renderingMode: UIImage.RenderingMode.alwaysOriginal)
+            if let glyph = tint {
+                let glyphSize = glyph.size
+                let glyphRect = CGRect(
+                    x: (size.width - glyphSize.width) / 2.0,
+                    y: (size.height - glyphSize.height) / 2.0,
+                    width: glyphSize.width,
+                    height: glyphSize.height
+                )
+                glyph.draw(in: glyphRect)
+            }
         }
-        return nil
+        return image.withRenderingMode(UIImage.RenderingMode.alwaysOriginal)
     }
 
     /// Returns a square-cropped copy of the image (center-crop) given any source image.

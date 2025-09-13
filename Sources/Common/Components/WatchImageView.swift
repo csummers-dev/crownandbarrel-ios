@@ -30,7 +30,7 @@ public struct WatchImageView: View {
                     Image(systemName: "applewatch")
                         .resizable()
                         .scaledToFit()
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.textSecondary)
                         .padding(16)
                         .accessibilityIdentifier("watch-image-placeholder")
                 }

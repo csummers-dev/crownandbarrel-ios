@@ -118,7 +118,7 @@ struct WatchFormView: View {
         .navigationTitle(viewModel.existingWatchId == nil ? "Add Watch" : "Edit Watch")
         .navigationBarItems(
             leading: Button("Cancel") { dismiss() },
-            trailing: Button("Save") { Task { if await viewModel.save() { dismiss() } } }.disabled(viewModel.isSaving).tint(AppColors.brandGold)
+            trailing: Button("Save") { Task { if await viewModel.save() { dismiss() } } }.disabled(viewModel.isSaving).tint(AppColors.textSecondary)
         )
         .onChange(of: pickerItem) { _, newValue in
             guard let item = newValue else { return }

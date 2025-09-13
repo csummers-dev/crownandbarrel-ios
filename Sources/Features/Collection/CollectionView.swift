@@ -6,6 +6,7 @@ import SwiftUI
 /// - How: Uses `.searchable`, live refresh on dismissal, and `NavigationLink` to details.
 
 struct CollectionView: View {
+    @Environment(\.themeToken) private var themeToken
     @StateObject private var viewModel = CollectionViewModel()
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
@@ -48,6 +49,8 @@ struct CollectionView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
+        .background(AppColors.background.ignoresSafeArea())
+        .id(themeToken)
     }
 
     private var sortAndLayoutBar: some View {
@@ -62,6 +65,8 @@ struct CollectionView: View {
                 Text("Last worn").tag(WatchSortOption.lastWornDate)
             }
             .pickerStyle(.menu)
+            // Match dropdown chevrons/indicators to the same accent used by Calendar's Add worn
+            .tint(AppColors.accent)
 
             Spacer()
 
@@ -72,6 +77,7 @@ struct CollectionView: View {
             .pickerStyle(.segmented)
             .controlSize(.small)
             .frame(maxWidth: 160)
+            .tint(AppColors.accent)
         }
     }
 
@@ -93,8 +99,12 @@ struct CollectionView: View {
                 NavigationLink(destination: WatchDetailView(watch: watch)) {
                     ListRow(watch: watch)
                 }
+                .listRowBackground(AppColors.secondaryBackground)
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(AppColors.secondaryBackground)
+            .listRowSeparatorTint(AppColors.separator)
         }
     }
 
@@ -104,7 +114,7 @@ struct CollectionView: View {
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(AppColors.brandWhite)
                 .padding(18)
-                .background(Circle().fill(AppColors.brandGold))
+                .background(Circle().fill(AppColors.accent))
                 .shadow(radius: 6)
         }
         .padding()
@@ -128,14 +138,15 @@ private struct GridCell: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(watch.manufacturer)
                 .font(.headline)
+                .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
             Text(watch.model ?? "")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary)
                 .lineLimit(1)
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(.secondarySystemBackground))
+                    .fill(AppColors.secondaryBackground)
                     .frame(width: tileSize, height: tileSize)
                 WatchImageView(imageAssetId: watch.imageAssetId)
                     .frame(width: tileSize, height: tileSize)
@@ -147,10 +158,10 @@ private struct GridCell: View {
             }
             Text(watch.timesWorn > 0 ? "Worn \(watch.timesWorn)x" : "Not worn yet")
                 .font(.footnote)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.textSecondary)
         }
         .padding(10)
-        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.tertiarySystemBackground)))
+        .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.tertiaryBackground))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(watch.manufacturer) \(watch.model ?? "")")
         .accessibilityHint(watch.timesWorn > 0 ? "Worn \(watch.timesWorn) times" : "Not worn yet")
@@ -168,7 +179,7 @@ private struct ListRow: View {
         HStack(spacing: 12) {
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(.secondarySystemBackground))
+                    .fill(AppColors.secondaryBackground)
                 WatchImageView(imageAssetId: watch.imageAssetId)
                     .frame(width: thumbSize, height: thumbSize)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -181,15 +192,16 @@ private struct ListRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(watch.manufacturer)
                     .font(.body)
+                    .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
                 Text(watch.model ?? "")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)
             }
             Spacer()
             Image(systemName: watch.isFavorite ? "star.fill" : "star")
-                .foregroundStyle(watch.isFavorite ? .yellow : .secondary)
+                .foregroundStyle(watch.isFavorite ? .yellow : AppColors.textSecondary)
                 .accessibilityLabel(watch.isFavorite ? "Favorite" : "Not favorite")
         }
         .contentShape(Rectangle())
@@ -205,7 +217,7 @@ private struct ToastBanner: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(AppColors.brandGold)
+                .foregroundStyle(AppColors.accent)
             Text(message)
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textPrimary)

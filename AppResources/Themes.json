@@ -1,0 +1,116 @@
+[
+  {
+    "id": "light-default",
+    "name": "Daytime",
+    "colorScheme": "light",
+    "colors": {
+      "accent": "#007AFF",
+      "background": "#FFFFFF",
+      "secondaryBackground": "#F2F2F7",
+      "tertiaryBackground": "#FFFFFF",
+      "separator": "rgba(60,60,67,0.29)",
+      "textPrimary": "#000000",
+      "textSecondary": "rgba(60,60,67,0.60)",
+      "tabBarHairline": "rgba(60,60,67,0.29)",
+      "chartPalette": ["#0A84FF", "#34C759", "#FF9500", "#FF2D55", "#AF52DE"]
+    }
+  },
+  {
+    "id": "dark-default",
+    "name": "Nighttime",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#8E8E93",
+      "background": "#000000",
+      "secondaryBackground": "#1C1C1E",
+      "tertiaryBackground": "#2C2C2E",
+      "separator": "rgba(84,84,88,0.60)",
+      "textPrimary": "rgba(255,255,255,0.92)",
+      "textSecondary": "rgba(235,235,245,0.64)",
+      "tabBarHairline": "rgba(84,84,88,0.65)",
+      "chartPalette": ["#64D2FF", "#30D158", "#FFD60A", "#FF375F", "#BF5AF2"]
+    }
+  },
+  {
+    "id": "pastel",
+    "name": "Pastel",
+    "colorScheme": "light",
+    "colors": {
+      "accent": "#A78BFA",
+      "background": "#FFFDF7",
+      "secondaryBackground": "#F5F3FF",
+      "tertiaryBackground": "#FDF2F8",
+      "separator": "#E5E7EB",
+      "textPrimary": "#111827",
+      "textSecondary": "#374151",
+      "tabBarHairline": "rgba(31,41,55,0.10)",
+      "chartPalette": ["#FFADAD", "#FFD6A5", "#FDFFB6", "#CAFFBF", "#A0C4FF"]
+    }
+  },
+  {
+    "id": "midnight-indigo",
+    "name": "Midnight Indigo",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#6366F1",
+      "background": "#0F172A",
+      "secondaryBackground": "#111827",
+      "tertiaryBackground": "#1F2937",
+      "separator": "rgba(255,255,255,0.12)",
+      "textPrimary": "#E5E7EB",
+      "textSecondary": "rgba(229,231,235,0.75)",
+      "tabBarHairline": "rgba(255,255,255,0.16)",
+      "chartPalette": ["#818CF8", "#60A5FA", "#22D3EE", "#A78BFA", "#F472B6"]
+    }
+  },
+  {
+    "id": "forest",
+    "name": "Forest",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#10B981",
+      "background": "#0C1F17",
+      "secondaryBackground": "#12281E",
+      "tertiaryBackground": "#1B3529",
+      "separator": "rgba(255,255,255,0.10)",
+      "textPrimary": "#E6F4EC",
+      "textSecondary": "rgba(230,244,236,0.75)",
+      "tabBarHairline": "rgba(255,255,255,0.14)",
+      "chartPalette": ["#34D399", "#A7F3D0", "#4ADE80", "#065F46", "#84CC16"]
+    }
+  },
+  {
+    "id": "ocean",
+    "name": "Ocean",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#06B6D4",
+      "background": "#071E26",
+      "secondaryBackground": "#0B2A33",
+      "tertiaryBackground": "#103741",
+      "separator": "rgba(255,255,255,0.10)",
+      "textPrimary": "#E6F7FB",
+      "textSecondary": "rgba(230,247,251,0.75)",
+      "tabBarHairline": "rgba(255,255,255,0.14)",
+      "chartPalette": ["#38BDF8", "#22D3EE", "#2DD4BF", "#0EA5E9", "#10B981"]
+    }
+  },
+  {
+    "id": "sunset",
+    "name": "Sunset",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#F97316",
+      "background": "#1A1412",
+      "secondaryBackground": "#241A17",
+      "tertiaryBackground": "#2E1F1B",
+      "separator": "rgba(255,255,255,0.10)",
+      "textPrimary": "#F5F5F4",
+      "textSecondary": "rgba(245,245,244,0.75)",
+      "tabBarHairline": "rgba(255,255,255,0.14)",
+      "chartPalette": ["#F87171", "#FB923C", "#FBBF24", "#F472B6", "#60A5FA"]
+    }
+  }
+]
+
+

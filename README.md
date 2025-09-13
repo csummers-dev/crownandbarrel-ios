@@ -31,6 +31,28 @@ Redesign 2025-09 highlights
   - After adding a worn entry, the list refreshes immediately.
 - Tokens: Added `AppColors.chartPalette`, `AppColors.tabBarHairline`, `AppTypography.titleCompact`, and `AppSpacing.xxs` for finer tuning.
 
+Launch splash overlay (theme-aware)
+- What: A lightweight SwiftUI overlay shown immediately at app start.
+- Why: Prevents a flash of unthemed content and matches the user's saved theme on boot.
+- How: `GoodWatchApp` wraps `RootView` in a `ZStack` and shows `SplashOverlay` (background = `AppColors.background`, text = `AppColors.textSecondary`). It fades out after the first frame using a short `DispatchQueue.main.asyncAfter` with an opacity transition.
+- Tests: UI test asserts the splash appears on launch and dismisses within a short interval.
+
+Theming (user-selectable)
+- A JSON-driven theme catalog (`AppResources/Themes.json`) defines:
+  - `accent`, `background`, `secondaryBackground`, `tertiaryBackground`, `separator`, `textPrimary`, `textSecondary`, `tabBarHairline`, `chartPalette` (5 colors)
+  - `colorScheme`: `system`, `light`, or `dark` for `.preferredColorScheme`
+- `ThemeCatalog` loads themes on launch; `ThemeManager` exposes the current theme via `@AppStorage("selectedThemeId")`.
+- `AppColors` reads from the current theme; `brandGold` now aliases `accent`.
+- Settings → Appearance exposes a combined "Theme" picker listing all entries from `Themes.json` with color swatches.
+- Appearance proxies (tab bar/nav bar/segmented control) update when the theme changes.
+  - Navigation titles and bar button items intentionally use themed secondary text by design.
+  - Calendar labels in `UICalendarView` are themed via `UILabel.appearance(whenContainedInInstancesOf:)`.
+
+Add or edit a theme
+1) Edit `AppResources/Themes.json` (validate 5 colors under `chartPalette`).
+2) Run the app; the new theme appears in Settings.
+3) Ensure text contrast passes (primary ≥ 7:1, secondary ≥ 4.5:1). Unit tests verify this.
+
 Assets (images)
 - Preferred: Add a theme-aware placeholder in the asset catalog at `AppResources/Assets.xcassets/WatchEntryPlaceholder.imageset` (supports Light/Dark variants automatically).
 - Fallback (raw files):
@@ -42,6 +64,7 @@ Assets (images)
 
 Future enhancements
 - Theming: Expand metallic theme application across headers and accents; user-selectable accent color.
+- Stats: Full page redesign with richer charts, time filters (7/30/90/365), category breakdowns, and comparisons.
 - Accessibility: VoiceOver summaries for pie segments; high-contrast fallback palette.
 - Visual polish: Donut labels for pies; refined legends and spacing with tokens.
 - Calendar depth: Per-day summaries and quick-add favorites.

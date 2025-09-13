@@ -9,37 +9,66 @@ import UIKit
 @main
 struct GoodWatchApp: App {
     private let theme = ThemeManager()
+    @AppStorage("selectedThemeId") private var selectedThemeId: String = ThemeCatalog.shared.defaultThemeId
+    /// Controls the visibility of the splash overlay at boot.
+    /// - What: Starts true so the user sees a branded, theme-matching screen.
+    /// - Why: Avoids a flash of unthemed UI between process launch and SwiftUI render.
+    /// - How: Fades out shortly after the first frame using a small, non-blocking delay.
+    @State private var showSplash: Bool = true
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            // Compose the app root with a transient, theme-driven splash overlay.
+            // The overlay uses the current theme's background and secondary text color
+            // to ensure immediate visual consistency with user preferences.
+            ZStack {
+                RootView()
+                if showSplash {
+                    SplashOverlay()
+                        .transition(.opacity)
+                }
+            }
                 .preferredColorScheme(theme.preferredColorScheme)
-                .tint(AppColors.brandGold)
+                .tint(AppColors.accent)
+                .background(AppColors.background.ignoresSafeArea())
+                .environment(\.themeToken, selectedThemeId)
                 .onAppear {
+                    // Fade out the splash overlay shortly after first frame
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation(.easeOut(duration: 0.25)) { showSplash = false }
+                    }
+                    let isDark = ThemeAccess.currentTheme().colorScheme == .dark
                     // Tab bar appearance
                     let tabAppearance = UITabBarAppearance()
                     tabAppearance.configureWithDefaultBackground()
+                    tabAppearance.backgroundColor = UIColor(AppColors.background)
                     tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
                     UITabBar.appearance().standardAppearance = tabAppearance
                     UITabBar.appearance().scrollEdgeAppearance = tabAppearance
-                    UITabBar.appearance().tintColor = UIColor(AppColors.brandGold)
+                    UITabBar.appearance().tintColor = UIColor(AppColors.accent)
                     UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
 
                     // Navigation bar appearance
                     let navAppearance = UINavigationBarAppearance()
                     navAppearance.configureWithDefaultBackground()
+                    navAppearance.backgroundColor = UIColor(AppColors.background)
                     navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-                    navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textPrimary)]
-                    navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.textPrimary)]
+                    navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+                    navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
                     UINavigationBar.appearance().standardAppearance = navAppearance
                     UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
-                    UINavigationBar.appearance().tintColor = UIColor(AppColors.brandGold)
+                    UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
 
-                    // Global control tint (UIKit hosting)
-                    UIView.appearance().tintColor = UIColor(AppColors.brandGold)
+                    // Global control tint (UIKit hosting). In dark themes, avoid blue-tinted text.
+                    UIView.appearance().tintColor = isDark ? UIColor(AppColors.textSecondary) : UIColor(AppColors.accent)
+
+                    // UITableView / Cell backgrounds for SwiftUI List(.plain)
+                    UITableView.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
+                    UITableViewCell.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
 
                     // Segmented control (used in Collection view toggle)
-                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.brandGold)
+                    // Always use the theme accent for the selected segment across all themes
+                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
                     UISegmentedControl.appearance().setTitleTextAttributes([
                         .foregroundColor: UIColor(AppColors.brandWhite)
                     ], for: .selected)
@@ -48,10 +77,67 @@ struct GoodWatchApp: App {
                     ], for: .normal)
 
                     // Common button/bar button tint
-                    UIBarButtonItem.appearance().tintColor = UIColor(AppColors.brandGold)
-                    UIButton.appearance().tintColor = UIColor(AppColors.brandGold)
+                    UIBarButtonItem.appearance().tintColor = UIColor(AppColors.accent)
+                    UIButton.appearance().tintColor = UIColor(AppColors.accent)
+                    // Calendar labels inside UICalendarView should inherit theme text color
+                    UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
+                }
+                .onChange(of: selectedThemeId) { _, _ in
+                    // Reapply appearance proxies on theme changes
+                    let isDark = ThemeAccess.currentTheme().colorScheme == .dark
+                    let tabAppearance = UITabBarAppearance()
+                    tabAppearance.configureWithDefaultBackground()
+                    tabAppearance.backgroundColor = UIColor(AppColors.background)
+                    tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+                    UITabBar.appearance().standardAppearance = tabAppearance
+                    UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+                    UITabBar.appearance().tintColor = UIColor(AppColors.accent)
+                    UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
+
+                    let navAppearance = UINavigationBarAppearance()
+                    navAppearance.configureWithDefaultBackground()
+                    navAppearance.backgroundColor = UIColor(AppColors.background)
+                    navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+                    navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+                    navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+                    UINavigationBar.appearance().standardAppearance = navAppearance
+                    UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+                    UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
+
+                    UIView.appearance().tintColor = isDark ? UIColor(AppColors.textSecondary) : UIColor(AppColors.accent)
+                    // Keep segmented control selected tint in sync with theme accent on changes
+                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
+                    UISegmentedControl.appearance().setTitleTextAttributes([
+                        .foregroundColor: UIColor(AppColors.brandWhite)
+                    ], for: .selected)
+                    UISegmentedControl.appearance().setTitleTextAttributes([
+                        .foregroundColor: UIColor(AppColors.textPrimary)
+                    ], for: .normal)
+
+                    // Reapply List backgrounds on theme change
+                    UITableView.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
+                    UITableViewCell.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
+                    UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
+                    // Environment token is bound at the scene; no imperative update needed here
                 }
         }
+    }
+}
+
+
+/// A lightweight, theme-driven splash overlay shown briefly on app launch.
+/// Uses the user's saved theme: primary background and secondary text color.
+private struct SplashOverlay: View {
+    var body: some View {
+        ZStack {
+            AppColors.background.ignoresSafeArea()
+            VStack(spacing: 8) {
+                Text("Good Watch")
+                    .font(AppTypography.titleCompact)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+        }
+        .accessibilityIdentifier("SplashOverlay")
     }
 }
 

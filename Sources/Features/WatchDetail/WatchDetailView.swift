@@ -6,6 +6,7 @@ import SwiftUI
 /// - How: Uses a simple repository to add wear entries, with error surfaced via alert.
 
 struct WatchDetailView: View {
+    @Environment(\.themeToken) private var themeToken
     @State private var watch: Watch
     @State private var errorMessage: String? = nil
     @State private var isEditing: Bool = false
@@ -27,6 +28,7 @@ struct WatchDetailView: View {
             }
             .padding()
         }
+        .background(AppColors.background.ignoresSafeArea())
         .navigationTitle(watch.manufacturer)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -49,7 +51,7 @@ struct WatchDetailView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
-            .tint(AppColors.brandGold)
+            .tint(AppColors.textSecondary)
             .padding()
             .disabled(isSavingWear)
             .accessibilityLabel("Mark worn today")
@@ -59,6 +61,7 @@ struct WatchDetailView: View {
         } message: {
             Text(errorMessage ?? "")
         }
+        .id(themeToken)
     }
 
     private var imageHeader: some View {
@@ -84,7 +87,7 @@ struct WatchDetailView: View {
                 if let movement = watch.movement { Label(movement.rawValue.capitalized, systemImage: "gear") }
                 if watch.isFavorite { Image(systemName: "star.fill").foregroundStyle(.yellow) }
             }
-            .foregroundStyle(.secondary)
+            .foregroundStyle(AppColors.textSecondary)
         }
     }
 
@@ -94,7 +97,7 @@ struct WatchDetailView: View {
             if let last = watch.lastWornDate { Label(DateUtils.mediumString(from: last), systemImage: "clock") }
         }
         .font(.subheadline)
-        .foregroundStyle(.secondary)
+        .foregroundStyle(AppColors.textSecondary)
     }
 
     private var details: some View {
