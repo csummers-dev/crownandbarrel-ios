@@ -15,8 +15,8 @@ final class FullScreenLaunchUITests: XCTestCase {
         XCTAssertTrue(tabBar.waitForExistence(timeout: 3), "Tab bar should exist in full-screen layout.")
 
         // Also ensure no legacy 20pt status bar layout by verifying navigation title is visible and not clipped.
-        let title = app.navigationBars["Good Watch"]
-        XCTAssertTrue(title.exists || app.staticTexts["Good Watch"].exists, "Navigation title should be visible in full-screen mode.")
+        let title = app.navigationBars["Crown & Barrel"]
+        XCTAssertTrue(title.exists || app.staticTexts["Crown & Barrel"].exists, "Navigation title should be visible in full-screen mode.")
     }
 
     func testSplashOverlayDoesNotLinger() throws {

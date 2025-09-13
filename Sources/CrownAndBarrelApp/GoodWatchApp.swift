@@ -29,6 +29,8 @@ struct GoodWatchApp: App {
                 }
             }
                 .preferredColorScheme(theme.preferredColorScheme)
+                // What: Bind SwiftUI tint to the theme accent.
+                // Why: Ensures SwiftUI controls (e.g., segmented controls) adopt the accent immediately.
                 .tint(AppColors.accent)
                 .background(AppColors.background.ignoresSafeArea())
                 .environment(\.themeToken, selectedThemeId)
@@ -37,7 +39,7 @@ struct GoodWatchApp: App {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                         withAnimation(.easeOut(duration: 0.25)) { showSplash = false }
                     }
-                    let isDark = ThemeAccess.currentTheme().colorScheme == .dark
+                    // Apply themed appearances at launch
                     // Tab bar appearance
                     let tabAppearance = UITabBarAppearance()
                     tabAppearance.configureWithDefaultBackground()
@@ -59,15 +61,20 @@ struct GoodWatchApp: App {
                     UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
                     UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
 
-                    // Global control tint (UIKit hosting). In dark themes, avoid blue-tinted text.
-                    UIView.appearance().tintColor = isDark ? UIColor(AppColors.textSecondary) : UIColor(AppColors.accent)
+                    // Global control tint (UIKit hosting).
+                    // What: Use themed accent instead of system tint.
+                    // Why: Some UIKit elements cache tint on creation; this sets a consistent baseline.
+                    UIView.appearance().tintColor = UIColor(AppColors.accent)
+                    // Ensure calendar header arrow buttons adopt accent
+                    UIButton.appearance(whenContainedInInstancesOf: [UICalendarView.self]).tintColor = UIColor(AppColors.accent)
 
                     // UITableView / Cell backgrounds for SwiftUI List(.plain)
                     UITableView.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
                     UITableViewCell.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
 
                     // Segmented control (used in Collection view toggle)
-                    // Always use the theme accent for the selected segment across all themes
+                    // What: Use accent for selected segment, white text for selected, primary for normal.
+                    // Why: Keeps selection visible across themes and avoids system blue.
                     UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
                     UISegmentedControl.appearance().setTitleTextAttributes([
                         .foregroundColor: UIColor(AppColors.brandWhite)
@@ -84,7 +91,6 @@ struct GoodWatchApp: App {
                 }
                 .onChange(of: selectedThemeId) { _, _ in
                     // Reapply appearance proxies on theme changes
-                    let isDark = ThemeAccess.currentTheme().colorScheme == .dark
                     let tabAppearance = UITabBarAppearance()
                     tabAppearance.configureWithDefaultBackground()
                     tabAppearance.backgroundColor = UIColor(AppColors.background)
@@ -104,7 +110,9 @@ struct GoodWatchApp: App {
                     UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
                     UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
 
-                    UIView.appearance().tintColor = isDark ? UIColor(AppColors.textSecondary) : UIColor(AppColors.accent)
+                    // Re-assert global and calendar-contained button tint to reflect new theme.
+                    UIView.appearance().tintColor = UIColor(AppColors.accent)
+                    UIButton.appearance(whenContainedInInstancesOf: [UICalendarView.self]).tintColor = UIColor(AppColors.accent)
                     // Keep segmented control selected tint in sync with theme accent on changes
                     UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
                     UISegmentedControl.appearance().setTitleTextAttributes([
@@ -118,7 +126,7 @@ struct GoodWatchApp: App {
                     UITableView.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
                     UITableViewCell.appearance().backgroundColor = UIColor(AppColors.secondaryBackground)
                     UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
-                    // Environment token is bound at the scene; no imperative update needed here
+                    // Environment token is bound at the scene; view-level `.id(themeToken)` handles SwiftUI refresh.
                 }
         }
     }
@@ -132,7 +140,7 @@ private struct SplashOverlay: View {
         ZStack {
             AppColors.background.ignoresSafeArea()
             VStack(spacing: 8) {
-                Text("Good Watch")
+                Text(Brand.appDisplayName)
                     .font(AppTypography.titleCompact)
                     .foregroundStyle(AppColors.textSecondary)
             }

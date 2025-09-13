@@ -16,7 +16,35 @@ public final class CoreDataStack {
     /// - Parameter inMemory: If true, configures an in-memory store (useful for tests).
     public init(inMemory: Bool = false) {
         let model = CoreDataStack.buildModel()
-        persistentContainer = NSPersistentContainer(name: "GoodWatch", managedObjectModel: model)
+        // Use a branded container name and store filename. If an old store exists, rename on first launch.
+        persistentContainer = NSPersistentContainer(name: "CrownAndBarrel", managedObjectModel: model)
+
+        // Configure on-disk store location and first-run migration from old filename if present
+        let storeURL: URL = {
+            let storeDir = NSPersistentContainer.defaultDirectoryURL()
+            return storeDir.appendingPathComponent("CrownAndBarrel.sqlite")
+        }()
+        let oldStoreURL: URL = {
+            let storeDir = NSPersistentContainer.defaultDirectoryURL()
+            return storeDir.appendingPathComponent("GoodWatch.sqlite")
+        }()
+        // Attempt rename if the new store doesn't exist but the old one does
+        if !FileManager.default.fileExists(atPath: storeURL.path), FileManager.default.fileExists(atPath: oldStoreURL.path) {
+            let fm = FileManager.default
+            let pairs = [
+                (oldStoreURL, storeURL),
+                (oldStoreURL.deletingPathExtension().appendingPathExtension("sqlite-wal"), storeURL.deletingPathExtension().appendingPathExtension("sqlite-wal")),
+                (oldStoreURL.deletingPathExtension().appendingPathExtension("sqlite-shm"), storeURL.deletingPathExtension().appendingPathExtension("sqlite-shm"))
+            ]
+            for (from, to) in pairs {
+                if fm.fileExists(atPath: from.path) {
+                    _ = try? fm.removeItem(at: to) // best-effort remove if exists
+                    _ = try? fm.moveItem(at: from, to: to)
+                }
+            }
+        }
+        let description = NSPersistentStoreDescription(url: storeURL)
+        persistentContainer.persistentStoreDescriptions = [description]
 
         if inMemory {
             let description = NSPersistentStoreDescription()

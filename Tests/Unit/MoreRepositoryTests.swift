@@ -1,5 +1,5 @@
 import XCTest
-@testable import GoodWatch
+@testable import CrownAndBarrel
 
 final class MoreRepositoryTests: XCTestCase {
     /// Creates a repository backed by an in-memory Core Data stack for speed

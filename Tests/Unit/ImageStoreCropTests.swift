@@ -1,5 +1,5 @@
 import XCTest
-@testable import GoodWatch
+@testable import CrownAndBarrel
 
 final class ImageStoreCropTests: XCTestCase {
     func testSquareCropCentersAndProducesSquare() throws {

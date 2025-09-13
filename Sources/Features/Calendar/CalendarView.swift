@@ -22,9 +22,15 @@ struct CalendarView: View {
         VStack(spacing: 0) {
             // Native iOS calendar; fixed height to ensure the divider stays at the bottom of the calendar
             // Use the same tint as the "Add worn" action so header arrows and month selector match.
-            UICalendarRepresentable(selectedDate: $selectedDate)
+            // Why: `UICalendarView` caches tint on its internal header buttons when created.
+            // How: We both set `.tint(AppColors.accent)` and tag the view with the `themeToken`
+            //      so the UIKit view is recreated when the theme changes. We also reapply tint
+            //      in the UIViewRepresentable's `updateUIView` to handle mid-session changes.
+            UICalendarRepresentable(selectedDate: $selectedDate, themeToken: themeToken)
                 .frame(height: 420)
                 .tint(AppColors.accent)
+                // Force recreation on theme change so header chevrons rebuild with new tint
+                .id(themeToken + "-calendar")
             Divider()
             entriesSection
                 .padding(.top, contentTopPadding)
@@ -123,17 +129,39 @@ struct CalendarView: View {
 }
 
 // MARK: - UIKit wrapper
+/// SwiftUI wrapper for `UICalendarView` with explicit retinting on theme changes.
+/// - What: Hosts the calendar and bridges selection back to SwiftUI.
+/// - Why: `UICalendarView`'s header chevrons (UIButton) may not update tint color when only
+///        SwiftUI `Color` changes; we must reassert tint or recreate the header on theme change.
+/// - How: Pass a `themeToken` to force SwiftUI identity changes; in `updateUIView`, set
+///        `tintColor` and retint the header subview.
 private struct UICalendarRepresentable: UIViewRepresentable {
     @Binding var selectedDate: Date
+    // What: Theme token forces SwiftUI to re-render the representable when theme changes
+    // Why: Ensures UIKit view re-applies accent tint for navigation arrows immediately
+    // How: Pass token down; updateUIView reapplies tint
+    var themeToken: String = ""
 
     func makeUIView(context: Context) -> UICalendarView {
         let view = UICalendarView()
         view.availableDateRange = DateInterval(start: Date(timeIntervalSince1970: 0), end: Date.distantFuture)
         view.selectionBehavior = UICalendarSelectionSingleDate(delegate: context.coordinator)
+        // Ensure month navigation chevrons and header controls use the themed accent color
+        view.tintColor = UIColor(AppColors.accent)
         return view
     }
 
-    func updateUIView(_ uiView: UICalendarView, context: Context) {}
+    func updateUIView(_ uiView: UICalendarView, context: Context) {
+        // What: Reassert tint on theme changes.
+        // Why: Some UIKit subviews cache `tintColor` at creation; directly resetting both the
+        //      calendar and its header ensures the month chevrons immediately adopt the new accent.
+        // How: Set `tintColor` and ask the header to relayout.
+        uiView.tintColor = UIColor(AppColors.accent)
+        if let header = uiView.subviews.first(where: { NSStringFromClass(type(of: $0)).contains("UICalendarHeaderView") }) {
+            header.tintColor = UIColor(AppColors.accent)
+            header.setNeedsLayout()
+        }
+    }
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
