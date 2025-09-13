@@ -6,75 +6,34 @@ import SwiftUI
 /// - How: Expose static properties, not raw values, so call sites stay readable and maintainable.
 
 public enum AppColors {
-    /// Helper to resolve a color that differs in light vs. dark mode.
-    private static func themed(light: Color, dark: Color) -> Color {
-        Color(UIColor { traits in
-            traits.userInterfaceStyle == .dark ? UIColor(dark) : UIColor(light)
-        })
+    private static var theme: AppTheme { ThemeAccess.currentTheme() }
+
+    @inline(__always)
+    private static func resolve(_ keyPath: KeyPath<AppThemeColors, String>) -> Color {
+        // What: Resolve a color token from the current theme by key path.
+        // Why: Ensures views always read the latest selected theme without caching mismatches.
+        // How: Read the theme on each access; SwiftUI computes lazily so cost is negligible.
+        let current = ThemeAccess.currentTheme()
+        let value = current.colors[keyPath: keyPath]
+        return Color(themeString: value) ?? Color.clear
     }
 
-    // MARK: - Semantic Colors
-    // Light theme palette (hex): 363636, 242f40, cca43b, e5e5e5, ffffff
-    // Mapping:
-    // - background: ffffff
-    // - secondary/tertiary background: e5e5e5
-    // - textPrimary: 242f40
-    // - textSecondary: 363636
-    // - accent/brandGold: cca43b
+    public static var accent: Color { resolve(\.accent) }
+    // Primary background maps to the theme's primary background color.
+    public static var background: Color { resolve(\.background) }
+    public static var secondaryBackground: Color { resolve(\.secondaryBackground) }
+    public static var tertiaryBackground: Color { resolve(\.tertiaryBackground) }
+    public static var separator: Color { resolve(\.separator) }
+    public static var textPrimary: Color { resolve(\.textPrimary) }
+    public static var textSecondary: Color { resolve(\.textSecondary) }
+    public static var tabBarHairline: Color { resolve(\.tabBarHairline) }
 
-    public static var accent: Color { themed(
-        light: Color(red: 0.80, green: 0.64, blue: 0.23), // #cca43b
-        dark: Color.accentColor
-    ) }
+    public static var chartPalette: [Color] {
+        theme.colors.chartPalette.compactMap { Color(themeString: $0) }
+    }
 
-    public static var background: Color { themed(
-        light: .white, // #ffffff
-        dark: Color(.systemBackground)
-    ) }
-
-    public static var secondaryBackground: Color { themed(
-        light: Color(red: 0.90, green: 0.90, blue: 0.90), // #e5e5e5
-        dark: Color(.secondarySystemBackground)
-    ) }
-
-    public static var tertiaryBackground: Color { themed(
-        light: Color(red: 0.90, green: 0.90, blue: 0.90), // #e5e5e5
-        dark: Color(.tertiarySystemBackground)
-    ) }
-
-    public static var separator: Color { themed(
-        light: Color(red: 0.90, green: 0.90, blue: 0.90), // #e5e5e5
-        dark: Color(.separator)
-    ) }
-
-    public static var textPrimary: Color { themed(
-        light: Color(red: 0.14, green: 0.18, blue: 0.25), // #242f40
-        dark: Color.primary
-    ) }
-
-    public static var textSecondary: Color { themed(
-        light: Color(red: 0.21, green: 0.21, blue: 0.21), // #363636
-        dark: Color.secondary
-    ) }
-
-    /// Subtle hairline color for borders like the tab bar top edge.
-    public static var tabBarHairline: Color { themed(
-        light: Color(red: 0.90, green: 0.90, blue: 0.90), // #e5e5e5
-        dark: Color(.separator)
-    ) }
-
-    /// Palette for charts (metallic-inspired with good contrast on light/dark).
-    /// Order: gold, silver, steel blue, emerald, graphite.
-    public static let chartPalette: [Color] = [
-        Color(red: 0.83, green: 0.69, blue: 0.22), // gold
-        Color(red: 0.75, green: 0.75, blue: 0.75), // silver
-        Color(red: 0.33, green: 0.42, blue: 0.58), // steel blue
-        Color(red: 0.10, green: 0.63, blue: 0.52), // emerald
-        Color(red: 0.33, green: 0.33, blue: 0.33)  // graphite
-    ]
-
-    // Brand accents
-    public static let brandGold = Color(red: 0.80, green: 0.64, blue: 0.23) // #cca43b
+    // Legacy brand tokens for call sites; map to current theme
+    public static var brandGold: Color { accent }
     public static let brandSilver = Color(red: 0.75, green: 0.75, blue: 0.75)
     public static let brandWhite = Color.white
 }

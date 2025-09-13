@@ -7,6 +7,7 @@ import Charts
 /// - How: Loads watches from repository; derives top-N slices; renders pies via `SectorMark` with
 ///        a metallic-inspired palette from `AppColors.chartPalette`.
 struct StatsView: View {
+    @Environment(\.themeToken) private var themeToken
     @State private var watches: [Watch] = []
     @State private var errorMessage: String? = nil
     private let repository: WatchRepository = WatchRepositoryCoreData()
@@ -19,10 +20,14 @@ struct StatsView: View {
                 charts
             }
             .padding()
+            .foregroundStyle(AppColors.textPrimary)
         }
+        .background(AppColors.background.ignoresSafeArea())
         .navigationTitle("Stats")
+        .toolbarTitleMenu { /* no-op; ensure toolbar exists to apply appearance */ }
         .task { await load() }
         .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
+        .id(themeToken)
     }
 
     private var summaryCards: some View {
@@ -41,12 +46,14 @@ struct StatsView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Most worn")
                 .font(.title3)
+                .foregroundStyle(AppColors.textSecondary)
             ForEach(watches.sorted(by: { $0.timesWorn > $1.timesWorn }).prefix(5)) { w in
                 Text("\(w.manufacturer) \(w.model ?? "") — \(w.timesWorn)x")
             }
             Divider().padding(.vertical, 8)
             Text("Least worn")
                 .font(.title3)
+                .foregroundStyle(AppColors.textSecondary)
             ForEach(watches.sorted(by: { $0.timesWorn < $1.timesWorn }).prefix(5)) { w in
                 Text("\(w.manufacturer) \(w.model ?? "") — \(w.timesWorn)x")
             }
@@ -55,12 +62,12 @@ struct StatsView: View {
 
     private var charts: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Most worn (Top 5)").font(.title3)
+            Text("Most worn (Top 5)").font(.title3).foregroundStyle(AppColors.textSecondary)
             PieChart(data: watches.sorted(by: { $0.timesWorn > $1.timesWorn }).prefix(5).map { ($0.displayName, Double($0.timesWorn)) })
                 .frame(height: 220)
 
             Divider().padding(.vertical, 8)
-            Text("Least worn (Top 5)").font(.title3)
+            Text("Least worn (Top 5)").font(.title3).foregroundStyle(AppColors.textSecondary)
             PieChart(data: watches.sorted(by: { $0.timesWorn < $1.timesWorn }).prefix(5).map { ($0.displayName, Double($0.timesWorn)) })
                 .frame(height: 220)
         }

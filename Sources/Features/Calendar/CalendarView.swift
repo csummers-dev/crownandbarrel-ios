@@ -7,6 +7,7 @@ import UIKit
 /// - How: Wraps `UICalendarView` in a `UIViewRepresentable` and wires selection via a Coordinator.
 
 struct CalendarView: View {
+    @Environment(\.themeToken) private var themeToken
     @State private var selectedDate: Date = Date()
     @State private var entries: [WearEntry] = []
     @State private var errorMessage: String? = nil
@@ -20,12 +21,16 @@ struct CalendarView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Native iOS calendar; fixed height to ensure the divider stays at the bottom of the calendar
+            // Use the same tint as the "Add worn" action so header arrows and month selector match.
             UICalendarRepresentable(selectedDate: $selectedDate)
                 .frame(height: 420)
+                .tint(AppColors.accent)
             Divider()
             entriesSection
                 .padding(.top, contentTopPadding)
         }
+        .background(AppColors.background.ignoresSafeArea())
+        .foregroundStyle(AppColors.textPrimary)
         .navigationTitle("Calendar")
         // Initial data load: watches map (for row labels/images) and entries for today
         .task {
@@ -49,6 +54,7 @@ struct CalendarView: View {
         .alert("Error", isPresented: .constant(errorMessage != nil)) {
             Button("OK") { errorMessage = nil }
         } message: { Text(errorMessage ?? "") }
+        .id(themeToken)
     }
 
     private var entriesSection: some View {
@@ -79,18 +85,22 @@ struct CalendarView: View {
                                     .frame(width: 18, height: 18)
                                     .clipShape(RoundedRectangle(cornerRadius: 3))
                                 HStack(spacing: 4) {
-                                    Text(w.manufacturer).fontWeight(.semibold)
+                                    Text(w.manufacturer).fontWeight(.semibold).foregroundStyle(AppColors.textPrimary)
                                     if let model = w.model, !model.isEmpty {
-                                        Text("- \(model)")
+                                        Text("- \(model)").foregroundStyle(AppColors.textSecondary)
                                     }
                                 }
                             }
                             .accessibilityLabel("\(w.manufacturer) \(w.model ?? "")")
                         } else {
-                            Text("Unknown watch")
+                            Text("Unknown watch").foregroundStyle(AppColors.textPrimary)
                         }
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
+                    .listRowBackground(AppColors.background)
+                    .background(AppColors.background)
+                    .listRowSeparatorTint(AppColors.separator)
                 }
                 .padding(.horizontal)
             }
@@ -154,7 +164,7 @@ private struct WatchPicker: View {
                 Button(action: { Task { await mark(watch: watch) } }) {
                     HStack {
                         Text(watch.manufacturer)
-                        Text(watch.model ?? "").foregroundStyle(.secondary)
+                        Text(watch.model ?? "").foregroundStyle(AppColors.textSecondary)
                     }
                 }
             }
@@ -162,6 +172,8 @@ private struct WatchPicker: View {
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
             .task { await load() }
             .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
+            .scrollContentBackground(.hidden)
+            .background(AppColors.background)
         }
     }
 

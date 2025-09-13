@@ -1,26 +1,5 @@
 {
-  "images" : [
-    {
-      "filename" : "WatchEntryPlaceholder-LightMode-1000.png",
-      "idiom" : "universal",
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "light"
-        }
-      ]
-    },
-    {
-      "filename" : "WatchEntryPlaceholder-DarkMode-1000.png",
-      "idiom" : "universal",
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ]
-    }
-  ],
+  "images" : [],
   "info" : {
     "author" : "xcode",
     "version" : 1

@@ -12,9 +12,12 @@ final class AddWatchFlowUITests: XCTestCase {
         // Tap Add button (FAB)
         app.buttons["Add watch"].firstMatch.tap()
 
-        // Enter manufacturer and save
-        let manufacturer = app.textFields["Manufacturer"]
-        XCTAssertTrue(manufacturer.waitForExistence(timeout: 2))
+        // Wait for the Add Watch sheet to appear
+        XCTAssertTrue(app.navigationBars["Add Watch"].waitForExistence(timeout: 5))
+
+        // Enter manufacturer and save (locate inside the form's table)
+        let manufacturer = app.textFields["manufacturerField"].firstMatch
+        XCTAssertTrue(manufacturer.waitForExistence(timeout: 5))
         manufacturer.tap()
         manufacturer.typeText("TestBrand")
 

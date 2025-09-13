@@ -5,11 +5,20 @@ import SwiftUI
 /// - Why: Allows forcing light/dark or following the system across the entire app.
 /// - How: Uses `@AppStorage` to persist a simple enum in UserDefaults.
 public struct ThemeManager {
-    @AppStorage("themePreference") private var themeRaw: String = ThemePreference.system.rawValue
+    @AppStorage("selectedThemeId") private var selectedThemeId: String = ThemeCatalog.shared.defaultThemeId
     public init() {}
     public var preferredColorScheme: ColorScheme? {
-        guard let pref = ThemePreference(rawValue: themeRaw) else { return nil }
-        switch pref { case .system: return nil; case .light: return .light; case .dark: return .dark }
+        // Map the theme's `colorScheme` to SwiftUI's `ColorScheme?` for `.preferredColorScheme`.
+        switch currentTheme.colorScheme {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+
+    public var currentTheme: AppTheme {
+        // Read-through lookup with a safe default so UI never crashes if an id is missing.
+        ThemeCatalog.shared.themesById[selectedThemeId] ?? ThemeCatalog.shared.orderedThemes.first!
     }
 }
 
