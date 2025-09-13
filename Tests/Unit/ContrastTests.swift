@@ -1,5 +1,5 @@
 import XCTest
-@testable import GoodWatch
+@testable import CrownAndBarrel
 import SwiftUI
 
 final class ContrastTests: XCTestCase {

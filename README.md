@@ -1,4 +1,4 @@
-Good Watch
+Crown & Barrel
 ===========
 
 An open-source iOS app to manage a watch collection, track wear history, and visualize data insights.
@@ -34,7 +34,7 @@ Redesign 2025-09 highlights
 Launch splash overlay (theme-aware)
 - What: A lightweight SwiftUI overlay shown immediately at app start.
 - Why: Prevents a flash of unthemed content and matches the user's saved theme on boot.
-- How: `GoodWatchApp` wraps `RootView` in a `ZStack` and shows `SplashOverlay` (background = `AppColors.background`, text = `AppColors.textSecondary`). It fades out after the first frame using a short `DispatchQueue.main.asyncAfter` with an opacity transition.
+- How: `CrownAndBarrelApp` wraps `RootView` in a `ZStack` and shows `SplashOverlay` (background = `AppColors.background`, text = `AppColors.textSecondary`). It fades out after the first frame using a short `DispatchQueue.main.asyncAfter` with an opacity transition.
 - Tests: UI test asserts the splash appears on launch and dismisses within a short interval.
 
 Theming (user-selectable)
@@ -70,7 +70,7 @@ Future enhancements
 - Calendar depth: Per-day summaries and quick-add favorites.
 
 Modules (source layout)
-- `Sources/GoodWatchApp`: app entry, root navigation, tab scaffolding
+- `Sources/CrownAndBarrelApp`: app entry, root navigation, tab scaffolding
 - `Sources/DesignSystem`: colors, typography, spacing, icons, theme manager
 - `Sources/Domain`: models, errors, repository protocols
 - `Sources/Common`: shared components and utilities (e.g., `WatchImageView`, `ImageStore`)
@@ -82,7 +82,7 @@ Getting started
 2) Generate the Xcode project with XcodeGen (recommended)
    - Install: `brew install xcodegen`
    - Generate: `xcodegen generate`
-   - Open: `open GoodWatch.xcodeproj`
+   - Open: `open CrownAndBarrel.xcodeproj`
    - Run: Select a simulator (iPhone 16 or newer) and Build/Run
 3) Build & run on iPhone simulator (iOS 17+)
 
@@ -91,7 +91,7 @@ Testing
 - UI tests cover collection, form, detail, calendar, stats, and full-screen launch behavior. Includes a collection image refresh verification after saving edits.
 - Unit tests validate the app icon presence, theme-aware placeholders, and the square-cropping utility.
 - CI (GitHub Actions): see build/test badge above; workflow runs `xcodebuild test`.
-- Run locally: `xcodebuild -project GoodWatch.xcodeproj -scheme GoodWatch -destination 'platform=iOS Simulator,name=iPhone 16' test`
+- Run locally: `xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' test`
 
 Platform and device support
 - Minimum iOS version: 17.0
@@ -183,7 +183,7 @@ Troubleshooting (paths and project generation)
   - Verify YAML indentation uses spaces (no tabs) and keys are correctly spelled:
     ```yaml
     targets:
-      GoodWatch:
+      CrownAndBarrel:
         sources:
           - path: Sources
           - path: AppResources
@@ -191,7 +191,7 @@ Troubleshooting (paths and project generation)
   - Try a minimal spec temporarily to isolate the issue, then add entries back:
     ```yaml
     targets:
-      GoodWatch:
+      CrownAndBarrel:
         type: application
         platform: iOS
         sources:
@@ -205,17 +205,17 @@ Troubleshooting (paths and project generation)
   - If the error persists, try absolute paths as a diagnostic (shouldn’t be needed long-term):
     ```yaml
     sources:
-      - path: /Users/yourname/Developer/GoodWatch/Sources
+      - path: /Users/yourname/Developer/CrownAndBarrel/Sources
     ```
   - Clean any stale project and DerivedData, then regenerate:
     ```bash
-    rm -rf GoodWatch.xcodeproj
-    rm -rf ~/Library/Developer/Xcode/DerivedData/GoodWatch-*
+    rm -rf CrownAndBarrel.xcodeproj
+    rm -rf ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-*
     xcodegen generate
     ```
 
 - App resources not copied/recognized
-  - Ensure `AppResources/` is listed under `targets.GoodWatch.sources` and exists on disk.
+  - Ensure `AppResources/` is listed under `targets.CrownAndBarrel.sources` and exists on disk.
   - For Launch Screen, include `AppResources/LaunchScreen.storyboard` and set in `project.yml`:
     ```yaml
     info:
@@ -247,12 +247,12 @@ Troubleshooting (paths and project generation)
 
 Minimal project.yml example
 ```yaml
-name: GoodWatch
+name: CrownAndBarrel
 options:
   deploymentTarget:
     iOS: "17.0"
 targets:
-  GoodWatch:
+  CrownAndBarrel:
     type: application
     platform: iOS
     sources:
@@ -277,12 +277,12 @@ mkdir -p Sources \
 # Optional: ensure a minimal project.yml exists
 if [ ! -f project.yml ]; then
   cat > project.yml <<'YAML'
-name: GoodWatch
+name: CrownAndBarrel
 options:
   deploymentTarget:
     iOS: "17.0"
 targets:
-  GoodWatch:
+  CrownAndBarrel:
     type: application
     platform: iOS
     sources:
@@ -292,7 +292,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.goodwatch.app
         GENERATE_INFOPLIST_FILE: YES
-  GoodWatchTests:
+  CrownAndBarrelTests:
     type: bundle.unit-test
     platform: iOS
     sources:
@@ -301,8 +301,8 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
-      - target: GoodWatch
-  GoodWatchUITests:
+      - target: CrownAndBarrel
+  CrownAndBarrelUITests:
     type: bundle.ui-testing
     platform: iOS
     sources:
@@ -311,13 +311,13 @@ targets:
       base:
         GENERATE_INFOPLIST_FILE: YES
     dependencies:
-      - target: GoodWatch
+      - target: CrownAndBarrel
 YAML
 fi
 
 # Generate the Xcode project
 xcodegen generate
-echo "Generated GoodWatch.xcodeproj"
+echo "Generated CrownAndBarrel.xcodeproj"
 ```
 
 

@@ -11,7 +11,7 @@ struct PrivacyPolicyView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Privacy Policy").font(.title)
-                Text("Good Watch stores your data locally on your device. No data leaves your device unless you export a backup. We do not collect or process personal data.")
+                Text("\(Brand.appDisplayName) stores your data locally on your device. No data leaves your device unless you export a backup. We do not collect or process personal data.")
                 Text("Permissions").font(.headline)
                 Text("Photos access is used only to let you pick a watch image.")
                 Text("Backups").font(.headline)
@@ -30,7 +30,7 @@ struct AboutView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Good Watch")
+                Text(Brand.appDisplayName)
                     .font(.title)
                 Text("Vision: Beautiful, modern, and helpful watch box analytics.")
                 Text("Design philosophy: Simple, focused, iOS-native.")

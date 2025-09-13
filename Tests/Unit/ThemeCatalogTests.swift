@@ -1,6 +1,6 @@
 import XCTest
 import SwiftUI
-@testable import GoodWatch
+@testable import CrownAndBarrel
 
 final class ThemeCatalogTests: XCTestCase {
     func testCatalogLoadsThemes() {

@@ -24,12 +24,12 @@ struct RootView: View {
         TabView {
             NavigationStack {
                 CollectionView()
-                    .navigationTitle("Good Watch")
+                    .navigationTitle(Brand.appDisplayName)
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         settingsToolbar
                         ToolbarItem(placement: .principal) {
-                            Text("Good Watch")
+                            Text(Brand.appDisplayName)
                                 .font(AppTypography.titleCompact)
                                 .foregroundStyle(AppColors.textSecondary)
                         }

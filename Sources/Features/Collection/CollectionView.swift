@@ -55,18 +55,30 @@ struct CollectionView: View {
 
     private var sortAndLayoutBar: some View {
         HStack(spacing: AppSpacing.sm) {
-            Picker("Sort", selection: $viewModel.sortOption) {
-                Text("Entry ↑").tag(WatchSortOption.entryDateAscending)
-                Text("Entry ↓").tag(WatchSortOption.entryDateDescending)
-                Text("A–Z").tag(WatchSortOption.manufacturerAZ)
-                Text("Z–A").tag(WatchSortOption.manufacturerZA)
-                Text("Most worn").tag(WatchSortOption.mostWorn)
-                Text("Least worn").tag(WatchSortOption.leastWorn)
-                Text("Last worn").tag(WatchSortOption.lastWornDate)
+            // Why: `.pickerStyle(.menu)` relies on UIKit's menu chevrons which may not retint
+            //      mid-session on theme changes. A custom Menu label lets us explicitly control
+            //      the chevron color and guarantees it follows `AppColors.accent`.
+            Menu {
+                Picker("Sort", selection: $viewModel.sortOption) {
+                    Text("Entry ↑").tag(WatchSortOption.entryDateAscending)
+                    Text("Entry ↓").tag(WatchSortOption.entryDateDescending)
+                    Text("A–Z").tag(WatchSortOption.manufacturerAZ)
+                    Text("Z–A").tag(WatchSortOption.manufacturerZA)
+                    Text("Most worn").tag(WatchSortOption.mostWorn)
+                    Text("Least worn").tag(WatchSortOption.leastWorn)
+                    Text("Last worn").tag(WatchSortOption.lastWornDate)
+                }
+            } label: {
+                HStack(spacing: 6) {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                    Image(systemName: "chevron.down")
+                }
+                // What: Color the label chevron and text explicitly.
+                // Why: Prevents reliance on global tint for this element; ensures immediate theme update.
+                .foregroundStyle(AppColors.accent)
             }
-            .pickerStyle(.menu)
-            // Match dropdown chevrons/indicators to the same accent used by Calendar's Add worn
-            .tint(AppColors.accent)
+            // Force refresh of menu indicator color when theme changes
+            .id(themeToken + "-sortmenu")
 
             Spacer()
 
