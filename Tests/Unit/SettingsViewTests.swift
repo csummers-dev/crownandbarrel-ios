@@ -17,7 +17,7 @@ final class SettingsViewTests: XCTestCase {
         UserDefaults.standard.set("dark-default", forKey: "selectedThemeId")
     }
 
-    func testAppearanceHeaderIsCellAndGapIsTight() {
+    func testAppearanceHeaderIsCellAndGapIsTight() throws {
         // What: Build the view under test.
         // Why: Encapsulate `SettingsView` in a navigation context to mirror production.
         // How: Wrap in `NavigationStack` and host with `UIHostingController`.
