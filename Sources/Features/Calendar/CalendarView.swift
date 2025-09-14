@@ -63,6 +63,17 @@ struct CalendarView: View {
         .id(themeToken)
     }
 
+    /// Entries section below the calendar.
+    /// - What: Hosts either an empty-state CTA or a `List` of worn entries for the selected date.
+    /// - Why: We must ensure the container paints the theme's primary background and that each
+    ///        row renders as a rounded card on the theme's secondary background, avoiding any
+    ///        UIKit system table backgrounds (especially in dark mode).
+    /// - How:
+    ///   - Place a full-bleed `AppColors.background` behind the `List` using a `ZStack`.
+    ///   - Hide the `List`'s scroll content background and provide per-row `listRowBackground`
+    ///     with a rounded `secondaryBackground` fill.
+    ///   - Paint the outer container with `AppColors.background` so no system color bleeds through
+    ///     when empty or populated.
     private var entriesSection: some View {
         Group {
             if entries.isEmpty {
@@ -84,8 +95,11 @@ struct CalendarView: View {
                             .buttonStyle(.bordered)
                     }
                     // Compact rows: thumbnail + "Manufacturer - Model". Manufacturer bolded per spec.
-                    List(entries) { entry in
-                        if let w = watchesById[entry.watchId] {
+                    ZStack(alignment: .top) {
+                        // Full-bleed themed background behind the List to prevent system black
+                        AppColors.background.ignoresSafeArea()
+                        List(entries) { entry in
+                            if let w = watchesById[entry.watchId] {
                             HStack(spacing: 8) {
                                 WatchImageView(imageAssetId: w.imageAssetId)
                                     .frame(width: 18, height: 18)
@@ -98,19 +112,58 @@ struct CalendarView: View {
                                 }
                             }
                             .accessibilityLabel("\(w.manufacturer) \(w.model ?? "")")
+                            .accessibilityIdentifier("CalendarEntryCard")
+                            .padding(.horizontal, AppSpacing.sm)
+                            .padding(.vertical, AppSpacing.xxs)
+                            .listRowBackground(
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: AppRadius.large)
+                                        .fill(AppColors.secondaryBackground)
+                                }
+                                .padding(.vertical, AppSpacing.xxs)
+                            )
+                            // Extra defensive: hide any residual UIKit separators at the row level
+                            .listRowSeparator(.hidden, edges: .all)
+                            // Keep rows tight; vertical spacing handled by list insets
                         } else {
                             Text("Unknown watch").foregroundStyle(AppColors.textPrimary)
+                                .padding(.horizontal, AppSpacing.sm)
+                                .padding(.vertical, AppSpacing.xxs)
+                                .listRowBackground(
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: AppRadius.large)
+                                            .fill(AppColors.secondaryBackground)
+                                    }
+                                    .padding(.vertical, AppSpacing.xxs)
+                                )
+                                // Extra defensive: hide any residual UIKit separators at the row level
+                                .listRowSeparator(.hidden, edges: .all)
+                                .accessibilityIdentifier("CalendarEntryCard")
                         }
+                        }
+                        .listStyle(.plain)
+                        // What: Prevent UIKit's table background from showing through.
+                        // Why: Keeps the surface strictly on the theme primary background.
+                        // How: Hide the table's scroll background so our ZStack and container paint it.
+                        .scrollContentBackground(.hidden)
+                        // Per-row backgrounds define rounded secondary cards
+                        // Equal horizontal insets so cards "float" within the primary container
+                        .listRowInsets(EdgeInsets(top: AppSpacing.xxs, leading: AppSpacing.md, bottom: AppSpacing.xxs, trailing: AppSpacing.md))
+                        // Hide separators for clean card list
+                        .listSectionSeparator(.hidden, edges: .all)
+                        .listRowSeparator(.hidden, edges: .all)
+                        // Force recreation on theme change to ensure UIKit list picks up new backgrounds
+                        .id(themeToken + "-entries-list")
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .listRowBackground(AppColors.background)
-                    .background(AppColors.background)
-                    .listRowSeparatorTint(AppColors.separator)
                 }
                 .padding(.horizontal)
             }
         }
+        // Expand and paint the entire entries container with the theme primary background
+        // so no system background bleeds through in any theme.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(AppColors.background)
+        .accessibilityIdentifier("CalendarEntriesContainer")
     }
 
     private func loadEntries() async {

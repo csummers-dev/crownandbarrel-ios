@@ -36,7 +36,7 @@ final class MoreRepositoryTests: XCTestCase {
         let stack = CoreDataStack(inMemory: true)
         let backup = BackupRepositoryFile(stack: stack)
         // Create an empty temp file to simulate a backup
-        let temp = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + ".goodwatch")
+        let temp = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(UUID().uuidString + ".crownandbarrel")
         FileManager.default.createFile(atPath: temp.path, contents: Data())
         await XCTAssertThrowsErrorAsync(try await backup.importBackup(from: temp, replace: false))
     }

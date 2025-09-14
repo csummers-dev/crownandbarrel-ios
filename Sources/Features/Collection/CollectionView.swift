@@ -110,13 +110,36 @@ struct CollectionView: View {
             List(viewModel.watches) { watch in
                 NavigationLink(destination: WatchDetailView(watch: watch)) {
                     ListRow(watch: watch)
+                        .padding(.horizontal, AppSpacing.sm)
+                        .padding(.vertical, AppSpacing.xs)
                 }
-                .listRowBackground(AppColors.secondaryBackground)
+                .accessibilityIdentifier("CollectionCard")
+                // Ensure equal padding around chevron by applying horizontal inset to the row
+                .listRowInsets(EdgeInsets(top: AppSpacing.xs - 2, leading: AppSpacing.md, bottom: AppSpacing.xs - 2, trailing: AppSpacing.md))
+                // Use a full-width background so it extends under the chevron
+                .listRowBackground(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: AppRadius.large)
+                            .fill(AppColors.secondaryBackground)
+                    }
+                    .padding(.vertical, AppSpacing.xxs)
+                )
+                // Extra defensive: hide any residual UIKit separators at the row level
+                .listRowSeparator(.hidden, edges: .all)
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(AppColors.secondaryBackground)
-            .listRowSeparatorTint(AppColors.separator)
+            .background(AppColors.background)
+            .listSectionSeparator(.hidden, edges: .all)
+            .listRowSeparator(.hidden, edges: .all)
+            // Extra defensive: remove any UIAppearance-driven separators at runtime
+            .onAppear {
+                UITableView.appearance().separatorStyle = .none
+                UITableView.appearance().separatorColor = .clear
+                UITableView.appearance().separatorEffect = nil
+                UITableView.appearance().separatorInset = .zero
+                UITableView.appearance().separatorInsetReference = .fromCellEdges
+            }
         }
     }
 
@@ -157,14 +180,14 @@ private struct GridCell: View {
                 .foregroundStyle(AppColors.textSecondary)
                 .lineLimit(1)
             ZStack {
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius: AppRadius.medium)
                     .fill(AppColors.secondaryBackground)
                     .frame(width: tileSize, height: tileSize)
                 WatchImageView(imageAssetId: watch.imageAssetId)
                     .frame(width: tileSize, height: tileSize)
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.medium))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 10)
+                        RoundedRectangle(cornerRadius: AppRadius.medium)
                             .stroke(AppColors.brandSilver.opacity(0.6), lineWidth: 0.5)
                     )
             }
@@ -173,7 +196,7 @@ private struct GridCell: View {
                 .foregroundStyle(AppColors.textSecondary)
         }
         .padding(10)
-        .background(RoundedRectangle(cornerRadius: 12).fill(AppColors.tertiaryBackground))
+        .background(RoundedRectangle(cornerRadius: AppRadius.large).fill(AppColors.secondaryBackground))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(watch.manufacturer) \(watch.model ?? "")")
         .accessibilityHint(watch.timesWorn > 0 ? "Worn \(watch.timesWorn) times" : "Not worn yet")
@@ -190,15 +213,15 @@ private struct ListRow: View {
         // How: Thumbnail uses the same image component and clipped fixed frame
         HStack(spacing: 12) {
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: AppRadius.small)
                     .fill(AppColors.secondaryBackground)
                 WatchImageView(imageAssetId: watch.imageAssetId)
                     .frame(width: thumbSize, height: thumbSize)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.small))
             }
             .frame(width: thumbSize, height: thumbSize)
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: AppRadius.small)
                     .stroke(AppColors.brandSilver.opacity(0.6), lineWidth: 0.5)
             )
             VStack(alignment: .leading, spacing: 4) {

@@ -36,6 +36,20 @@ final class ThemeResolutionTests: XCTestCase {
         XCTAssertNotEqual(darkPalette.map { UIColor($0) }, lightPalette.map { UIColor($0) })
     }
 
+    func testSecondaryBackgroundDiffersFromPrimaryAcrossThemes() {
+        let themeIds = ["light-default", "dark-default", "pastel", "midnight-indigo", "forest", "ocean", "sunset"]
+        for themeId in themeIds {
+            UserDefaults.standard.set(themeId, forKey: "selectedThemeId")
+            let primary = UIColor(AppColors.background)
+            let secondary = UIColor(AppColors.secondaryBackground)
+            // Colors should resolve
+            XCTAssertNotNil(primary.cgColor.components)
+            XCTAssertNotNil(secondary.cgColor.components)
+            // They should not be identical for our catalog, guarding the row card contrast intent
+            XCTAssertNotEqual(primary, secondary, "Primary and secondary backgrounds should differ for theme: \(themeId)")
+        }
+    }
+
     func testControlTintUsesTextSecondaryNotAccent() {
         // What: Validate our tint policy uses textSecondary rather than accent blue.
         // Why: Ensures consistent, non-blue controls across themes per design decision.

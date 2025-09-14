@@ -51,7 +51,7 @@ final class FiltersAndBackupTests: XCTestCase {
         // Why: Ensure we surface a clear error instead of silent failure.
         let stack = CoreDataStack(inMemory: true)
         let backup = BackupRepositoryFile(stack: stack)
-        let invalidURL = URL(fileURLWithPath: "/tmp/not-a-backup.goodwatch")
+        let invalidURL = URL(fileURLWithPath: "/tmp/not-a-backup.crownandbarrel")
         await XCTAssertThrowsErrorAsync(try await backup.importBackup(from: invalidURL, replace: true))
     }
 }

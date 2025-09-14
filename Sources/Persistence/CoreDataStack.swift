@@ -26,7 +26,7 @@ public final class CoreDataStack {
         }()
         let oldStoreURL: URL = {
             let storeDir = NSPersistentContainer.defaultDirectoryURL()
-            return storeDir.appendingPathComponent("GoodWatch.sqlite")
+            return storeDir.appendingPathComponent("CrownAndBarrel.sqlite")
         }()
         // Attempt rename if the new store doesn't exist but the old one does
         if !FileManager.default.fileExists(atPath: storeURL.path), FileManager.default.fileExists(atPath: oldStoreURL.path) {

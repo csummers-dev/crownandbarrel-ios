@@ -31,7 +31,7 @@ struct RootView: View {
                         ToolbarItem(placement: .principal) {
                             Text(Brand.appDisplayName)
                                 .font(AppTypography.titleCompact)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.accent)
                         }
                     }
             }
@@ -44,7 +44,7 @@ struct RootView: View {
                     .toolbar {
                         settingsToolbar
                         ToolbarItem(placement: .principal) {
-                            Text("Stats").font(AppTypography.titleCompact).foregroundStyle(AppColors.textSecondary)
+                            Text("Stats").font(AppTypography.titleCompact).foregroundStyle(AppColors.accent)
                         }
                     }
             }
@@ -57,19 +57,16 @@ struct RootView: View {
                     .toolbar {
                         settingsToolbar
                         ToolbarItem(placement: .principal) {
-                            Text("Calendar").font(AppTypography.titleCompact).foregroundStyle(AppColors.textSecondary)
+                            Text("Calendar").font(AppTypography.titleCompact).foregroundStyle(AppColors.accent)
                         }
                     }
             }
             .tabItem { Label("Calendar", systemImage: "calendar") }
         }
         .background(AppColors.background.ignoresSafeArea())
-        // Tag the tab container so all tabs and their headers react instantly to theme changes
-        .id(themeToken)
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
-            // Tag the sheet's NavigationStack with the theme token so its header refreshes at the same time as the body.
-            case .settings: NavigationStack { SettingsView() }.id(themeToken)
+            case .settings: NavigationStack { SettingsView().id(themeToken + "-settings") }
             case .appData: NavigationStack { AppDataView() }
             case .privacy: NavigationStack { PrivacyPolicyView() }
             case .about: NavigationStack { AboutView() }

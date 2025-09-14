@@ -2,7 +2,7 @@ import Foundation
 
 /// Repository abstraction for backup/restore operations.
 public protocol BackupRepository {
-    /// Exports a full-replace backup and returns the file URL of the generated `.goodwatch` archive.
+    /// Exports a full-replace backup and returns the file URL of the generated `.crownandbarrel` archive.
     func exportBackup() async throws -> URL
 
     /// Imports a backup from the provided URL. Replace must be true for now.

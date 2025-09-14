@@ -3,7 +3,7 @@ import UniformTypeIdentifiers
 
 /// AppDataView centralizes data-management operations such as backup/export,
 /// restore/import (replace-only), and destructive delete-all actions.
-/// - What: Provides buttons and flows to export a `.goodwatch` archive, import
+/// - What: Provides buttons and flows to export a `.crownandbarrel` archive, import
 ///   one to fully replace on-device data, seed debug data, and delete all.
 /// - Why: Consolidating these capabilities improves discoverability and keeps
 ///   risky actions behind explicit user intent and confirmations.
@@ -36,7 +36,7 @@ struct AppDataView: View {
         Form {
             Section("Backup") {
                 Button("Export backup") { Task { await export() } }
-                    .fileExporter(isPresented: Binding(get: { isExporting }, set: { _ in }), document: exportDoc, contentType: UTType(filenameExtension: "goodwatch") ?? .data, defaultFilename: "GoodWatchBackup") { _ in }
+                    .fileExporter(isPresented: Binding(get: { isExporting }, set: { _ in }), document: exportDoc, contentType: UTType(filenameExtension: "crownandbarrel") ?? .data, defaultFilename: "CrownAndBarrelBackup") { _ in }
                 #if DEBUG
                 Button("Load sample data") { Task { await seedSampleData() } }
                 #endif
@@ -50,7 +50,7 @@ struct AppDataView: View {
         }
         .navigationTitle("App Data")
         .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
-        .fileImporter(isPresented: $isImporting, allowedContentTypes: [UTType(filenameExtension: "goodwatch") ?? .data], allowsMultipleSelection: false) { result in
+        .fileImporter(isPresented: $isImporting, allowedContentTypes: [UTType(filenameExtension: "crownandbarrel") ?? .data], allowsMultipleSelection: false) { result in
             switch result {
             case .success(let urls):
                 if let url = urls.first { Task { await importBackup(url) } }
