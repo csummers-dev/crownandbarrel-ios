@@ -1,340 +1,231 @@
-Crown & Barrel
-===========
+# Crown & Barrel
 
-An open-source iOS app to manage a watch collection, track wear history, and visualize data insights. Designed to be elegant and modern. Ad-free, privacy focused.
-
-![Branch: feature/about-privacy-updates](https://img.shields.io/badge/branch-feature--about--privacy--updates-1E90FF?style=flat&logo=github)
-[![Build/Test CI](https://github.com/
-csummers-dev/crownandbarrel-ios/actions/
-workflows/ci.yml/badge.svg?branch=main)]
-(https://github.com/csummers-dev/
-crownandbarrel-ios/actions/workflows/ci.
-yml)
+[![Build/Test CI](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
 ![Latest release](https://img.shields.io/github/v/release/csummers-dev/crownandbarrel-ios)
+![iOS](https://img.shields.io/badge/iOS-17.0+-blue?logo=ios)
 
-Key decisions
-- iOS 17 minimum, iPhone only (portrait). Rationale: ensures modern full-screen behavior on iPhone devices, simplifies API surface (e.g., updated onChange), and avoids legacy compatibility modes. Landscape mode a consideration for future updates.
-- Local persistence via Core Data
-- Backup/restore is full replace (.crownandbarrel zip)
+An elegant iOS app for managing your watch collection, tracking wear history, and visualizing insights. Built with privacy in mind. Ad-free and open-source.
 
-Architecture
-- SwiftUI + Combine for UI and state
-- MVVM + Repository pattern
-- Core Data for persistence, file-based image storage
-- Swift Charts for statistics, UICalendarView (wrapped) for calendar
-- Design System for colors, typography, spacing, icons, and theme management
+## Table of Contents
 
-Future enhancements
-- Theming: Additional theme color schemes and matching app icons.
-- Stats: Full page redesign with richer charts, time filters (7/30/90/365), category breakdowns, and comparisons.
-- Accessibility: VoiceOver summaries for pie segments; high-contrast fallback palette.
-- Visual polish: Donut labels for pies; refined legends and spacing with tokens.
-- Calendar depth: Per-day summaries and quick-add favorites.
-- Haptics: Richer, configurable tactile feedback for key interactions.
-- Archiving Watches: Tracking an archive of previously owned watches.
-- Desired Watches: Tracking a collection of watches that you want to own.
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Installation](#installation)
+- [Requirements](#requirements)
+- [Privacy & Data](#privacy--data)
+- [Contributing](#contributing)
+- [Development](#development)
+- [Architecture](#architecture)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
-Redesign highlights
-- Navigation: Inline titles on all tabs; per-tab NavigationStacks isolate behavior (e.g., search only on Collection).
-- Tab bar: Subtle top hairline using UITabBarAppearance for visual separation.
-- Stats: Replaced bar charts with full pie charts (SectorMark, iOS 17+) and a metallic-inspired palette (gold, silver, steel blue, emerald, graphite). Legends shown on trailing side.
-- Collection: Compact sort/layout controls with reduced vertical spacing and small control size.
-- Collection: List view now uses rounded card-style rows (secondary background fill), row separators hidden, and horizontal insets to expose curvature. Curvature is standardized via `AppRadius` tokens.
-- Calendar: On date selection, the entries area animates a slight (4pt) downward offset; empty-state CTA reads “No watches worn this day. Add one?” which opens the add-worn sheet.
-  - Divider spacing is fixed at ~4pt between calendar and entries to prevent overlap with the last week.
-  - Entries list rows: compact watch thumbnail + “Manufacturer - Model”; manufacturer bolded, model regular.
-  - After adding a worn entry, the list refreshes immediately.
-  - Entries container uses the theme primary background (`AppColors.background`) across all states to avoid any system background bleed in dark mode.
-- Tokens: Added `AppColors.chartPalette`, `AppColors.tabBarHairline`, `AppTypography.titleCompact`, and `AppSpacing.xxs` for finer tuning.
+## Features
 
-Launch splash overlay (theme-aware)
-- What: A lightweight SwiftUI overlay shown immediately at app start.
-- Why: Prevents a flash of unthemed content and matches the user's saved theme on boot.
-- How: `CrownAndBarrelApp` wraps `RootView` in a `ZStack` and shows `SplashOverlay` (background = `AppColors.background`, text = `AppColors.textSecondary`). It fades out after the first frame using a short `DispatchQueue.main.asyncAfter` with an opacity transition.
-- Tests: UI test asserts the splash appears on launch and dismisses within a short interval.
+### 🎨 **Beautiful Design**
+- **6 Themed Color Schemes**: Daytime, Nighttime, Pastel, Forest, Ocean, and Sunset
+- **System-Based Defaults**: Automatically matches your device's appearance on first launch
+- **Consistent UI**: Unified design language across all screens
 
-Theming (user-selectable)
-- A JSON-driven theme catalog (`AppResources/Themes.json`) defines:
-  - `accent`, `background`, `secondaryBackground`, `tertiaryBackground`, `separator`, `textPrimary`, `textSecondary`, `tabBarHairline`, `chartPalette` (5 colors)
-  - `colorScheme`: `system`, `light`, or `dark` for `.preferredColorScheme`
-- `ThemeCatalog` loads themes on launch; `ThemeManager` exposes the current theme via `@AppStorage("selectedThemeId")`.
-- `AppColors` reads from the current theme; `brandGold` now aliases `accent`.
-- Settings → Appearance exposes a combined "Theme" picker listing all entries from `Themes.json` with color swatches.
-- Appearance proxies (tab bar/nav bar/segmented control) update when the theme changes.
-  - Navigation titles and bar button items intentionally use themed secondary text by design.
-  - Calendar labels in `UICalendarView` are themed via `UILabel.appearance(whenContainedInInstancesOf:)`.
+### ⌚ **Watch Collection Management**
+- **Add & Edit Watches**: Comprehensive details including manufacturer, model, serial numbers, and photos
+- **Optional Date Fields**: Purchase date, warranty expiration, service dates, and sale information
+- **Favorite System**: Mark your most-worn watches as favorites
+- **Smart Search**: Find watches by manufacturer, model, or reference number
 
-Radius tokens
-- `AppRadius` provides `small`, `medium`, and `large` corner radii to avoid literals and unify curvature:
-  - `small` (8): compact elements (e.g., list thumbnails)
-  - `medium` (10): medium surfaces (e.g., grid tiles)
-  - `large` (12): prominent containers (e.g., list cards)
- - Collection adopts these tokens for list cards, thumbnails, and grid tiles.
+### 📊 **Wear Tracking & Analytics**
+- **Daily Wear Logging**: Mark watches as worn with a single tap
+- **Smart Statistics**: Track wear frequency and patterns
+- **Past-Only Analytics**: Excludes future dates from calculations for accurate insights
+- **Visual Charts**: Beautiful pie charts showing wear distribution
 
-Add or edit a theme
-1) Edit `AppResources/Themes.json` (validate 5 colors under `chartPalette`).
-2) Run the app; the new theme appears in Settings.
-3) Ensure text contrast passes (primary ≥ 7:1, secondary ≥ 4.5:1). Unit tests verify this.
+### 📅 **Calendar Integration**
+- **Visual Calendar**: See which watches you wore on specific dates
+- **Quick Add**: Add wear entries directly from the calendar
+- **Historical View**: Browse your wearing patterns over time
 
-Assets (images)
-- Preferred: Add a theme-aware placeholder in the asset catalog at `AppResources/Assets.xcassets/WatchEntryPlaceholder.imageset` (supports Light/Dark variants automatically).
-- Fallback (raw files):
-  - Light mode: `AppResources/Images/WatchEntryPlaceholder-LightMode-1000.png`
-  - Dark mode: `AppResources/Images/WatchEntryPlaceholder-DarkMode-1000.png`
-- Notes:
-  - Use square PNGs (1000×1000 recommended) with transparent background.
-  - The loader tries the asset catalog first (“WatchEntryPlaceholder”), then falls back to the raw Light/Dark PNGs.
+### 🔄 **Data Management**
+- **Local Storage**: All data stays on your device
+- **Backup & Restore**: Export your collection as a `.crownandbarrel` file
+- **Sample Data**: Load demo watches for testing (debug builds)
 
-Modules (source layout)
-- `Sources/CrownAndBarrelApp`: app entry, root navigation, tab scaffolding
-- `Sources/DesignSystem`: colors, typography, spacing, icons, theme manager
-- `Sources/Domain`: models, errors, repository protocols
-- `Sources/Common`: shared components and utilities (e.g., `WatchImageView`, `ImageStore`)
-- `Sources/Features`: feature UIs (Collection, Stats, Calendar, Watch Detail, Watch Form)
-- `Sources/Persistence`: Core Data stack, repositories, mappers
+## Screenshots
 
-Getting started
-1) Prerequisites: Xcode 16+, macOS with command line tools
-2) Generate the Xcode project with XcodeGen (recommended)
-   - Install: `brew install xcodegen`
-   - Generate: `xcodegen generate`
-   - Open: `open CrownAndBarrel.xcodeproj`
-   - Run: Select a simulator (iPhone 16 or newer) and Build/Run
-3) Build & run on iPhone simulator (iOS 17+)
+*Screenshots coming soon - showcasing the beautiful interface across different themes*
 
-Testing
-- Unit test target covers domain, repositories, filters, and backup/restore. Includes a launch configuration check that guards against legacy letterboxing.
-- UI tests cover collection, form, detail, calendar, stats, and full-screen launch behavior. Includes a collection image refresh verification after saving edits.
-- Unit tests validate the app icon presence, theme-aware placeholders, and the square-cropping utility.
-- CI (GitHub Actions): see build/test badge above; workflow runs `xcodebuild test`.
-- Run locally: `xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' test`
+## Installation
 
-Platform and device support
-- Minimum iOS version: 17.0
-  - Why: Avoids legacy layout modes; enables updated SwiftUI APIs; reduces compatibility risk.
-- Devices: iPhone only, portrait orientation
-  - Why: Phone-first UX and simpler safe-area/layout semantics.
+### For Users
+1. Download from the App Store (coming soon)
+2. Or build from source using the [Development](#development) instructions below
 
-Launch and full-screen behavior
-- Uses a modern Launch Screen (UILaunchStoryboardName) to signal contemporary device support; prevents letterboxing on iPhone 16/16 Pro. Safe areas are respected throughout (NavigationStack, TabView, safeAreaInset where needed).
-- Ensure Info.plist contains:
-  - `UILaunchStoryboardName` = `LaunchScreen` (file at `AppResources/LaunchScreen.storyboard`).
+### For Developers
+See the [Development](#development) section for detailed setup instructions.
 
-Image selection and cropping
-- All watch images are enforced to be square:
-  - Selection: images are center-cropped to square on import.
-  - Persistence: images are re-validated as square before saving.
-  - Display: grid tiles (120×120) and list thumbnails (56×56) use a fixed square size with `.scaledToFill()` in a rounded container.
-  - Detail: watch pages show an image header (user image or theme-aware placeholder) above details.
+## Requirements
 
-### App icon
-- **Place base 1024px PNG**: `AppResources/AppIcon-1024.png` (square, no rounded corners).
-- **Generate all sizes**: `./AppResources/icongen.sh AppResources/AppIcon-1024.png`.
-  - Outputs to `AppResources/Assets.xcassets/AppIcon.appiconset` with a preconfigured `Contents.json`.
-- **Project setup**: `project.yml` sets `ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon`; Xcode picks it up on generate/build.
-- **Notes**:
-  - Keep edges within the HIG safe area; no transparency padding.
-  - Marketing icon (1024) is included as `ios-marketing`.
+- **iOS 17.0+** (iPhone only, portrait orientation)
+- **Xcode 16+** (for development)
+- **macOS** with command line tools (for development)
 
-### Commenting standards (What, Why, How)
-- **Goal**: Make code self-explanatory for future maintainers without refactoring behavior.
-- **Principle**: Comment intent and tradeoffs; avoid narrating obvious syntax.
-- **Where to comment**:
-  - **Types (struct/class/enum)**: Start with a short block that explains the feature’s role.
-  - **Public/internal methods**: Describe the “what” (purpose), “why” (reasoning/business rule), and “how” (non-obvious algorithm or side effect). Include threading/async and error behavior.
-  - **Stored properties**: Only when the meaning isn’t obvious from the name or when constraints matter.
-  - **Conditionals/branches**: When guarding edge cases, explain the invariant or risk avoided.
-- **Style**:
-  - Prefer concise sentences; use bullet lists for multi-point rationale.
-  - Use domain language users would recognize (e.g., “wear entry,” “backup replace-only”).
-  - Keep comments up-to-date in the same edit that changes behavior.
-- **Examples applied in this codebase**:
-  - Core Data stack: Why programmatic model and merge policies are used; why in-memory tests avoid batch deletes.
-  - Calendar UIKit wrapper: Why `UICalendarView` via representable and how selection normalization reloads entries.
-  - Repositories: How denormalized fields (timesWorn/lastWornDate) help sorting, and why uniqueness checks exist.
-  - App Data flows: Why import is replace-only; how export uses a temporary URL + FileDocument wrapper.
-  - Theme: Why `@AppStorage` with raw value ties into `ThemeManager` and `preferredColorScheme`.
-- **Error messages**:
-  - Must be clear, concise, and informative; prefer actionable wording (what failed; what the user can try).
-  - Surface domain errors via `LocalizedError` with human-friendly descriptions.
-- **Accessibility and UX notes**:
-  - Call out VoiceOver labels and Dynamic Type-sensitive components where non-standard.
-  - Note when haptics are used for feedback and why.
-  
-### Rationale highlights (design choices)
-- **iOS 17+, iPhone portrait only**: Ensures modern safe areas and avoids legacy, letterboxed modes. Simplifies API usage (e.g., updated `onChange`) and reduces compatibility surface.
-- **Core Data + programmatic model**: Single source of truth in code, fewer Xcode model merge issues, explicit schema evolution.
-- **Replace-only backups (.crownandbarrel)**: Prevents partial merges and conflict ambiguity. Import is deterministic; export is transparent (JSON + images).
-- **Local image files**: Keeps Core Data light, enables efficient file operations and easier backup packaging.
-- **MVVM + Repository**: Decouples UI from persistence, enabling testability and future storage changes.
+## Privacy & Data
 
-Seeding sample data (optional)
-- Use the App Data screen (Settings → App Data) and tap "Load sample data" in Debug builds.
+- **Local-First**: All data is stored locally on your device
+- **No Tracking**: No analytics, no data collection, no external services
+- **Backup Control**: You control when and how to backup your data
+- **Open Source**: Full source code available for transparency
 
-Backup format (.crownandbarrel)
-- metadata.json (app version, schema version, export date)
-- watches.json
-- wear_entries.json
-- images/ (image files referenced by watches)
+## Contributing
 
-Accessibility
-- Dynamic Type, sufficient contrast, 44pt hit targets
-- VoiceOver labels and hints on interactive elements
- - Reduced motion support, haptics for key interactions
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-Roadmap (high → low)
-1) Collection, Watch Form, Watch Detail, Calendar, Stats
-2) Settings and App Data (backup/restore/delete)
-3) Privacy Policy and About
-4) Polish and advanced insights
+### Quick Start for Contributors
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-Troubleshooting (paths and project generation)
-- XcodeGen: “Decoding failed at "path": Nothing found”
-  - Ensure referenced folders exist before generating: `Sources`, `Tests/Unit`, `Tests/UITests`, and `AppResources` (if listed in `project.yml`).
-    - Check quickly:
-      ```bash
-      ls -la; ls -la Sources; ls -la Tests; ls -la AppResources
-      ```
-  - If you recently added a new folder (e.g., `AppResources`), create it first, then run `xcodegen generate` again.
-  - Verify YAML indentation uses spaces (no tabs) and keys are correctly spelled:
-    ```yaml
-    targets:
-      CrownAndBarrel:
-        sources:
-          - path: Sources
-          - path: AppResources
-    ```
-  - Try a minimal spec temporarily to isolate the issue, then add entries back:
-    ```yaml
-    targets:
-      CrownAndBarrel:
-        type: application
-        platform: iOS
-        sources:
-          - path: Sources
-    ```
-  - Use these helpers to debug the spec:
-    ```bash
-    xcodegen dump | cat
-    ruby -ryaml -e 'puts YAML.load_file("project.yml").to_s' | cat
-    ```
-  - If the error persists, try absolute paths as a diagnostic (shouldn’t be needed long-term):
-    ```yaml
-    sources:
-      - path: /Users/yourname/Developer/CrownAndBarrel/Sources
-    ```
-  - Clean any stale project and DerivedData, then regenerate:
-    ```bash
-    rm -rf CrownAndBarrel.xcodeproj
-    rm -rf ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-*
-    xcodegen generate
-    ```
+## Development
 
-- App resources not copied/recognized
-  - Ensure `AppResources/` is listed under `targets.CrownAndBarrel.sources` and exists on disk.
-  - For Launch Screen, include `AppResources/LaunchScreen.storyboard` and set in `project.yml`:
-    ```yaml
-    info:
-      properties:
-        UILaunchStoryboardName: LaunchScreen
-    ```
-  - Letterboxed/legacy appearance on iPhone 16/Pro:
-    - Verify `AppResources/Info.plist` includes:
-      ```xml
-      <key>UILaunchStoryboardName</key>
-      <string>LaunchScreen</string>
-      ```
-    - Clean build folder and rebuild. If the simulator still shows letterboxing, erase the simulator content (Device → Erase All Content and Settings) and relaunch.
+### Prerequisites
+- Xcode 16+
+- macOS with command line tools
+- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (for project generation)
 
-- Simulator destination not found
-  - Pick an available simulator shown by:
-    ```bash
-    xcrun simctl list devices | grep -E "iPhone 1|Booted"
-    ```
-  - Update the destination, for example: `-destination 'platform=iOS Simulator,name=iPhone 16'`.
+### Setup
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/csummers-dev/crownandbarrel-ios.git
+   cd crownandbarrel-ios
+   ```
 
-- Test targets: Info.plist error
-  - Ensure auto-Info generation is enabled for test targets in `project.yml`:
-    ```yaml
-    settings:
-      base:
-        GENERATE_INFOPLIST_FILE: YES
-    ```
+2. **Install XcodeGen**
+   ```bash
+   brew install xcodegen
+   ```
 
-Minimal project.yml example
-```yaml
-name: CrownAndBarrel
-options:
-  deploymentTarget:
-    iOS: "17.0"
-targets:
-  CrownAndBarrel:
-    type: application
-    platform: iOS
-    sources:
-      - path: Sources
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.crownandbarrel.app
-        GENERATE_INFOPLIST_FILE: YES
+3. **Generate the Xcode project**
+   ```bash
+   xcodegen generate
+   ```
+
+4. **Open in Xcode**
+   ```bash
+   open CrownAndBarrel.xcodeproj
+   ```
+
+5. **Run the app**
+   - Select iPhone 16 simulator (or newer)
+   - Build and run (⌘+R)
+
+### Project Structure
+```
+Sources/
+├── CrownAndBarrelApp/     # App entry point and root navigation
+├── DesignSystem/          # Colors, typography, spacing, themes
+├── Domain/               # Models, errors, repository protocols
+├── Common/               # Shared components and utilities
+├── Features/             # Feature UIs (Collection, Stats, Calendar, etc.)
+└── Persistence/          # Core Data stack and repositories
+
+Tests/
+├── Unit/                # Unit tests
+└── UITests/             # UI tests
+
+AppResources/            # Assets, themes, launch screen
 ```
 
-Bootstrap script (create folders, then generate the project)
+## Architecture
+
+### **Design Patterns**
+- **MVVM + Repository**: Clean separation of concerns
+- **SwiftUI + Combine**: Modern reactive UI framework
+- **Core Data**: Robust local persistence
+- **Design System**: Consistent tokens for colors, typography, and spacing
+
+### **Key Components**
+- **Theme System**: JSON-driven themes with system integration
+- **Repository Pattern**: Abstracted data access for testability
+- **Image Management**: Square-cropped watch photos with fallback placeholders
+- **Backup System**: Complete data export/import with replace-only semantics
+
+### **Technical Decisions**
+- **iOS 17+**: Modern APIs, full-screen behavior, simplified compatibility
+- **iPhone Portrait Only**: Optimized UX, simpler layout constraints
+- **Local Storage**: Privacy-first, no external dependencies
+- **Replace-Only Backups**: Prevents merge conflicts, deterministic imports
+
+## Testing
+
+### **Test Coverage**
+- **Unit Tests**: Domain logic, repositories, theme system, data validation
+- **UI Tests**: User flows, theme switching, form validation, navigation
+- **Accessibility**: VoiceOver support, Dynamic Type, contrast validation
+
+### **Running Tests**
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
+# Run all tests
+xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' test
 
-# Create expected directories if missing
-mkdir -p Sources \
-         Tests/Unit \
-         Tests/UITests \
-         AppResources
-
-# Optional: ensure a minimal project.yml exists
-if [ ! -f project.yml ]; then
-  cat > project.yml <<'YAML'
-name: CrownAndBarrel
-options:
-  deploymentTarget:
-    iOS: "17.0"
-targets:
-  CrownAndBarrel:
-    type: application
-    platform: iOS
-    sources:
-      - path: Sources
-      - path: AppResources
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.crownandbarrel.app
-        GENERATE_INFOPLIST_FILE: YES
-  CrownAndBarrelTests:
-    type: bundle.unit-test
-    platform: iOS
-    sources:
-      - path: Tests/Unit
-    settings:
-      base:
-        GENERATE_INFOPLIST_FILE: YES
-    dependencies:
-      - target: CrownAndBarrel
-  CrownAndBarrelUITests:
-    type: bundle.ui-testing
-    platform: iOS
-    sources:
-      - path: Tests/UITests
-    settings:
-      base:
-        GENERATE_INFOPLIST_FILE: YES
-    dependencies:
-      - target: CrownAndBarrel
-YAML
-fi
-
-# Generate the Xcode project
-xcodegen generate
-echo "Generated CrownAndBarrel.xcodeproj"
+# Run specific test target
+xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' test -only-testing:CrownAndBarrelTests
 ```
+
+### **Test Features**
+- **Theme Testing**: Automated theme switching and validation
+- **Data Persistence**: Backup/restore functionality testing
+- **Form Validation**: Watch creation and editing workflows
+- **Accessibility**: Screen reader and contrast compliance
+
+## Troubleshooting
+
+### **Common Issues**
+
+#### **Project Generation**
+```bash
+# Ensure all required directories exist
+mkdir -p Sources Tests/Unit Tests/UITests AppResources
+
+# Clean and regenerate
+rm -rf CrownAndBarrel.xcodeproj
+xcodegen generate
+```
+
+#### **Build Errors**
+- Ensure Xcode 16+ is installed
+- Clean build folder (⌘+Shift+K)
+- Reset simulator if needed
+
+#### **Simulator Issues**
+```bash
+# List available simulators
+xcrun simctl list devices | grep -E "iPhone 1|Booted"
+
+# Reset simulator
+xcrun simctl erase "iPhone 16"
+```
+
+#### **App Resources**
+- Verify `AppResources/` is included in project sources
+- Check that `LaunchScreen.storyboard` exists
+- Ensure `Info.plist` contains `UILaunchStoryboardName: LaunchScreen`
+
+### **Getting Help**
+- Check existing [Issues](https://github.com/csummers-dev/crownandbarrel-ios/issues)
+- Create a new issue with detailed reproduction steps
+- Include device/simulator information and error logs
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**Developed with ❤️ by [@csummers-dev](https://github.com/csummers-dev)**
+
+For support or feature requests, contact: [csummersdev@icloud.com](mailto:csummersdev@icloud.com)
+
 
 
