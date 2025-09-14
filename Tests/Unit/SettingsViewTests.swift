@@ -29,14 +29,16 @@ final class SettingsViewTests: XCTestCase {
         // Allow the run loop to process layout passes SwiftUI may schedule
         RunLoop.current.run(until: Date().addingTimeInterval(0.05))
 
-        // Locate the UITableView backing the Form
-        guard let table = findSubview(ofType: UITableView.self, in: host.view) else {
-            XCTFail("Backed Form UITableView not found")
+        // Locate the UITableView or UICollectionView backing the Form (iOS versions differ)
+        let table = findSubview(ofType: UITableView.self, in: host.view)
+        let collection = findSubview(ofType: UICollectionView.self, in: host.view)
+        guard table != nil || collection != nil else {
+            XCTFail("Backed Form UITableView/UICollectionView not found")
             return
         }
 
         // Find the cell that contains the "Appearance" label
-        guard let appearanceCell = findCell(containingText: "Appearance", in: table) else {
+        guard let appearanceCell = (table != nil ? findCell(containingText: "Appearance", in: table!) : findCellInCollection(containingText: "Appearance", in: collection!)) else {
             XCTFail("Appearance header cell not found")
             return
         }
@@ -46,7 +48,7 @@ final class SettingsViewTests: XCTestCase {
         XCTAssertNil(headerAncestor, "Appearance should be a custom row, not a grouped header")
 
         // Find the first theme title row ("Theme")
-        guard let themeCell = findCell(containingText: "Theme", in: table) else {
+        guard let themeCell = (table != nil ? findCell(containingText: "Theme", in: table!) : findCellInCollection(containingText: "Theme", in: collection!)) else {
             XCTFail("Theme row cell not found")
             return
         }
@@ -64,6 +66,20 @@ final class SettingsViewTests: XCTestCase {
     private func findSubview<T: UIView>(ofType: T.Type, in root: UIView) -> T? {
         if let view = root as? T { return view }
         for sub in root.subviews { if let found: T = findSubview(ofType: ofType, in: sub) { return found } }
+        return nil
+    }
+
+    private func findCellInCollection(containingText text: String, in collection: UICollectionView) -> UICollectionViewCell? {
+        collection.layoutIfNeeded()
+        for section in 0..<collection.numberOfSections {
+            for item in 0..<collection.numberOfItems(inSection: section) {
+                let indexPath = IndexPath(item: item, section: section)
+                if let cell = collection.cellForItem(at: indexPath) ?? collection.dataSource?.collectionView(collection, cellForItemAt: indexPath) {
+                    if containsLabel(withText: text, in: cell.contentView) { return cell }
+                }
+            }
+        }
+        for cell in collection.visibleCells { if containsLabel(withText: text, in: cell.contentView) { return cell } }
         return nil
     }
 

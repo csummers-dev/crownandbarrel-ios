@@ -9,15 +9,13 @@ final class ThemeLiveRefreshUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Open Settings sheet from any tab (use Collection tab by default)
-        let gear = app.buttons["gearshape"]
-        if gear.waitForExistence(timeout: 2) { gear.tap() }
-        else {
-            // Try via navigation bar button if rendered there
-            let navGear = app.navigationBars.buttons["gearshape"]
-            XCTAssertTrue(navGear.waitForExistence(timeout: 2))
-            navGear.tap()
-        }
+        // Open Settings via the menu button using a stable identifier
+        let gearMenu = app.buttons["SettingsMenuButton"]
+        XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
+        gearMenu.tap()
+        let settingsMenuItem = app.buttons["Settings"]
+        XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))
+        settingsMenuItem.tap()
 
         // Assert the Settings sheet is visible
         let settingsTitle = app.navigationBars.staticTexts["Settings"]

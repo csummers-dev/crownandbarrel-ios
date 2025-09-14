@@ -12,14 +12,13 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Open Settings via gear button from any tab
-        let gear = app.buttons["gearshape"]
-        if gear.waitForExistence(timeout: 2) { gear.tap() }
-        else {
-            let navGear = app.navigationBars.buttons["gearshape"]
-            XCTAssertTrue(navGear.waitForExistence(timeout: 2))
-            navGear.tap()
-        }
+        // Open Settings via menu button (stable identifier) then tap the Settings menu item
+        let gearMenu = app.buttons["SettingsMenuButton"]
+        XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
+        gearMenu.tap()
+        let settingsMenuItem = app.buttons["Settings"]
+        XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))
+        settingsMenuItem.tap()
 
         // Settings title visible
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
@@ -36,9 +35,13 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Open Settings
-        let gear = app.buttons["gearshape"]
-        if gear.waitForExistence(timeout: 2) { gear.tap() } else { app.navigationBars.buttons["gearshape"].tap() }
+        // Open Settings via menu then tap the Settings menu item
+        let gearMenu = app.buttons["SettingsMenuButton"]
+        XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
+        gearMenu.tap()
+        let settingsMenuItem = app.buttons["Settings"]
+        XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))
+        settingsMenuItem.tap()
 
         // Change the theme by tapping a visible cell
         XCTAssertTrue(app.staticTexts["Daytime"].waitForExistence(timeout: 3))

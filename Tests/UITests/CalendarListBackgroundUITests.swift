@@ -17,7 +17,17 @@ final class CalendarListBackgroundUITests: XCTestCase {
 
         // If empty, add a worn entry via picker flow
         let addPrompt = app.buttons["No watches worn this day. Add one?"]
-        if addPrompt.waitForExistence(timeout: 2) { addPrompt.tap(); app.buttons["Close"].tap() }
+        if addPrompt.waitForExistence(timeout: 2) {
+            addPrompt.tap()
+            // Dismiss the sheet robustly across OS variations
+            if app.buttons["Close"].waitForExistence(timeout: 2) {
+                app.buttons["Close"].tap()
+            } else if app.navigationBars.buttons["Close"].waitForExistence(timeout: 2) {
+                app.navigationBars.buttons["Close"].tap()
+            } else {
+                app.swipeDown()
+            }
+        }
 
         // Assert the entries container is present (primary background applied by view code)
         let container = app.otherElements["CalendarEntriesContainer"]
