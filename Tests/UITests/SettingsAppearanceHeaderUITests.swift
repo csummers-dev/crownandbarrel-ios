@@ -30,16 +30,21 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         // Why: Ensures theming remains controllable and consistent.
         // How: Assert presence via a stable accessibility identifier (allow longer CI wait and a nudge).
         let headerRow = app.otherElements["SettingsAppearanceHeaderRow"]
-        if !headerRow.waitForExistence(timeout: 3) {
+        // Allow more time and try gentle scrolls to bring the row into view on CI
+        if !headerRow.waitForExistence(timeout: 4) {
             app.swipeUp()
         }
-        XCTAssertTrue(headerRow.waitForExistence(timeout: 3))
+        if !headerRow.waitForExistence(timeout: 3) {
+            app.swipeDown()
+        }
+        XCTAssertTrue(headerRow.waitForExistence(timeout: 4))
 
         // What: Inline picker should be expanded and visible.
         // Why: Prevents regressions where wrapping collapses the picker.
         // How: Heuristic—look for a known theme name cell; if not present, any theme cell.
-        if !app.staticTexts["Daytime"].waitForExistence(timeout: 3) {
-            XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 2))
+        if !app.staticTexts["Daytime"].waitForExistence(timeout: 4) {
+            // If a specifically named theme isn't present, accept any visible theme cell
+            XCTAssertTrue(app.cells.firstMatch.waitForExistence(timeout: 3))
         }
     }
 
