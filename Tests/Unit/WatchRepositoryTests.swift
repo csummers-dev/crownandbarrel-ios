@@ -58,6 +58,38 @@ final class WatchRepositoryTests: XCTestCase {
         let fetched = try await repo.fetchById(watch.id)
         XCTAssertNil(fetched)
     }
+
+    func testWearEntriesUpToExcludesFutureAndSorts() async throws {
+        let repo = makeRepo()
+        var watch = Watch(manufacturer: "Dates")
+        try await repo.upsert(watch)
+        let cal = Calendar.current
+        let today = Date()
+        let past = cal.date(byAdding: .day, value: -10, to: today)!
+        let future = cal.date(byAdding: .day, value: 1, to: today)!
+        try await repo.incrementWear(for: watch.id, on: past)
+        try await repo.incrementWear(for: watch.id, on: today)
+        // attempt to insert a future entry should be reflected in repo if allowed, but our query must exclude it
+        try await repo.incrementWear(for: watch.id, on: future)
+        let entries = try await repo.wearEntriesUpTo(watchId: watch.id, through: today)
+        XCTAssertEqual(entries.count, 2)
+        XCTAssertEqual(Calendar.current.startOfDay(for: entries.last!.date), Calendar.current.startOfDay(for: today))
+    }
+
+    func testExistsWearEntryHonorsCalendarDay() async throws {
+        let repo = makeRepo()
+        let watch = Watch(manufacturer: "Exists")
+        try await repo.upsert(watch)
+        // Mark worn today
+        try await repo.incrementWear(for: watch.id, on: Date())
+        // Today should be true
+        let existsToday = try await repo.existsWearEntry(watchId: watch.id, date: Date())
+        XCTAssertTrue(existsToday)
+        // Future should be false
+        let future = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+        let existsFuture = try await repo.existsWearEntry(watchId: watch.id, date: future)
+        XCTAssertFalse(existsFuture)
+    }
 }
 
 extension XCTestCase {

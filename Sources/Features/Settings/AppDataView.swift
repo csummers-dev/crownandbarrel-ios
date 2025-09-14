@@ -14,7 +14,12 @@ import UniformTypeIdentifiers
 ///   replace-only semantics as requested. Delete all is gated by a two-step
 ///   confirmation dialog.
 
+/// App Data screen for backup/export, import/restore, and destructive delete operations.
+/// - What: Provides export/import flows and a debug-only seed sample data action.
+/// - Why: Centralizes risky actions behind explicit user intent with confirmations and clear messaging.
+/// - How: Uses repository abstractions and system file presenters; shows lightweight toasts for success.
 struct AppDataView: View {
+    @Environment(\.themeToken) private var themeToken
     /// Transient error message presented in an alert when operations fail.
     @State private var errorMessage: String? = nil
     /// Controls presentation of the file exporter once an export URL is ready.
@@ -31,24 +36,54 @@ struct AppDataView: View {
     private let backup: BackupRepository = BackupRepositoryFile()
     /// Concrete repository for seeding sample data during debug.
     private let repo: WatchRepository = WatchRepositoryCoreData()
+    @State private var infoMessage: String? = nil
 
     var body: some View {
         Form {
-            Section("Backup") {
+            headerRow("Backup")
+            Section {
                 Button("Export backup") { Task { await export() } }
-                    .fileExporter(isPresented: Binding(get: { isExporting }, set: { _ in }), document: exportDoc, contentType: UTType(filenameExtension: "crownandbarrel") ?? .data, defaultFilename: "CrownAndBarrelBackup") { _ in }
+                    .fileExporter(
+                        isPresented: $isExporting,
+                        document: exportDoc,
+                        contentType: archiveUTType,
+                        defaultFilename: "CrownAndBarrelBackup"
+                    ) { _ in }
+                    .listRowBackground(AppColors.background)
                 #if DEBUG
                 Button("Load sample data") { Task { await seedSampleData() } }
+                    .listRowBackground(AppColors.background)
                 #endif
-            }
-            Section("Restore") {
+            } header: { EmptyView() }
+            headerRow("Restore")
+            Section {
                 Button("Import backup") { isImporting = true }
-            }
-            Section("Danger zone") {
+                    .listRowBackground(AppColors.background)
+            } header: { EmptyView() }
+            headerRow("Danger zone")
+            Section {
                 Button(role: .destructive) { confirmDeleteStep1 = true } label: { Text("Delete all data") }
+                    .listRowBackground(AppColors.background)
+            } header: { EmptyView() }
+        }
+        .listSectionSeparator(.hidden, edges: .all)
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background.ignoresSafeArea())
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(.custom(0))
+        .contentMargins(.top, -8, for: .scrollContent)
+        .id(themeToken + "-appdata-form")
+        .navigationTitle("App Data")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("App Data")
+                    .font(AppTypography.titleCompact)
+                    .foregroundStyle(AppColors.accent)
             }
         }
-        .navigationTitle("App Data")
+        .toolbarBackground(AppColors.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
         .fileImporter(isPresented: $isImporting, allowedContentTypes: [UTType(filenameExtension: "crownandbarrel") ?? .data], allowsMultipleSelection: false) { result in
             switch result {
@@ -56,6 +91,20 @@ struct AppDataView: View {
                 if let url = urls.first { Task { await importBackup(url) } }
             case .failure(let error):
                 errorMessage = error.localizedDescription
+            }
+        }
+        .overlay(alignment: .bottom) {
+            if let msg = infoMessage {
+                AppDataToastBanner(message: msg)
+                    .padding(.bottom, 90)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .animation(.spring(response: 0.35, dampingFraction: 0.9), value: infoMessage)
+            }
+        }
+        .onChange(of: infoMessage) { _, newValue in
+            guard newValue != nil else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                withAnimation { infoMessage = nil }
             }
         }
         .confirmationDialog("Delete all data?", isPresented: $confirmDeleteStep1, titleVisibility: .visible) {
@@ -74,6 +123,8 @@ struct AppDataView: View {
 
     /// Wraps the export URL into a `FileDocument` that the exporter can write.
     private var exportDoc: ExportedFile? { exportURL.map(ExportedFile.init(url:)) }
+    /// Resolved UTType for our backup archive
+    private var archiveUTType: UTType { UTType(filenameExtension: "crownandbarrel") ?? .data }
 
     /// Triggers backup export via repository and presents the exporter sheet.
     private func export() async {
@@ -93,6 +144,7 @@ struct AppDataView: View {
     private func seedSampleData() async {
         do {
             for watch in SampleData.makeWatches(count: 8) { try await repo.upsert(watch) }
+            await MainActor.run { withAnimation { infoMessage = "Sample data loaded" } }
         } catch { errorMessage = error.localizedDescription }
     }
 
@@ -100,6 +152,42 @@ struct AppDataView: View {
     private func deleteAll() async {
         do { try await backup.deleteAll() }
         catch { errorMessage = error.localizedDescription }
+    }
+}
+
+private struct AppDataToastBanner: View {
+    let message: String
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(AppColors.accent)
+            Text(message)
+                .font(.subheadline)
+                .foregroundStyle(AppColors.textPrimary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial, in: Capsule())
+        .shadow(radius: 4)
+        .accessibilityLabel(message)
+    }
+}
+
+// MARK: - Settings-style header row (plain row above native section)
+private extension AppDataView {
+    func headerRow(_ title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.footnote)
+                .foregroundStyle(AppColors.textSecondary)
+                .textCase(.none)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 2)
+        .padding(.bottom, -6)
+        .listRowSeparator(.hidden)
+        .listRowBackground(AppColors.background)
     }
 }
 

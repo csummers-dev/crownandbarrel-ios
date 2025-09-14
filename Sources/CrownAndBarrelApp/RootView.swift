@@ -63,7 +63,27 @@ struct RootView: View {
             }
             .tabItem { Label("Calendar", systemImage: "calendar") }
         }
+        .tint(AppColors.accent)
+        .id(themeToken + "-tabs")
         .background(AppColors.background.ignoresSafeArea())
+        // Expose minimal theme info for UITests in DEBUG via an invisible, accessible element
+        .overlay(alignment: .topLeading) {
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("--uiTestExposeThemeInfo") {
+                let forcedArg = ProcessInfo.processInfo.arguments.first { $0.hasPrefix("--uiTestForceSystemStyle=") }
+                let forcedValue = forcedArg?.split(separator: "=").last.map(String.init)
+                let detectedStyle: String = {
+                    if let v = forcedValue?.lowercased(), v == "dark" { return "dark" }
+                    if let v = forcedValue?.lowercased(), v == "light" { return "light" }
+                    return UIScreen.main.traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+                }()
+                let themeId = UserDefaults.standard.string(forKey: "selectedThemeId") ?? ""
+                Text("system:\(detectedStyle);theme:\(themeId)")
+                    .accessibilityIdentifier("UITestThemeInfo")
+                    .opacity(0.01)
+            }
+            #endif
+        }
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
             case .settings: NavigationStack { SettingsView().id(themeToken + "-settings") }
@@ -78,6 +98,14 @@ struct RootView: View {
             if ProcessInfo.processInfo.arguments.contains("--uiTestOpenSettings") {
                 // Present only if not already shown
                 if activeSheet == nil { activeSheet = .settings }
+            }
+            // Allow UI tests to open Privacy Policy directly without tapping the toolbar menu
+            if ProcessInfo.processInfo.arguments.contains("--uiTestOpenPrivacy") {
+                if activeSheet == nil { activeSheet = .privacy }
+            }
+            // Allow UI tests to open App Data directly without tapping the toolbar menu
+            if ProcessInfo.processInfo.arguments.contains("--uiTestOpenAppData") {
+                if activeSheet == nil { activeSheet = .appData }
             }
             #endif
         }

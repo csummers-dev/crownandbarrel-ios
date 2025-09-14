@@ -132,6 +132,58 @@ struct CrownAndBarrelApp: App {
     /// - How: Fades out shortly after the first frame using a small, non-blocking delay.
     @State private var showSplash: Bool = true
 
+    init() {
+        // On first launch, if no saved theme preference exists, choose a default
+        // based on the current system appearance (light → Daytime, dark → Nighttime).
+        let key = "selectedThemeId"
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        let env = ProcessInfo.processInfo.environment
+        let uiTestSuite = env["UITestDefaultsSuite"].flatMap { UserDefaults(suiteName: $0) }
+        if args.contains("--uiTestResetTheme") {
+            UserDefaults.standard.removeObject(forKey: key)
+            uiTestSuite?.removeObject(forKey: key)
+        }
+        if args.contains("--uiTestExposeThemeInfo") {
+            // Allow forcing the perceived system style for deterministic tests
+            let forcedArg = args.first { $0.hasPrefix("--uiTestForceSystemStyle=") }
+            let forcedValue = forcedArg?.split(separator: "=").last.map(String.init)
+            let detected: UIUserInterfaceStyle
+            if let forcedValue, forcedValue.lowercased() == "dark" {
+                detected = .dark
+            } else if let forcedValue, forcedValue.lowercased() == "light" {
+                detected = .light
+            } else {
+                detected = UIScreen.main.traitCollection.userInterfaceStyle
+            }
+            let detectedString = (detected == .dark) ? "dark" : "light"
+            UserDefaults.standard.set(detectedString, forKey: "uiTestDetectedSystemStyle")
+            uiTestSuite?.set(detectedString, forKey: "uiTestDetectedSystemStyle")
+        }
+        #endif
+        if UserDefaults.standard.string(forKey: key) == nil {
+            #if DEBUG
+            let forcedArg = ProcessInfo.processInfo.arguments.first { $0.hasPrefix("--uiTestForceSystemStyle=") }
+            let forcedValue = forcedArg?.split(separator: "=").last.map(String.init)
+            let style: UIUserInterfaceStyle
+            if let forcedValue, forcedValue.lowercased() == "dark" {
+                style = .dark
+            } else if let forcedValue, forcedValue.lowercased() == "light" {
+                style = .light
+            } else {
+                style = UIScreen.main.traitCollection.userInterfaceStyle
+            }
+            #else
+            let style = UIScreen.main.traitCollection.userInterfaceStyle
+            #endif
+            let initialId = ThemeManager.defaultThemeId(for: style)
+            UserDefaults.standard.set(initialId, forKey: key)
+            #if DEBUG
+            uiTestSuite?.set(initialId, forKey: key)
+            #endif
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             // Compose the app root with a transient, theme-driven splash overlay.

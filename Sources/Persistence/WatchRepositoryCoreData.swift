@@ -5,6 +5,10 @@ import CoreData
 /// - What: Persists and queries watches and wear entries using Core Data.
 /// - Why: Provides robust local storage with sorting/filtering capabilities and referential integrity.
 /// - How: Uses a shared `CoreDataStack` and maps between domain models and managed objects via `Mappers`.
+/// Core Data-backed implementation of `WatchRepository`.
+/// - What: Persists and queries watches and wear entries using Core Data.
+/// - Why: Provides robust local storage with sorting/filtering and derived field updates.
+/// - How: Uses a shared `CoreDataStack`, mapping helpers, and calendar normalization.
 public final class WatchRepositoryCoreData: WatchRepository {
     private let stack: CoreDataStack
     private let calendar: Calendar
@@ -136,6 +140,25 @@ public final class WatchRepositoryCoreData: WatchRepository {
             let day = calendar.startOfDay(for: date)
             let next = calendar.date(byAdding: .day, value: 1, to: day)!
             request.predicate = NSPredicate(format: "date >= %@ AND date < %@", day as NSDate, next as NSDate)
+            request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+            return try stack.viewContext.fetch(request).map(Mappers.toDomain)
+        }
+    }
+
+    /// Returns all wear entries for a watch up to and including the given date.
+    /// Returns all wear entries for a watch up to and including the given date, sorted ascending.
+    /// - Parameters:
+    ///   - watchId: watch identifier
+    ///   - date: inclusive upper bound
+    public func wearEntriesUpTo(watchId: UUID, through date: Date) async throws -> [WearEntry] {
+        try await stack.viewContext.perform { [stack, calendar] in
+            guard let watch = try self.fetchCDWatch(by: watchId) else { return [] }
+            let end = calendar.startOfDay(for: date)
+            let request = NSFetchRequest<CDWearEntry>(entityName: "CDWearEntry")
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                NSPredicate(format: "watch == %@", watch),
+                NSPredicate(format: "date <= %@", end as NSDate)
+            ])
             request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
             return try stack.viewContext.fetch(request).map(Mappers.toDomain)
         }

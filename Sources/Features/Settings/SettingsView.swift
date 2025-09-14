@@ -75,6 +75,7 @@ private extension SettingsView {
             .tint(AppColors.textPrimary)
             .foregroundStyle(AppColors.textPrimary)
             .listRowBackground(AppColors.background)
+            .id(themeToken + "-settings-picker")
         } header: { EmptyView() }
     }
 
@@ -108,6 +109,7 @@ private struct ThemeRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(theme.name)
+                .foregroundStyle(AppColors.textPrimary)
             Spacer()
             Swatches(hexes: Array(theme.colors.chartPalette.prefix(5)))
         }

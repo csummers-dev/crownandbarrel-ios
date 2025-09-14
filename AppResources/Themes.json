@@ -48,22 +48,6 @@
     }
   },
   {
-    "id": "midnight-indigo",
-    "name": "Midnight Indigo",
-    "colorScheme": "dark",
-    "colors": {
-      "accent": "#6366F1",
-      "background": "#0F172A",
-      "secondaryBackground": "#111827",
-      "tertiaryBackground": "#1F2937",
-      "separator": "rgba(255,255,255,0.12)",
-      "textPrimary": "#E5E7EB",
-      "textSecondary": "rgba(229,231,235,0.75)",
-      "tabBarHairline": "rgba(255,255,255,0.16)",
-      "chartPalette": ["#818CF8", "#60A5FA", "#22D3EE", "#A78BFA", "#F472B6"]
-    }
-  },
-  {
     "id": "forest",
     "name": "Forest",
     "colorScheme": "dark",

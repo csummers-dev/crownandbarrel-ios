@@ -48,6 +48,13 @@ public protocol WatchRepository {
 
     /// Returns all wear entries for a specific date, sorted by time.
     func wearEntries(on date: Date) async throws -> [WearEntry]
+
+    /// Returns all wear entries for a watch up to and including the given date.
+    /// - Parameters:
+    ///   - watchId: The watch identifier
+    ///   - date: The inclusive upper bound date (calendar day)
+    /// - Returns: Entries sorted by date ascending
+    func wearEntriesUpTo(watchId: UUID, through date: Date) async throws -> [WearEntry]
 }
 
 

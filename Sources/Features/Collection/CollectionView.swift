@@ -3,7 +3,8 @@ import SwiftUI
 /// Displays the watch collection with search, sorting, and grid/list toggle.
 /// - What: Hosts a `CollectionViewModel`, renders results in a grid or list, and presents the add form.
 /// - Why: Keeps UI interactions focused while delegating data logic to the ViewModel.
-/// - How: Uses `.searchable`, live refresh on dismissal, and `NavigationLink` to details.
+/// - How: Uses `.searchable`, pull-to-refresh, and `NavigationLink` to details. Grid tiles use a standardized width
+///        and truncate long text with ellipses. A bottom-right star indicates favorite entries.
 
 struct CollectionView: View {
     @Environment(\.themeToken) private var themeToken
@@ -11,10 +12,26 @@ struct CollectionView: View {
 
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
+    /// Local grid sizing token to avoid project regeneration for new files.
+    /// Move to `Sources/DesignSystem` if project is regenerated via XcodeGen.
+    /// Grid tile width tokens to standardize card sizing (avoid magic numbers).
+    fileprivate enum GridTileWidth {
+        case small, medium, large, xLarge
+        var width: CGFloat {
+            switch self {
+            case .small: return 100
+            case .medium: return 120
+            case .large: return 140
+            case .xLarge: return 160
+            }
+        }
+    }
+
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: AppSpacing.xs) {
                 sortAndLayoutBar
+                Color.clear.frame(height: 2)
                 content
             }
             .padding(.horizontal, AppSpacing.lg)
@@ -106,6 +123,7 @@ struct CollectionView: View {
                 }
                 .padding(.bottom, 80)
             }
+            .refreshable { await viewModel.load() }
         } else {
             List(viewModel.watches) { watch in
                 NavigationLink(destination: WatchDetailView(watch: watch)) {
@@ -132,6 +150,7 @@ struct CollectionView: View {
             .background(AppColors.background)
             .listSectionSeparator(.hidden, edges: .all)
             .listRowSeparator(.hidden, edges: .all)
+            .refreshable { await viewModel.load() }
             // Extra defensive: remove any UIAppearance-driven separators at runtime
             .onAppear {
                 UITableView.appearance().separatorStyle = .none
@@ -166,19 +185,25 @@ private struct GridCell: View {
     let watch: Watch
 
     var body: some View {
-        let tileSize: CGFloat = 120
+        let tileSize: CGFloat = CollectionView.GridTileWidth.xLarge.width
+        let containerWidth: CGFloat = tileSize + 20 // match 10pt horizontal padding on each side
         // What: Grid tile showing name and a square image with subtle border
         // Why: Maintains visual uniformity across all items, regardless of image aspect ratio
-        // How: Use `WatchImageView` scaledToFill and clip to a rounded rect of fixed size
+        // How: Use `WatchImageView` scaledToFill and clip to a rounded rect of fixed size. Apply a fixed
+        //      container width so layout does not shift based on text length. Truncate long text.
         VStack(alignment: .leading, spacing: 6) {
             Text(watch.manufacturer)
                 .font(.headline)
                 .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
+                .truncationMode(.tail)
+                .accessibilityIdentifier("GridCellManufacturer")
             Text(watch.model ?? "")
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textSecondary)
                 .lineLimit(1)
+                .truncationMode(.tail)
+                .accessibilityIdentifier("GridCellModel")
             ZStack {
                 RoundedRectangle(cornerRadius: AppRadius.medium)
                     .fill(AppColors.secondaryBackground)
@@ -196,7 +221,15 @@ private struct GridCell: View {
                 .foregroundStyle(AppColors.textSecondary)
         }
         .padding(10)
+        .frame(width: containerWidth, alignment: .leading)
         .background(RoundedRectangle(cornerRadius: AppRadius.large).fill(AppColors.secondaryBackground))
+        .overlay(alignment: .bottomTrailing) {
+            if watch.isFavorite {
+                Image(systemName: "star.fill")
+                    .foregroundStyle(.yellow)
+                    .padding(6)
+            }
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(watch.manufacturer) \(watch.model ?? "")")
         .accessibilityHint(watch.timesWorn > 0 ? "Worn \(watch.timesWorn) times" : "Not worn yet")

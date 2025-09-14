@@ -37,7 +37,7 @@ final class ThemeResolutionTests: XCTestCase {
     }
 
     func testSecondaryBackgroundDiffersFromPrimaryAcrossThemes() {
-        let themeIds = ["light-default", "dark-default", "pastel", "midnight-indigo", "forest", "ocean", "sunset"]
+        let themeIds = ["light-default", "dark-default", "pastel", "forest", "ocean", "sunset"]
         for themeId in themeIds {
             UserDefaults.standard.set(themeId, forKey: "selectedThemeId")
             let primary = UIColor(AppColors.background)
@@ -55,7 +55,7 @@ final class ThemeResolutionTests: XCTestCase {
         // Why: Ensures consistent, non-blue controls across themes per design decision.
         // How: Compare resolved UIColor for textSecondary vs accent; they must differ for at least one theme,
         //      and the chosen global tint should equal textSecondary.
-        for themeId in ["light-default", "dark-default", "pastel", "midnight-indigo", "forest", "ocean", "sunset"] {
+        for themeId in ["light-default", "dark-default", "pastel", "forest", "ocean", "sunset"] {
             UserDefaults.standard.set(themeId, forKey: "selectedThemeId")
             let accent = UIColor(AppColors.accent)
             let secondary = UIColor(AppColors.textSecondary)

@@ -79,6 +79,12 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
 
         // The sheet should remain visible after theme change
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].exists)
+
+        // Sanity: interacting with the picker again should still work without color/visibility regressions
+        if app.cells.count > 1 {
+            app.cells.element(boundBy: 1).tap()
+            XCTAssertTrue(app.navigationBars.staticTexts["Settings"].exists)
+        }
     }
 }
 

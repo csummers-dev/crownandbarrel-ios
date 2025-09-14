@@ -1,10 +1,15 @@
 Crown & Barrel
 ===========
 
-An open-source iOS app to manage a watch collection, track wear history, and visualize data insights.
+An open-source iOS app to manage a watch collection, track wear history, and visualize data insights. Designed to be elegant and modern. Ad-free, privacy focused.
 
-![Branch: feature/ui-updates](https://img.shields.io/badge/branch-feature--ui--updates-1E90FF?style=flat&logo=github)
-[![Build/Test CI](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml)
+![Branch: feature/about-privacy-updates](https://img.shields.io/badge/branch-feature--about--privacy--updates-1E90FF?style=flat&logo=github)
+[![Build/Test CI](https://github.com/
+csummers-dev/crownandbarrel-ios/actions/
+workflows/ci.yml/badge.svg?branch=main)]
+(https://github.com/csummers-dev/
+crownandbarrel-ios/actions/workflows/ci.
+yml)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
 ![Latest release](https://img.shields.io/github/v/release/csummers-dev/crownandbarrel-ios)
 
@@ -20,7 +25,17 @@ Architecture
 - Swift Charts for statistics, UICalendarView (wrapped) for calendar
 - Design System for colors, typography, spacing, icons, and theme management
 
-Redesign 2025-09 highlights
+Future enhancements
+- Theming: Additional theme color schemes and matching app icons.
+- Stats: Full page redesign with richer charts, time filters (7/30/90/365), category breakdowns, and comparisons.
+- Accessibility: VoiceOver summaries for pie segments; high-contrast fallback palette.
+- Visual polish: Donut labels for pies; refined legends and spacing with tokens.
+- Calendar depth: Per-day summaries and quick-add favorites.
+- Haptics: Richer, configurable tactile feedback for key interactions.
+- Archiving Watches: Tracking an archive of previously owned watches.
+- Desired Watches: Tracking a collection of watches that you want to own.
+
+Redesign highlights
 - Navigation: Inline titles on all tabs; per-tab NavigationStacks isolate behavior (e.g., search only on Collection).
 - Tab bar: Subtle top hairline using UITabBarAppearance for visual separation.
 - Stats: Replaced bar charts with full pie charts (SectorMark, iOS 17+) and a metallic-inspired palette (gold, silver, steel blue, emerald, graphite). Legends shown on trailing side.
@@ -70,13 +85,6 @@ Assets (images)
 - Notes:
   - Use square PNGs (1000×1000 recommended) with transparent background.
   - The loader tries the asset catalog first (“WatchEntryPlaceholder”), then falls back to the raw Light/Dark PNGs.
-
-Future enhancements
-- Theming: Expand metallic theme application across headers and accents; user-selectable accent color.
-- Stats: Full page redesign with richer charts, time filters (7/30/90/365), category breakdowns, and comparisons.
-- Accessibility: VoiceOver summaries for pie segments; high-contrast fallback palette.
-- Visual polish: Donut labels for pies; refined legends and spacing with tokens.
-- Calendar depth: Per-day summaries and quick-add favorites.
 
 Modules (source layout)
 - `Sources/CrownAndBarrelApp`: app entry, root navigation, tab scaffolding

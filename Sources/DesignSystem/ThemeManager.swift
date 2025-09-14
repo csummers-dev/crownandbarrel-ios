@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Persists and exposes the user's theme preference.
 /// - What: Bridges a stored preference to SwiftUI's `ColorScheme?` for `.preferredColorScheme`.
@@ -19,6 +20,21 @@ public struct ThemeManager {
     public var currentTheme: AppTheme {
         // Read-through lookup with a safe default so UI never crashes if an id is missing.
         ThemeCatalog.shared.themesById[selectedThemeId] ?? ThemeCatalog.shared.orderedThemes.first!
+    }
+}
+
+// MARK: - First-run defaulting helper
+
+extension ThemeManager {
+    /// Maps a system interface style to the app's default theme identifier.
+    /// - Returns: `"dark-default"` for `.dark`, `"light-default"` for `.light` or `.unspecified`.
+    public static func defaultThemeId(for style: UIUserInterfaceStyle) -> String {
+        switch style {
+        case .dark:
+            return "dark-default"
+        default:
+            return "light-default"
+        }
     }
 }
 

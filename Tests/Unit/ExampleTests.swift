@@ -36,6 +36,7 @@ final class InMemoryRepo: WatchRepository {
     func incrementWear(for watchId: UUID, on date: Date) async throws {}
     func existsWearEntry(watchId: UUID, date: Date) async throws -> Bool { false }
     func wearEntries(on date: Date) async throws -> [WearEntry] { [] }
+    func wearEntriesUpTo(watchId: UUID, through date: Date) async throws -> [WearEntry] { [] }
 }
 
 
