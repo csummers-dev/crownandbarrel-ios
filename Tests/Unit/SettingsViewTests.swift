@@ -72,7 +72,7 @@ final class SettingsViewTests: XCTestCase {
         table.layoutIfNeeded()
         for section in 0..<table.numberOfSections {
             for row in 0..<table.numberOfRows(inSection: section) {
-                if let cell = table.cellForRow(at: IndexPath(row: row, section: section)) ?? table.dataSource?.tableView?(table, cellForRowAt: IndexPath(row: row, section: section)) {
+                if let cell = table.cellForRow(at: IndexPath(row: row, section: section)) ?? table.dataSource?.tableView(table, cellForRowAt: IndexPath(row: row, section: section)) {
                     if containsLabel(withText: text, in: cell.contentView) { return cell }
                 }
             }
