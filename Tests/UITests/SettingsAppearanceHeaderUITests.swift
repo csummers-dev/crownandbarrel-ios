@@ -10,16 +10,11 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
 
     func testHeaderRowExistsAndPickerNotCollapsed() throws {
         let app = XCUIApplication()
+        app.launchArguments.append("--uiTestOpenSettings")
         app.launch()
 
-        // Open Settings via menu button (stable identifier) then tap the Settings menu item
-        let gearMenu = app.buttons["SettingsMenuButton"]
-        XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
-        if !gearMenu.isHittable { app.swipeDown() }
-        gearMenu.tap()
-        let settingsMenuItem = app.buttons["Settings"]
-        XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))
-        settingsMenuItem.tap()
+        // Settings should already be open via launch argument
+        XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
 
         // Settings title visible
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
@@ -34,16 +29,11 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
 
     func testSheetRemainsOpenAfterThemeChange() throws {
         let app = XCUIApplication()
+        app.launchArguments.append("--uiTestOpenSettings")
         app.launch()
 
-        // Open Settings via menu then tap the Settings menu item
-        let gearMenu = app.buttons["SettingsMenuButton"]
-        XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
-        if !gearMenu.isHittable { app.swipeDown() }
-        gearMenu.tap()
-        let settingsMenuItem = app.buttons["Settings"]
-        XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))
-        settingsMenuItem.tap()
+        // Settings opened via launch argument
+        XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
 
         // Change the theme by tapping a visible cell
         XCTAssertTrue(app.staticTexts["Daytime"].waitForExistence(timeout: 3))

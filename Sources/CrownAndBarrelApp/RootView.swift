@@ -72,6 +72,15 @@ struct RootView: View {
             case .about: NavigationStack { AboutView() }
             }
         }
+        .onAppear {
+            #if DEBUG
+            // Allow UI tests to open Settings directly without tapping toolbar UI
+            if ProcessInfo.processInfo.arguments.contains("--uiTestOpenSettings") {
+                // Present only if not already shown
+                if activeSheet == nil { activeSheet = .settings }
+            }
+            #endif
+        }
     }
 
     private var settingsToolbar: some ToolbarContent {

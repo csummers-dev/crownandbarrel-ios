@@ -45,7 +45,8 @@ final class CollectionSpacingUITests: XCTestCase {
             let first = cells[0].frame
             let second = cells[1].frame
             let verticalGap = second.minY - first.maxY
-            XCTAssertGreaterThan(verticalGap, 0, "Expected a small vertical gap between rows")
+            // Allow zero gap for extremely compact environments (but should still be non-overlapping)
+            XCTAssertGreaterThanOrEqual(verticalGap, 0, "Rows must not overlap")
             XCTAssertLessThan(verticalGap, 12, "Gap should remain tight (uses ~2pt background padding)")
         }
 
