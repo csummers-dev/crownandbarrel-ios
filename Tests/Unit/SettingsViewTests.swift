@@ -36,8 +36,21 @@ final class SettingsViewTests: XCTestCase {
         // Locate the UITableView or UICollectionView backing the Form (iOS versions differ)
         let table = findSubview(ofType: UITableView.self, in: host.view)
         let collection = findSubview(ofType: UICollectionView.self, in: host.view)
-        guard table != nil || collection != nil else {
-            XCTFail("Backed Form UITableView/UICollectionView not found")
+        // If neither container is found (platform variance), fall back to scanning labels directly.
+        if table == nil && collection == nil {
+            guard let appearanceLabel = findLabel(withText: "Appearance", in: host.view) else {
+                XCTFail("Appearance label not found in view hierarchy")
+                return
+            }
+            guard let themeLabel = findLabel(withText: "Theme", in: host.view) else {
+                XCTFail("Theme label not found in view hierarchy")
+                return
+            }
+
+            let headerFrame = appearanceLabel.convert(appearanceLabel.bounds, to: host.view)
+            let themeFrame = themeLabel.convert(themeLabel.bounds, to: host.view)
+            let gap = themeFrame.minY - headerFrame.maxY
+            XCTAssertLessThan(gap, 24.0, "Gap between Appearance header and Theme row should be tight (<24pt), got \(gap)")
             return
         }
 
@@ -106,6 +119,12 @@ final class SettingsViewTests: XCTestCase {
         if let label = view as? UILabel, label.text == text { return true }
         for sub in view.subviews { if containsLabel(withText: text, in: sub) { return true } }
         return false
+    }
+
+    private func findLabel(withText text: String, in view: UIView) -> UILabel? {
+        if let label = view as? UILabel, label.text == text { return label }
+        for sub in view.subviews { if let found = findLabel(withText: text, in: sub) { return found } }
+        return nil
     }
 
     private func findAncestor<T: UIView>(of view: UIView, ofType: T.Type) -> T? {

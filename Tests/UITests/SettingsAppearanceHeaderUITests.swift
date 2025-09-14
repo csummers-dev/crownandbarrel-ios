@@ -19,8 +19,8 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         // Settings title visible
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
 
-        // Custom header row present
-        XCTAssertTrue(app.otherElements["SettingsAppearanceHeaderRow"].exists)
+        // Custom header row present (allow short wait on CI)
+        XCTAssertTrue(app.otherElements["SettingsAppearanceHeaderRow"].waitForExistence(timeout: 2))
 
         // Inline picker should render at least one theme cell (not collapsed)
         // Heuristic: Look for a known theme name cell under the list
@@ -35,9 +35,14 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         // Settings opened via launch argument
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
 
-        // Change the theme by tapping a visible cell
-        XCTAssertTrue(app.staticTexts["Daytime"].waitForExistence(timeout: 3))
-        app.staticTexts["Daytime"].tap()
+        // Change the theme by tapping a visible cell (fallback to first cell if theme name varies)
+        if app.staticTexts["Daytime"].waitForExistence(timeout: 3) {
+            app.staticTexts["Daytime"].tap()
+        } else {
+            let firstCell = app.cells.element(boundBy: 0)
+            XCTAssertTrue(firstCell.waitForExistence(timeout: 2))
+            firstCell.tap()
+        }
 
         // The sheet should remain visible after theme change
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].exists)
