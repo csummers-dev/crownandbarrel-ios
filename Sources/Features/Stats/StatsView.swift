@@ -24,9 +24,8 @@ struct StatsView: View {
         }
         .background(AppColors.background.ignoresSafeArea())
         .navigationTitle("Stats")
-        .toolbarTitleMenu { /* no-op; ensure toolbar exists to apply appearance */ }
         .task { await load() }
-        .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
+        .alert("Error", isPresented: Binding.constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
         .id(themeToken)
     }
 

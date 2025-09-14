@@ -3,7 +3,7 @@ import CoreData
 import ZIPFoundation
 
 /// File-based implementation of `BackupRepository` using ZIP archives.
-/// - What: Exports JSON + images to a `.goodwatch` zip; imports by replacing the store; deletes all data on request.
+/// - What: Exports JSON + images to a `.crownandbarrel` zip; imports by replacing the store; deletes all data on request.
 /// - Why: Keeps backups portable and explicit, and avoids partial merges that can corrupt referential integrity.
 /// - How: Serializes domain objects, zips them with images, validates schema on import, and replaces the store.
 public final class BackupRepositoryFile: BackupRepository {
@@ -15,7 +15,7 @@ public final class BackupRepositoryFile: BackupRepository {
         self.fileManager = fileManager
     }
 
-    /// Exports a full-replace backup to a temporary `.goodwatch` file and returns its URL.
+    /// Exports a full-replace backup to a temporary `.crownandbarrel` file and returns its URL.
     public func exportBackup() async throws -> URL {
         let tempDir = fileManager.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try fileManager.createDirectory(at: tempDir, withIntermediateDirectories: true)
@@ -38,7 +38,7 @@ public final class BackupRepositoryFile: BackupRepository {
             for file in contents { try fileManager.copyItem(at: file, to: dst.appendingPathComponent(file.lastPathComponent)) }
         }
 
-        let archiveURL = fileManager.temporaryDirectory.appendingPathComponent("GoodWatch_\(ISO8601DateFormatter().string(from: Date())).goodwatch")
+        let archiveURL = fileManager.temporaryDirectory.appendingPathComponent("CrownAndBarrel_\(ISO8601DateFormatter().string(from: Date())).crownandbarrel")
         if fileManager.fileExists(atPath: archiveURL.path) { try fileManager.removeItem(at: archiveURL) }
         let archive = try Archive(url: archiveURL, accessMode: .create)
         if let enumerator = fileManager.enumerator(at: tempDir, includingPropertiesForKeys: nil) {
@@ -52,7 +52,7 @@ public final class BackupRepositoryFile: BackupRepository {
         return archiveURL
     }
 
-    /// Imports a `.goodwatch` backup by fully replacing the store.
+    /// Imports a `.crownandbarrel` backup by fully replacing the store.
     /// - Note: `replace` must be true for safety. Import validates schema version and structure before applying.
     public func importBackup(from url: URL, replace: Bool) async throws {
         guard replace else { throw AppError.incompatibleBackup("Only full replace imports are supported.") }

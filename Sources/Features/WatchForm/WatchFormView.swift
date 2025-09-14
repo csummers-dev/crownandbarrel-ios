@@ -116,6 +116,8 @@ struct WatchFormView: View {
                 }
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background)
         .navigationTitle(viewModel.existingWatchId == nil ? "Add Watch" : "Edit Watch")
         .navigationBarItems(
             leading: Button("Cancel") { dismiss() },

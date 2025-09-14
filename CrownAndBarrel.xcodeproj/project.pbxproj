@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,10 +11,13 @@
 		0C749AB1023439DFBDCA32CE /* CollectionImageRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5463C4E5B4C0FD8946C87805 /* CollectionImageRefreshUITests.swift */; };
 		0DA404601938974F97478F3D /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17602141192723FEB181F4A /* CollectionView.swift */; };
 		0F7B5B55D278A9852F6053AD /* CollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F71CA37273E920219D48AB /* CollectionViewModel.swift */; };
+		0FE064E5843A30313D91B396 /* RadiusTokensTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB20B311249E371634BE8E5D /* RadiusTokensTests.swift */; };
 		173EB3B1546EC14939B78DDF /* AppEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEA2F7503083711152B1A2C /* AppEvents.swift */; };
 		1793E06CC2D36081B40C52F6 /* ExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC374BA8695D8D090FCC172 /* ExampleTests.swift */; };
+		1C7CD32052CEF02C6EE18BF4 /* Radius.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79BB55FBEEBDD119F94BC7E /* Radius.swift */; };
 		1E7D18CFB28245E72E8B2DE4 /* AddWatchFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */; };
 		21CBA0EF574D99452C2B6D91 /* StatsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C43DFAA9D722A37E85418 /* StatsUITests.swift */; };
+		23230A62D5182963A143588F /* CollectionCardStyleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D207210EC8150E958FC738 /* CollectionCardStyleUITests.swift */; };
 		25BBA85D4F1BE90755D647D7 /* BackupRepositoryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B040BB51355DC6B08325E028 /* BackupRepositoryFile.swift */; };
 		26C4944C357CB0181733291B /* icongen.sh in Resources */ = {isa = PBXBuildFile; fileRef = 2434F861A028AE841FBAD057 /* icongen.sh */; };
 		2D3F9ABF48D60C108E717F99 /* FullScreenLaunchUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33C55EC07E208EDA47A5696B /* FullScreenLaunchUITests.swift */; };
@@ -33,7 +36,7 @@
 		526918F904E16B26947E7B16 /* WatchDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3C83BA92A65605E38C999AF /* WatchDetailView.swift */; };
 		52F0635A213A7DF8204A8719 /* Brand.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1762DD239D6A8A362CEF7B /* Brand.swift */; };
 		55282FE62588F8DFE578529A /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A511830ED723836C98668DD /* Watch.swift */; };
-		5542D6724816DC039EBA89B5 /* GoodWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594D309DEF2AAB7D1596CA95 /* GoodWatchApp.swift */; };
+		5542D6724816DC039EBA89B5 /* CrownAndBarrelApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 594D309DEF2AAB7D1596CA95 /* CrownAndBarrelApp.swift */; };
 		56FCEEE42FA6235AE47398E9 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C277043741583085DC96EE /* ThemeManager.swift */; };
 		59CE1E6A24E11B8183FC9A91 /* ContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C0DC54BC572E05BC383A31 /* ContrastTests.swift */; };
 		5AB6A721EB32C7551223CE19 /* WatchFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C09ACC0EEECA7B66AD45880 /* WatchFormView.swift */; };
@@ -102,6 +105,7 @@
 		2F2B93F9791B1EC255A7DB33 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		2F8BA7C277A7B7801B9B060A /* WatchFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormViewModel.swift; sourceTree = "<group>"; };
 		302E7DBBF82190EA0726F703 /* AssetsPresenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsPresenceTests.swift; sourceTree = "<group>"; };
+		32D207210EC8150E958FC738 /* CollectionCardStyleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionCardStyleUITests.swift; sourceTree = "<group>"; };
 		33C55EC07E208EDA47A5696B /* FullScreenLaunchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenLaunchUITests.swift; sourceTree = "<group>"; };
 		397D8E4F131857CBF1DDE7FF /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		3A511830ED723836C98668DD /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
@@ -113,7 +117,7 @@
 		51A7E14FBC7396E2C345E576 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		53799E0EB1FCB8764FDCC04F /* MoreRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreRepositoryTests.swift; sourceTree = "<group>"; };
 		5463C4E5B4C0FD8946C87805 /* CollectionImageRefreshUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionImageRefreshUITests.swift; sourceTree = "<group>"; };
-		594D309DEF2AAB7D1596CA95 /* GoodWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoodWatchApp.swift; sourceTree = "<group>"; };
+		594D309DEF2AAB7D1596CA95 /* CrownAndBarrelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownAndBarrelApp.swift; sourceTree = "<group>"; };
 		5E4A3A4348CBF2B9F3FEB65F /* DetailWornTodayUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailWornTodayUITests.swift; sourceTree = "<group>"; };
 		6B29B563C0CF159D293A1C28 /* WatchRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepositoryTests.swift; sourceTree = "<group>"; };
 		6B4BF0935C0011D8A2E1A20D /* Mappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mappers.swift; sourceTree = "<group>"; };
@@ -137,19 +141,21 @@
 		ACA8A3A6028AAE227C44BAD7 /* AppDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataView.swift; sourceTree = "<group>"; };
 		B02611C4BD7A91D382299E62 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		B040BB51355DC6B08325E028 /* BackupRepositoryFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepositoryFile.swift; sourceTree = "<group>"; };
-		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51C43DFAA9D722A37E85418 /* StatsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsUITests.swift; sourceTree = "<group>"; };
 		B5A6FF1EA983B5DBC3BC4195 /* ThemeCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalogTests.swift; sourceTree = "<group>"; };
 		B9C583FE941D107F7494BC32 /* WatchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepository.swift; sourceTree = "<group>"; };
 		BB1762DD239D6A8A362CEF7B /* Brand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Brand.swift; sourceTree = "<group>"; };
 		C36B87497B8CF6955100A153 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		C684E99AD958983E604DAE82 /* CalendarAndDetailUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarAndDetailUITests.swift; sourceTree = "<group>"; };
+		CB20B311249E371634BE8E5D /* RadiusTokensTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadiusTokensTests.swift; sourceTree = "<group>"; };
 		CBAFA9A592B67182F3D74B9B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CDC374BA8695D8D090FCC172 /* ExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleTests.swift; sourceTree = "<group>"; };
 		D394ADB1653A9B3FEF334C9D /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		D4612BEB794509AC43357D48 /* ExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUITests.swift; sourceTree = "<group>"; };
 		D74DCE601B81CC4A2D4203AB /* ThemeResolutionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeResolutionTests.swift; sourceTree = "<group>"; };
 		DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWatchFlowUITests.swift; sourceTree = "<group>"; };
+		E79BB55FBEEBDD119F94BC7E /* Radius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Radius.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -329,6 +335,7 @@
 				BB1762DD239D6A8A362CEF7B /* Brand.swift */,
 				C36B87497B8CF6955100A153 /* Colors.swift */,
 				018618CC1E01DDCB5622A3C9 /* Icons.swift */,
+				E79BB55FBEEBDD119F94BC7E /* Radius.swift */,
 				25FA41234E4DFEDC5B3923B3 /* Spacing.swift */,
 				502E892118227F09D2045B03 /* ThemeCatalog.swift */,
 				50C277043741583085DC96EE /* ThemeManager.swift */,
@@ -372,6 +379,7 @@
 			children = (
 				DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */,
 				C684E99AD958983E604DAE82 /* CalendarAndDetailUITests.swift */,
+				32D207210EC8150E958FC738 /* CollectionCardStyleUITests.swift */,
 				5463C4E5B4C0FD8946C87805 /* CollectionImageRefreshUITests.swift */,
 				5E4A3A4348CBF2B9F3FEB65F /* DetailWornTodayUITests.swift */,
 				D4612BEB794509AC43357D48 /* ExampleUITests.swift */,
@@ -385,7 +393,7 @@
 		E6A257312ABFF1FAA04A7A16 /* CrownAndBarrelApp */ = {
 			isa = PBXGroup;
 			children = (
-				594D309DEF2AAB7D1596CA95 /* GoodWatchApp.swift */,
+				594D309DEF2AAB7D1596CA95 /* CrownAndBarrelApp.swift */,
 				265215670CFA47358E97835E /* Placeholders.swift */,
 				70AB4B9FBFC7C731F033FA86 /* RootView.swift */,
 			);
@@ -402,6 +410,7 @@
 				A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */,
 				8B298A749A64CE6C8DF50C7A /* LaunchConfigurationTests.swift */,
 				53799E0EB1FCB8764FDCC04F /* MoreRepositoryTests.swift */,
+				CB20B311249E371634BE8E5D /* RadiusTokensTests.swift */,
 				B5A6FF1EA983B5DBC3BC4195 /* ThemeCatalogTests.swift */,
 				D74DCE601B81CC4A2D4203AB /* ThemeResolutionTests.swift */,
 				6B29B563C0CF159D293A1C28 /* WatchRepositoryTests.swift */,
@@ -505,6 +514,7 @@
 			packageReferences = (
 				C29A45FE54EAAB10B4467041 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -543,6 +553,7 @@
 				9853902144754D6AB314734F /* ImageStoreCropTests.swift in Sources */,
 				E0CE542C64C2518590BC298E /* LaunchConfigurationTests.swift in Sources */,
 				F3AA5ACE53B4A598170A1AAE /* MoreRepositoryTests.swift in Sources */,
+				0FE064E5843A30313D91B396 /* RadiusTokensTests.swift in Sources */,
 				39647468C6B02C1C8B817273 /* ThemeCatalogTests.swift in Sources */,
 				6DA518CD17F3030AE5C1ED75 /* ThemeResolutionTests.swift in Sources */,
 				896D3432066C19F0C0A7CE79 /* WatchRepositoryTests.swift in Sources */,
@@ -566,12 +577,13 @@
 				DF9C95761D1075390E576460 /* CoreDataStack.swift in Sources */,
 				87D3F53C9C32477BC2298D90 /* DateUtils.swift in Sources */,
 				0C00147A27F02139FC63C9ED /* Enums.swift in Sources */,
-				5542D6724816DC039EBA89B5 /* GoodWatchApp.swift in Sources */,
+				5542D6724816DC039EBA89B5 /* CrownAndBarrelApp.swift in Sources */,
 				4424A93584582AD39BA2F469 /* Haptics.swift in Sources */,
 				DCEC9643AEF94737992BB9C7 /* Icons.swift in Sources */,
 				478643B45B86ADA5255EF2EB /* ImageStore.swift in Sources */,
 				61E0A8F4029AC486DE15FC77 /* Mappers.swift in Sources */,
 				B6967AA2675008BDEC447F57 /* Placeholders.swift in Sources */,
+				1C7CD32052CEF02C6EE18BF4 /* Radius.swift in Sources */,
 				F65B5191AAC9FCDD94BA81CF /* RootView.swift in Sources */,
 				4F7E9860B2A0575D17972948 /* SampleData.swift in Sources */,
 				B4E98F2CC116A098C8999048 /* SettingsView.swift in Sources */,
@@ -598,6 +610,7 @@
 			files = (
 				1E7D18CFB28245E72E8B2DE4 /* AddWatchFlowUITests.swift in Sources */,
 				66AA65E196DAE4CE53823DC6 /* CalendarAndDetailUITests.swift in Sources */,
+				23230A62D5182963A143588F /* CollectionCardStyleUITests.swift in Sources */,
 				0C749AB1023439DFBDCA32CE /* CollectionImageRefreshUITests.swift in Sources */,
 				68839F25741C217A7F6A75EB /* DetailWornTodayUITests.swift in Sources */,
 				33084C24FF0954E5E5F89ED1 /* ExampleUITests.swift in Sources */,
@@ -627,7 +640,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -701,7 +713,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (

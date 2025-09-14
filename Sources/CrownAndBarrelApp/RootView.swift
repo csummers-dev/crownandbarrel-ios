@@ -31,7 +31,7 @@ struct RootView: View {
                         ToolbarItem(placement: .principal) {
                             Text(Brand.appDisplayName)
                                 .font(AppTypography.titleCompact)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.accent)
                         }
                     }
             }
@@ -44,7 +44,7 @@ struct RootView: View {
                     .toolbar {
                         settingsToolbar
                         ToolbarItem(placement: .principal) {
-                            Text("Stats").font(AppTypography.titleCompact).foregroundStyle(AppColors.textSecondary)
+                            Text("Stats").font(AppTypography.titleCompact).foregroundStyle(AppColors.accent)
                         }
                     }
             }
@@ -57,26 +57,36 @@ struct RootView: View {
                     .toolbar {
                         settingsToolbar
                         ToolbarItem(placement: .principal) {
-                            Text("Calendar").font(AppTypography.titleCompact).foregroundStyle(AppColors.textSecondary)
+                            Text("Calendar").font(AppTypography.titleCompact).foregroundStyle(AppColors.accent)
                         }
                     }
             }
             .tabItem { Label("Calendar", systemImage: "calendar") }
         }
         .background(AppColors.background.ignoresSafeArea())
-        // Tag the tab container so all tabs and their headers react instantly to theme changes
-        .id(themeToken)
         .sheet(item: $activeSheet) { sheet in
             switch sheet {
-            // Tag the sheet's NavigationStack with the theme token so its header refreshes at the same time as the body.
-            case .settings: NavigationStack { SettingsView() }.id(themeToken)
+            case .settings: NavigationStack { SettingsView().id(themeToken + "-settings") }
             case .appData: NavigationStack { AppDataView() }
             case .privacy: NavigationStack { PrivacyPolicyView() }
             case .about: NavigationStack { AboutView() }
             }
         }
+        .onAppear {
+            #if DEBUG
+            // Allow UI tests to open Settings directly without tapping toolbar UI
+            if ProcessInfo.processInfo.arguments.contains("--uiTestOpenSettings") {
+                // Present only if not already shown
+                if activeSheet == nil { activeSheet = .settings }
+            }
+            #endif
+        }
     }
 
+    /// Settings and utilities menu shown on the trailing side of the navigation bar.
+    /// - What: Presents app-level destinations (Settings, App Data, Privacy, About) as a `Menu`.
+    /// - Why: Keeps the primary navigation uncluttered while exposing infrequent actions.
+    /// - How: Uses a stable accessibility identifier on the label for robust UI tests.
     private var settingsToolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
@@ -87,6 +97,7 @@ struct RootView: View {
             } label: {
                 Image(systemName: "gearshape").foregroundStyle(AppColors.accent)
                     .symbolRenderingMode(.monochrome)
+                    .accessibilityIdentifier("SettingsMenuButton")
             }
         }
     }

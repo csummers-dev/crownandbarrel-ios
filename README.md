@@ -11,7 +11,7 @@ An open-source iOS app to manage a watch collection, track wear history, and vis
 Key decisions
 - iOS 17 minimum, iPhone only (portrait). Rationale: ensures modern full-screen behavior on iPhone devices, simplifies API surface (e.g., updated onChange), and avoids legacy compatibility modes. Landscape mode a consideration for future updates.
 - Local persistence via Core Data
-- Backup/restore is full replace (.goodwatch zip)
+- Backup/restore is full replace (.crownandbarrel zip)
 
 Architecture
 - SwiftUI + Combine for UI and state
@@ -25,10 +25,12 @@ Redesign 2025-09 highlights
 - Tab bar: Subtle top hairline using UITabBarAppearance for visual separation.
 - Stats: Replaced bar charts with full pie charts (SectorMark, iOS 17+) and a metallic-inspired palette (gold, silver, steel blue, emerald, graphite). Legends shown on trailing side.
 - Collection: Compact sort/layout controls with reduced vertical spacing and small control size.
+- Collection: List view now uses rounded card-style rows (secondary background fill), row separators hidden, and horizontal insets to expose curvature. Curvature is standardized via `AppRadius` tokens.
 - Calendar: On date selection, the entries area animates a slight (4pt) downward offset; empty-state CTA reads “No watches worn this day. Add one?” which opens the add-worn sheet.
   - Divider spacing is fixed at ~4pt between calendar and entries to prevent overlap with the last week.
   - Entries list rows: compact watch thumbnail + “Manufacturer - Model”; manufacturer bolded, model regular.
   - After adding a worn entry, the list refreshes immediately.
+  - Entries container uses the theme primary background (`AppColors.background`) across all states to avoid any system background bleed in dark mode.
 - Tokens: Added `AppColors.chartPalette`, `AppColors.tabBarHairline`, `AppTypography.titleCompact`, and `AppSpacing.xxs` for finer tuning.
 
 Launch splash overlay (theme-aware)
@@ -47,6 +49,13 @@ Theming (user-selectable)
 - Appearance proxies (tab bar/nav bar/segmented control) update when the theme changes.
   - Navigation titles and bar button items intentionally use themed secondary text by design.
   - Calendar labels in `UICalendarView` are themed via `UILabel.appearance(whenContainedInInstancesOf:)`.
+
+Radius tokens
+- `AppRadius` provides `small`, `medium`, and `large` corner radii to avoid literals and unify curvature:
+  - `small` (8): compact elements (e.g., list thumbnails)
+  - `medium` (10): medium surfaces (e.g., grid tiles)
+  - `large` (12): prominent containers (e.g., list cards)
+ - Collection adopts these tokens for list cards, thumbnails, and grid tiles.
 
 Add or edit a theme
 1) Edit `AppResources/Themes.json` (validate 5 colors under `chartPalette`).
@@ -148,14 +157,14 @@ Image selection and cropping
 ### Rationale highlights (design choices)
 - **iOS 17+, iPhone portrait only**: Ensures modern safe areas and avoids legacy, letterboxed modes. Simplifies API usage (e.g., updated `onChange`) and reduces compatibility surface.
 - **Core Data + programmatic model**: Single source of truth in code, fewer Xcode model merge issues, explicit schema evolution.
-- **Replace-only backups (.goodwatch)**: Prevents partial merges and conflict ambiguity. Import is deterministic; export is transparent (JSON + images).
+- **Replace-only backups (.crownandbarrel)**: Prevents partial merges and conflict ambiguity. Import is deterministic; export is transparent (JSON + images).
 - **Local image files**: Keeps Core Data light, enables efficient file operations and easier backup packaging.
 - **MVVM + Repository**: Decouples UI from persistence, enabling testability and future storage changes.
 
 Seeding sample data (optional)
 - Use the App Data screen (Settings → App Data) and tap "Load sample data" in Debug builds.
 
-Backup format (.goodwatch)
+Backup format (.crownandbarrel)
 - metadata.json (app version, schema version, export date)
 - watches.json
 - wear_entries.json
@@ -259,7 +268,7 @@ targets:
       - path: Sources
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.goodwatch.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.crownandbarrel.app
         GENERATE_INFOPLIST_FILE: YES
 ```
 
@@ -290,7 +299,7 @@ targets:
       - path: AppResources
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.goodwatch.app
+        PRODUCT_BUNDLE_IDENTIFIER: com.crownandbarrel.app
         GENERATE_INFOPLIST_FILE: YES
   CrownAndBarrelTests:
     type: bundle.unit-test
