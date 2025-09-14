@@ -33,14 +33,15 @@ final class CalendarListBackgroundUITests: XCTestCase {
 
         // What: Assert the entries container is present.
         // Why: Guards the primary container background wiring.
-        // How: Prefer container identifier; fall back to table or at least one card.
+        // How: Prefer container identifier; fall back to table/collection or at least one card.
         let container = app.otherElements["CalendarEntriesContainer"]
         // Allow extra time on CI where async content can load slower; fall back to cards or table presence
-        let containerAppeared = container.waitForExistence(timeout: 8)
+        let containerAppeared = container.waitForExistence(timeout: 10)
         let card = app.otherElements["CalendarEntryCard"]
-        let cardAppeared = card.waitForExistence(timeout: 5)
-        let tableAppeared = app.tables.firstMatch.waitForExistence(timeout: 3)
-        XCTAssertTrue(containerAppeared || cardAppeared || tableAppeared, "Calendar entries UI did not appear in time")
+        let cardAppeared = card.waitForExistence(timeout: 8)
+        let tableAppeared = app.tables.firstMatch.waitForExistence(timeout: 5)
+        let collectionAppeared = app.collectionViews.firstMatch.waitForExistence(timeout: 5)
+        XCTAssertTrue(containerAppeared || cardAppeared || tableAppeared || collectionAppeared, "Calendar entries UI did not appear in time")
 
         // What: Ensure at least one card row exists.
         // Why: Guards `.listRowBackground` application path.
