@@ -21,13 +21,17 @@ final class SettingsViewTests: XCTestCase {
         // Build the view under test
         let root = NavigationStack { SettingsView() }
         let host = UIHostingController(rootView: root)
-        // Load view hierarchy
+        // Load view hierarchy and mount into a window to ensure UIKit containers are realized on CI
         _ = host.view
         host.view.frame = UIScreen.main.bounds
         host.view.layoutIfNeeded()
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = host
+        window.makeKeyAndVisible()
+        addTeardownBlock { [weak window] in window?.isHidden = true }
 
         // Allow the run loop to process layout passes SwiftUI may schedule
-        RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+        RunLoop.current.run(until: Date().addingTimeInterval(0.2))
 
         // Locate the UITableView or UICollectionView backing the Form (iOS versions differ)
         let table = findSubview(ofType: UITableView.self, in: host.view)

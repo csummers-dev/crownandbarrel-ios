@@ -12,6 +12,7 @@ final class ThemeLiveRefreshUITests: XCTestCase {
         // Open Settings via the menu button using a stable identifier
         let gearMenu = app.buttons["SettingsMenuButton"]
         XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
+        if !gearMenu.isHittable { app.swipeDown() }
         gearMenu.tap()
         let settingsMenuItem = app.buttons["Settings"]
         XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))

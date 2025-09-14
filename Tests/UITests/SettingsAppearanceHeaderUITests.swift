@@ -15,6 +15,7 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         // Open Settings via menu button (stable identifier) then tap the Settings menu item
         let gearMenu = app.buttons["SettingsMenuButton"]
         XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
+        if !gearMenu.isHittable { app.swipeDown() }
         gearMenu.tap()
         let settingsMenuItem = app.buttons["Settings"]
         XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))
@@ -38,6 +39,7 @@ final class SettingsAppearanceHeaderUITests: XCTestCase {
         // Open Settings via menu then tap the Settings menu item
         let gearMenu = app.buttons["SettingsMenuButton"]
         XCTAssertTrue(gearMenu.waitForExistence(timeout: 3))
+        if !gearMenu.isHittable { app.swipeDown() }
         gearMenu.tap()
         let settingsMenuItem = app.buttons["Settings"]
         XCTAssertTrue(settingsMenuItem.waitForExistence(timeout: 2))

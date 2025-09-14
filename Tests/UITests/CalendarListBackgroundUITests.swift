@@ -31,7 +31,8 @@ final class CalendarListBackgroundUITests: XCTestCase {
 
         // Assert the entries container is present (primary background applied by view code)
         let container = app.otherElements["CalendarEntriesContainer"]
-        XCTAssertTrue(container.waitForExistence(timeout: 2))
+        // Allow extra time on CI where async content can load slower
+        XCTAssertTrue(container.waitForExistence(timeout: 5))
 
         // Assert our card rows exist via accessibility identifier set on the row content
         let card = app.otherElements["CalendarEntryCard"]
