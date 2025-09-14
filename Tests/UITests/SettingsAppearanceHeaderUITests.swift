@@ -6,24 +6,34 @@ import XCTest
 /// - Why: Guards regressions around UIKit grouped header background and inline picker layout.
 /// - How: Uses identifiers and structure checks instead of color assertions (XCUITest can't read colors).
 final class SettingsAppearanceHeaderUITests: XCTestCase {
-    override func setUpWithError() throws { continueAfterFailure = false }
+    override func setUpWithError() throws {
+        // What: Fail fast to shorten feedback loops.
+        // Why: UI tests are slow; bailing on first failure speeds iteration.
+        // How: Use XCTest's `continueAfterFailure` flag.
+        continueAfterFailure = false
+    }
 
     func testHeaderRowExistsAndPickerNotCollapsed() throws {
         let app = XCUIApplication()
         app.launchArguments.append("--uiTestOpenSettings")
         app.launch()
 
-        // Settings should already be open via launch argument
+        // What: Verify Settings sheet is presented.
+        // Why: Subsequent assertions depend on being inside Settings.
+        // How: Look for the navigation bar title.
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
 
         // Settings title visible
         XCTAssertTrue(app.navigationBars.staticTexts["Settings"].waitForExistence(timeout: 3))
 
-        // Custom header row present (allow short wait on CI)
+        // What: The custom header row must exist as a normal cell (not a grouped header).
+        // Why: Ensures theming remains controllable and consistent.
+        // How: Assert presence via a stable accessibility identifier.
         XCTAssertTrue(app.otherElements["SettingsAppearanceHeaderRow"].waitForExistence(timeout: 2))
 
-        // Inline picker should render at least one theme cell (not collapsed)
-        // Heuristic: Look for a known theme name cell under the list
+        // What: Inline picker should be expanded and visible.
+        // Why: Prevents regressions where wrapping collapses the picker.
+        // How: Heuristic—look for a known theme name cell.
         XCTAssertTrue(app.staticTexts["Daytime"].waitForExistence(timeout: 3))
     }
 

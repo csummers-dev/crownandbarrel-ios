@@ -15,7 +15,9 @@ final class CalendarListBackgroundUITests: XCTestCase {
 
         app.tabBars.buttons["Calendar"].tap()
 
-        // If empty, add a worn entry via picker flow
+        // What: If there are no entries, briefly open and close the add-worn sheet.
+        // Why: Ensures the list/table is initialized so we can assert presence reliably.
+        // How: Tap prompt if present, then dismiss via Close button (or fallback swipe).
         let addPrompt = app.buttons["No watches worn this day. Add one?"]
         if addPrompt.waitForExistence(timeout: 2) {
             addPrompt.tap()
@@ -29,7 +31,9 @@ final class CalendarListBackgroundUITests: XCTestCase {
             }
         }
 
-        // Assert the entries container is present (primary background applied by view code)
+        // What: Assert the entries container is present.
+        // Why: Guards the primary container background wiring.
+        // How: Prefer container identifier; fall back to table or at least one card.
         let container = app.otherElements["CalendarEntriesContainer"]
         // Allow extra time on CI where async content can load slower; fall back to cards or table presence
         let containerAppeared = container.waitForExistence(timeout: 8)
@@ -38,8 +42,9 @@ final class CalendarListBackgroundUITests: XCTestCase {
         let tableAppeared = app.tables.firstMatch.waitForExistence(timeout: 3)
         XCTAssertTrue(containerAppeared || cardAppeared || tableAppeared, "Calendar entries UI did not appear in time")
 
-        // Assert our card rows exist via accessibility identifier set on the row content
-        let card = app.otherElements["CalendarEntryCard"]
+        // What: Ensure at least one card row exists.
+        // Why: Guards `.listRowBackground` application path.
+        // How: Look for the row's accessibility identifier.
         XCTAssertTrue(card.waitForExistence(timeout: 5))
     }
 }

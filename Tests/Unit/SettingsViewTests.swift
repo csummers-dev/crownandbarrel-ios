@@ -18,10 +18,14 @@ final class SettingsViewTests: XCTestCase {
     }
 
     func testAppearanceHeaderIsCellAndGapIsTight() {
-        // Build the view under test
+        // What: Build the view under test.
+        // Why: Encapsulate `SettingsView` in a navigation context to mirror production.
+        // How: Wrap in `NavigationStack` and host with `UIHostingController`.
         let root = NavigationStack { SettingsView() }
         let host = UIHostingController(rootView: root)
-        // Load view hierarchy and mount into a window to ensure UIKit containers are realized on CI
+        // What: Realize the view hierarchy and mount into a temporary window.
+        // Why: SwiftUI forms materialize UIKit containers only when attached to a window.
+        // How: Assign as rootViewController and make key/visible for the test lifetime.
         _ = host.view
         host.view.frame = UIScreen.main.bounds
         host.view.layoutIfNeeded()
@@ -30,13 +34,19 @@ final class SettingsViewTests: XCTestCase {
         window.makeKeyAndVisible()
         addTeardownBlock { [weak window] in window?.isHidden = true }
 
-        // Allow the run loop to process layout passes SwiftUI may schedule
+        // What: Let SwiftUI finish any deferred layout passes.
+        // Why: Ensures accurate frames when measuring inter-row spacing.
+        // How: Run the current run loop briefly.
         RunLoop.current.run(until: Date().addingTimeInterval(0.2))
 
-        // Locate the UITableView or UICollectionView backing the Form (iOS versions differ)
+        // What: Locate the UIKit container backing the Form.
+        // Why: iOS versions may use UITableView or UICollectionView under the hood.
+        // How: Try both and proceed when either exists.
         let table = findSubview(ofType: UITableView.self, in: host.view)
         let collection = findSubview(ofType: UICollectionView.self, in: host.view)
-        // If neither container is found (platform variance), fall back to scanning labels directly.
+        // What: Fall back to scanning labels if no UIKit container is discovered.
+        // Why: Some environments (e.g., preview-like contexts) may not expose the container.
+        // How: Find UILabels with matching text and measure their relative positions.
         if table == nil && collection == nil {
             guard let appearanceLabel = findLabel(withText: "Appearance", in: host.view) else {
                 XCTFail("Appearance label not found in view hierarchy")

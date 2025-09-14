@@ -1,7 +1,12 @@
 import XCTest
 
+/// UI tests validating that changing the theme live updates visible UI and does not dismiss Settings.
+/// - What: After selecting a theme, the Settings sheet remains visible and nav/tab elements persist.
+/// - Why: Guarantees immediate feedback for user changes without disruptive dismissals.
+/// - How: Uses a launch argument to open Settings and structural assertions for presence.
 final class ThemeLiveRefreshUITests: XCTestCase {
     override func setUpWithError() throws {
+        // Fail fast for clearer signals and quicker iterations on failures.
         continueAfterFailure = false
     }
 

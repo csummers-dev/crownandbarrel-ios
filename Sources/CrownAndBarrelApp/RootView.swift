@@ -83,6 +83,10 @@ struct RootView: View {
         }
     }
 
+    /// Settings and utilities menu shown on the trailing side of the navigation bar.
+    /// - What: Presents app-level destinations (Settings, App Data, Privacy, About) as a `Menu`.
+    /// - Why: Keeps the primary navigation uncluttered while exposing infrequent actions.
+    /// - How: Uses a stable accessibility identifier on the label for robust UI tests.
     private var settingsToolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {

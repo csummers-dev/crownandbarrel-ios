@@ -17,11 +17,15 @@ final class CollectionSpacingUITests: XCTestCase {
         let collectionTab = app.tabBars.buttons["Collection"]
         if collectionTab.waitForExistence(timeout: 2) { collectionTab.tap() }
 
-        // Switch to list mode
+        // What: Switch to list mode to measure list-specific spacing.
+        // Why: Grid mode uses different layout metrics that this test does not target.
+        // How: Tap the segment with system symbol "list.bullet" if present.
         let listToggle = app.segmentedControls.buttons["list.bullet"]
         if listToggle.exists { listToggle.tap() }
 
-        // Ensure there are at least two cells to measure. Create if needed.
+        // What: Ensure there are at least two cells to measure.
+        // Why: Vertical gap calculation needs two consecutive rows.
+        // How: Create minimal watches via the add flow if the list is sparse.
         func createWatch(named name: String) {
             app.buttons["Add watch"].tap()
             let manufacturer = app.textFields["Manufacturer"]
