@@ -1,8 +1,8 @@
 # Crown & Barrel
 
-[![Build/Test CI](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml)
+[![Build/Test CI](https://gitlab.com/csummersdev/crown-and-barrel/badges/main/pipeline.svg)](https://gitlab.com/csummersdev/crown-and-barrel/-/pipelines)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
-![Latest release](https://img.shields.io/github/v/release/csummers-dev/crownandbarrel-ios)
+![Latest release](https://img.shields.io/gitlab/v/release/csummersdev/crown-and-barrel)
 ![iOS](https://img.shields.io/badge/iOS-17.0+-blue?logo=ios)
 
 An elegant iOS app for managing your watch collection, tracking wear history, and visualizing insights. Built with privacy in mind. Ad-free and open-source.
@@ -97,8 +97,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 ### Setup
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/csummers-dev/crownandbarrel-ios.git
-   cd crownandbarrel-ios
+   git clone https://gitlab.com/csummersdev/crown-and-barrel.git
+   cd crown-and-barrel
    ```
 
 2. **Install XcodeGen**
@@ -213,7 +213,7 @@ xcrun simctl erase "iPhone 16"
 - Ensure `Info.plist` contains `UILaunchStoryboardName: LaunchScreen`
 
 ### **Getting Help**
-- Check existing [Issues](https://github.com/csummers-dev/crownandbarrel-ios/issues)
+- Check existing [Issues](https://gitlab.com/csummersdev/crown-and-barrel/-/issues)
 - Create a new issue with detailed reproduction steps
 - Include device/simulator information and error logs
 
@@ -223,7 +223,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Developed with ❤️ by [@csummers-dev](https://github.com/csummers-dev)**
+**Developed with ❤️ by [@csummersdev](https://gitlab.com/csummersdev)**
 
 For support or feature requests, contact: [csummersdev@icloud.com](mailto:csummersdev@icloud.com)
 

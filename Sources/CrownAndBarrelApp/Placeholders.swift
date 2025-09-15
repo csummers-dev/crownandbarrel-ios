@@ -106,16 +106,16 @@ struct AboutView: View {
         Form {
             headerRow("About")
             Section {
-                Text("Crown & Barrel is your companion for a life of timepieces. It keeps your collection organized with simplicity and elegance, captures the memories of each wear, and distills insights into visualizations. Thoughtfully designed for iOS, Crown & Barrel favors clarity over clutter and longevity over noise. Crown & Barrel will always be free and open-source. Developed with love by @csummers-dev.")
+                Text("Crown & Barrel is your companion for a life of timepieces. It keeps your collection organized with simplicity and elegance, captures the memories of each wear, and distills insights into visualizations. Thoughtfully designed for iOS, Crown & Barrel favors clarity over clutter and longevity over noise. Crown & Barrel will always be free and open-source. Developed with love by @csummersdev.")
                     .listRowBackground(AppColors.background)
             } header: { EmptyView() }
 
             headerRow("Developer")
             Section {
                 HStack {
-                    Text("GitHub")
+                    Text("GitLab")
                     Spacer(minLength: 0)
-                    Link("@csummers-dev", destination: URL(string: "https://github.com/csummers-dev")!)
+                    Link("@csummersdev", destination: URL(string: "https://gitlab.com/csummersdev")!)
                 }
                 .listRowBackground(AppColors.background)
                 HStack {
