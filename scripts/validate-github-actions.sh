@@ -99,24 +99,45 @@ def validate_github_actions(config, filepath=''):
         errors.append(f'Root config must be a dictionary in {filepath}')
         return errors
     
-    # Check required sections
-    required_sections = ['name', 'on']
-    for section in required_sections:
-        if section not in config:
-            errors.append(f'Missing required section \"{section}\" in {filepath}')
+    # Check required sections - handle YAML parsing quirks
+    has_name = False
+    has_on = False
+    
+    for key in config.keys():
+        if str(key).lower() == 'name':
+            has_name = True
+        if str(key) == 'on' or str(key).lower() == 'on' or key is True:
+            has_on = True
+    
+    if not has_name:
+        errors.append(f'Missing required section \"name\" in {filepath}')
+    if not has_on:
+        errors.append(f'Missing required section \"on\" in {filepath}')
     
     # Validate name
-    if 'name' in config:
-        if not isinstance(config['name'], str):
+    name_key = None
+    for key in config.keys():
+        if str(key).lower() == 'name':
+            name_key = key
+            break
+    
+    if name_key:
+        if not isinstance(config[name_key], str):
             errors.append(f'name must be a string in {filepath}')
-        elif len(config['name'].strip()) == 0:
+        elif len(config[name_key].strip()) == 0:
             errors.append(f'name cannot be empty in {filepath}')
     
     # Validate on triggers
-    if 'on' in config:
-        on_config = config['on']
-        if not isinstance(on_config, (str, list, dict)):
-            errors.append(f'on must be string, list, or dict in {filepath}')
+    on_key = None
+    for key in config.keys():
+        if str(key) == 'on' or str(key).lower() == 'on' or key is True:
+            on_key = key
+            break
+    
+    if on_key:
+        on_config = config[on_key]
+        if not isinstance(on_config, (str, list, dict, bool)):
+            errors.append(f'on must be string, list, dict, or bool in {filepath}')
     
     # Validate jobs
     if 'jobs' in config:
