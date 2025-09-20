@@ -109,9 +109,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **[Architecture Guide](ARCHITECTURE.md)** - Design patterns, code standards, and technical decisions
 - **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
+- **[Testing Guide](TESTING.md)** - Testing strategies and best practices
 
 ### **Feature Documentation**
 - **[Haptic Feedback System](docs/haptics/README.md)** - Comprehensive haptic feedback system documentation
+
+### **CI/CD and Infrastructure**
+- **[GitHub Actions Validation](GITHUB_ACTIONS_VALIDATION.md)** - CI/CD validation and testing
+- **[Migration Documentation](MIGRATION_COMPLETE.md)** - Complete GitHub migration summary
 
 ## License
 
