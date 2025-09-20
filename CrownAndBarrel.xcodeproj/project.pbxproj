@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -55,6 +55,7 @@
 		68839F25741C217A7F6A75EB /* DetailWornTodayUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A3A4348CBF2B9F3FEB65F /* DetailWornTodayUITests.swift */; };
 		6DA518CD17F3030AE5C1ED75 /* ThemeResolutionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74DCE601B81CC4A2D4203AB /* ThemeResolutionTests.swift */; };
 		6E3CAF8EA086B1EE28C78B45 /* ThemeLiveRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */; };
+		7216E4B245F32CA3E242D160 /* HapticIntegrationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B10F4C45F390435802C5F0D /* HapticIntegrationUITests.swift */; };
 		76CC8EAA46FAE4B202473AD0 /* FiltersAndBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4089FC1B0C673A2CE65ACEDC /* FiltersAndBackupTests.swift */; };
 		78CC781C4A7F8F8BFF9AC068 /* SettingsAppearanceHeaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */; };
 		87D3F53C9C32477BC2298D90 /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A021FCBFB00FA8A866C416 /* DateUtils.swift */; };
@@ -67,6 +68,7 @@
 		8C2E6EABD323CAA0327E12CE /* CalendarListBackgroundUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B089723905E9829DD7268F4E /* CalendarListBackgroundUITests.swift */; };
 		9853902144754D6AB314734F /* ImageStoreCropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */; };
 		98669173D126E51F59B1CA32 /* WearEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0EAFBD423D5E1C5C8FF2C8 /* WearEntry.swift */; };
+		991346D5F7331BF16592879D /* HapticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437A6973B360720818BB9088 /* HapticsTests.swift */; };
 		9C9F4E073700114208FCBCA8 /* AssetsPresenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E7DBBF82190EA0726F703 /* AssetsPresenceTests.swift */; };
 		A5B420DB024B6FC7DC10DAED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CBAFA9A592B67182F3D74B9B /* LaunchScreen.storyboard */; };
 		AB01C6ED766B3CC335219421 /* ThemeDefaultingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510362C5E1F49E09E688D0F5 /* ThemeDefaultingTests.swift */; };
@@ -111,6 +113,7 @@
 		017DAA579B6AFF18064256E2 /* PrivacyPolicy.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = PrivacyPolicy.html; sourceTree = "<group>"; };
 		018618CC1E01DDCB5622A3C9 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
 		05906912928A2722D7562850 /* WatchEntryPlaceholder-LightMode-1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WatchEntryPlaceholder-LightMode-1000.png"; sourceTree = "<group>"; };
+		0B10F4C45F390435802C5F0D /* HapticIntegrationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticIntegrationUITests.swift; sourceTree = "<group>"; };
 		0E0EAFBD423D5E1C5C8FF2C8 /* WearEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WearEntry.swift; sourceTree = "<group>"; };
 		0E3F25C6A2072551C6442412 /* AppIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconManager.swift; sourceTree = "<group>"; };
 		0F75954B3813C45474FE6264 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
@@ -133,6 +136,7 @@
 		3A511830ED723836C98668DD /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
 		3CF30BD6973E3AEDA840331C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4089FC1B0C673A2CE65ACEDC /* FiltersAndBackupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersAndBackupTests.swift; sourceTree = "<group>"; };
+		437A6973B360720818BB9088 /* HapticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsTests.swift; sourceTree = "<group>"; };
 		45F71CA37273E920219D48AB /* CollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewModel.swift; sourceTree = "<group>"; };
 		502E892118227F09D2045B03 /* ThemeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalog.swift; sourceTree = "<group>"; };
 		50C277043741583085DC96EE /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
@@ -171,7 +175,7 @@
 		B02611C4BD7A91D382299E62 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		B040BB51355DC6B08325E028 /* BackupRepositoryFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepositoryFile.swift; sourceTree = "<group>"; };
 		B089723905E9829DD7268F4E /* CalendarListBackgroundUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarListBackgroundUITests.swift; sourceTree = "<group>"; };
-		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51C43DFAA9D722A37E85418 /* StatsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsUITests.swift; sourceTree = "<group>"; };
 		B5A6FF1EA983B5DBC3BC4195 /* ThemeCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalogTests.swift; sourceTree = "<group>"; };
 		B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppearanceHeaderUITests.swift; sourceTree = "<group>"; };
@@ -429,6 +433,7 @@
 				5E4A3A4348CBF2B9F3FEB65F /* DetailWornTodayUITests.swift */,
 				D4612BEB794509AC43357D48 /* ExampleUITests.swift */,
 				33C55EC07E208EDA47A5696B /* FullScreenLaunchUITests.swift */,
+				0B10F4C45F390435802C5F0D /* HapticIntegrationUITests.swift */,
 				6E93D969C57CA79AC0574164 /* PrivacyPolicyUITests.swift */,
 				B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */,
 				C7F3572E383D9F8AA4E35ADD /* StatsTitleUITests.swift */,
@@ -458,6 +463,7 @@
 				12C0DC54BC572E05BC383A31 /* ContrastTests.swift */,
 				CDC374BA8695D8D090FCC172 /* ExampleTests.swift */,
 				4089FC1B0C673A2CE65ACEDC /* FiltersAndBackupTests.swift */,
+				437A6973B360720818BB9088 /* HapticsTests.swift */,
 				A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */,
 				8B298A749A64CE6C8DF50C7A /* LaunchConfigurationTests.swift */,
 				53799E0EB1FCB8764FDCC04F /* MoreRepositoryTests.swift */,
@@ -568,6 +574,7 @@
 			packageReferences = (
 				C29A45FE54EAAB10B4467041 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -604,6 +611,7 @@
 				59CE1E6A24E11B8183FC9A91 /* ContrastTests.swift in Sources */,
 				1793E06CC2D36081B40C52F6 /* ExampleTests.swift in Sources */,
 				76CC8EAA46FAE4B202473AD0 /* FiltersAndBackupTests.swift in Sources */,
+				991346D5F7331BF16592879D /* HapticsTests.swift in Sources */,
 				9853902144754D6AB314734F /* ImageStoreCropTests.swift in Sources */,
 				E0CE542C64C2518590BC298E /* LaunchConfigurationTests.swift in Sources */,
 				F3AA5ACE53B4A598170A1AAE /* MoreRepositoryTests.swift in Sources */,
@@ -681,6 +689,7 @@
 				68839F25741C217A7F6A75EB /* DetailWornTodayUITests.swift in Sources */,
 				33084C24FF0954E5E5F89ED1 /* ExampleUITests.swift in Sources */,
 				2D3F9ABF48D60C108E717F99 /* FullScreenLaunchUITests.swift in Sources */,
+				7216E4B245F32CA3E242D160 /* HapticIntegrationUITests.swift in Sources */,
 				880CD571C23F392806871F0C /* PrivacyPolicyUITests.swift in Sources */,
 				78CC781C4A7F8F8BFF9AC068 /* SettingsAppearanceHeaderUITests.swift in Sources */,
 				341C97D6DED6ABDAD40DE6C1 /* StatsTitleUITests.swift in Sources */,
@@ -711,7 +720,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -785,7 +793,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (

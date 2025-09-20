@@ -384,6 +384,14 @@ jobs:
           echo "Generating Xcode project with XcodeGen..."
           xcodegen generate
           
+      - name: Check available iOS platforms
+        run: |
+          echo "=== Available iOS Platforms ==="
+          xcodebuild -showsdks | grep iOS || echo "No iOS SDKs found"
+          echo ""
+          echo "=== Available iOS Destinations ==="
+          xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" || echo "No destinations found"
+          
       - name: Build for Debug
         run: |
           xcodebuild build \
@@ -391,6 +399,7 @@ jobs:
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
             -destination "generic/platform=iOS" \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
             VALID_ARCHS="arm64" \
@@ -404,6 +413,7 @@ jobs:
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
             -destination "generic/platform=iOS" \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
             VALID_ARCHS="arm64" \
@@ -878,6 +888,7 @@ jobs:
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
             -destination "generic/platform=iOS" \
+            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
