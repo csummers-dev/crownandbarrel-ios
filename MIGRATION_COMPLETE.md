@@ -55,6 +55,21 @@ The Crown & Barrel iOS app has been successfully migrated from GitLab CI to GitH
 - ✅ **Performance Analysis** - Automated performance assessment
 - ✅ **Optimization Recommendations** - Performance improvement suggestions
 
+### 🔧 **Robust Installation & Reliability**
+
+#### **Multi-Strategy Dependency Installation**
+- ✅ **Direct Download Strategy** - Downloads binaries from GitHub releases (primary)
+- ✅ **Homebrew with ARM64 Forcing** - Uses `arch -arm64` for correct architecture (fallback)
+- ✅ **Swift Package Manager** - Compiles from source if needed (last resort)
+- ✅ **Multiple Homebrew Paths** - Tries `/opt/homebrew/bin/brew`, `/usr/local/bin/brew`, and `brew`
+
+#### **Pipeline Reliability Features**
+- ✅ **Architecture Detection** - Automatic ARM64/x86_64 handling
+- ✅ **Conditional Testing** - Graceful handling of simulator unavailability
+- ✅ **iOS Device Builds** - Uses device target for reliable compilation
+- ✅ **Error Recovery** - Comprehensive error handling and fallback strategies
+- ✅ **Clear Logging** - Detailed status messages for debugging
+
 ### 🔧 **Development Tools**
 
 #### **Validation System**

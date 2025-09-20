@@ -31,7 +31,9 @@ This document describes the GitHub Actions workflows that power the Crown & Barr
 - ✅ **Matrix Builds**: Builds for both Debug and Release configurations
 - ✅ **Parallel Testing**: Unit tests and UI tests run in parallel
 - ✅ **Artifact Caching**: Caches Swift Package Manager and DerivedData
-- ✅ **Simulator Management**: Automated iOS simulator setup and cleanup
+- ✅ **Robust Installation**: Multi-strategy dependency installation with fallbacks
+- ✅ **Conditional Testing**: Graceful handling of simulator unavailability
+- ✅ **Architecture Detection**: Automatic ARM64/x86_64 handling
 - ✅ **Artifact Upload**: Uploads build artifacts and test results
 
 #### **Triggers:**
@@ -211,13 +213,53 @@ This document describes the GitHub Actions workflows that power the Crown & Barr
 - Security scan results
 - Dependency update frequency
 
+### 🔧 **Robust Installation Strategies**
+
+#### **Multi-Strategy Dependency Installation:**
+
+The pipeline implements a robust three-strategy approach for installing dependencies:
+
+1. **Direct Download (Primary Strategy)**
+   - Downloads pre-compiled binaries from GitHub releases
+   - Most reliable and fastest installation method
+   - Avoids Homebrew architecture conflicts entirely
+
+2. **Homebrew with ARM64 Forcing (Fallback Strategy)**
+   - Uses `arch -arm64` to force correct architecture
+   - Tries multiple Homebrew installation paths
+   - Handles GitHub Actions runner environment differences
+
+3. **Swift Package Manager (Last Resort Strategy)**
+   - Compiles from source if other methods fail
+   - Ensures installation even in edge cases
+   - Provides maximum compatibility
+
+#### **Implementation Example:**
+```bash
+# Strategy 1: Direct download (most reliable)
+curl -fsSL https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip
+unzip -o xcodegen.zip
+sudo mv xcodegen /usr/local/bin/
+
+# Strategy 2: Homebrew with ARM64 forcing
+for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+  if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+    break
+  fi
+done
+
+# Strategy 3: Swift Package Manager
+swift build -c release --package-path /tmp --package-url https://github.com/yonaskolb/XcodeGen.git --product xcodegen
+```
+
 ### 🚨 **Troubleshooting**
 
 #### **Common Issues:**
-1. **Simulator Boot Failures**: Check available simulators and iOS versions
-2. **Build Timeouts**: Optimize build configuration and caching
-3. **Test Failures**: Check test environment and device compatibility
-4. **Secret Issues**: Verify secret configuration and permissions
+1. **Homebrew Architecture Conflicts**: Use multi-strategy installation approach
+2. **Simulator Boot Failures**: Check available simulators and iOS versions
+3. **Build Timeouts**: Optimize build configuration and caching
+4. **Test Failures**: Check test environment and device compatibility
+5. **Secret Issues**: Verify secret configuration and permissions
 
 #### **Debug Steps:**
 1. Check workflow run logs for specific errors

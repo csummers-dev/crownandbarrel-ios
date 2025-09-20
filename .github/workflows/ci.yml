@@ -106,20 +106,71 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Check if we're running on ARM64 architecture
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Force ARM64 architecture for Homebrew installation
-            if [[ "$ARCH" == "arm64" ]]; then
-              echo "Using ARM64 architecture for Homebrew..."
-              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
+            # Try multiple installation strategies
+            INSTALL_SUCCESS=false
+            
+            # Strategy 1: Direct download (most reliable)
+            echo "Strategy 1: Direct download from GitHub releases..."
+            if curl -fsSL https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip; then
+              unzip -o xcodegen.zip
+              sudo mv xcodegen /usr/local/bin/
+              sudo chmod +x /usr/local/bin/xcodegen
+              if command -v xcodegen &> /dev/null; then
+                echo "✅ XcodeGen installed via direct download"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Strategy 2: Homebrew with ARM64 forcing
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 2: Homebrew with ARM64 forcing..."
+              if [[ "$ARCH" == "arm64" ]]; then
+                # Try multiple Homebrew paths
+                for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+                  echo "Trying: arch -arm64 $brew_path install xcodegen"
+                  if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+                    echo "✅ XcodeGen installed via Homebrew ($brew_path)"
+                    INSTALL_SUCCESS=true
+                    break
+                  fi
+                done
+              else
+                # x86_64 systems
+                if brew install xcodegen 2>/dev/null; then
+                  echo "✅ XcodeGen installed via Homebrew (x86_64)"
+                  INSTALL_SUCCESS=true
+                fi
+              fi
+            fi
+            
+            # Strategy 3: Swift Package Manager
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 3: Swift Package Manager..."
+              if swift build -c release --package-path /tmp --package-url https://github.com/yonaskolb/XcodeGen.git --product xcodegen 2>/dev/null; then
+                sudo mv /tmp/.build/release/xcodegen /usr/local/bin/
+                echo "✅ XcodeGen installed via Swift Package Manager"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Final verification
+            if [[ "$INSTALL_SUCCESS" == false ]] || ! command -v xcodegen &> /dev/null; then
+              echo "❌ Failed to install XcodeGen with all strategies"
+              echo "Available tools:"
+              which brew || echo "brew not found"
+              which swift || echo "swift not found"
+              which curl || echo "curl not found"
+              exit 1
             else
-              echo "Using x86_64 architecture for Homebrew..."
-              brew install xcodegen
+              echo "✅ XcodeGen installation verified: $(which xcodegen)"
+              xcodegen --version
             fi
           else
-            echo "XcodeGen is already installed"
+            echo "✅ XcodeGen is already installed: $(which xcodegen)"
+            xcodegen --version
           fi
           
       - name: Generate Xcode project
@@ -162,20 +213,71 @@ jobs:
         run: |
           if ! command -v swiftlint &> /dev/null; then
             echo "Installing SwiftLint..."
-            # Check if we're running on ARM64 architecture
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Force ARM64 architecture for Homebrew installation
-            if [[ "$ARCH" == "arm64" ]]; then
-              echo "Using ARM64 architecture for Homebrew..."
-              arch -arm64 /opt/homebrew/bin/brew install swiftlint || arch -arm64 brew install swiftlint
+            # Try multiple installation strategies
+            INSTALL_SUCCESS=false
+            
+            # Strategy 1: Direct download (most reliable)
+            echo "Strategy 1: Direct download from GitHub releases..."
+            if curl -fsSL https://github.com/realm/SwiftLint/releases/latest/download/swiftlint_linux.zip -o swiftlint.zip; then
+              unzip -o swiftlint.zip
+              sudo mv swiftlint /usr/local/bin/
+              sudo chmod +x /usr/local/bin/swiftlint
+              if command -v swiftlint &> /dev/null; then
+                echo "✅ SwiftLint installed via direct download"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Strategy 2: Homebrew with ARM64 forcing
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 2: Homebrew with ARM64 forcing..."
+              if [[ "$ARCH" == "arm64" ]]; then
+                # Try multiple Homebrew paths
+                for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+                  echo "Trying: arch -arm64 $brew_path install swiftlint"
+                  if arch -arm64 $brew_path install swiftlint 2>/dev/null; then
+                    echo "✅ SwiftLint installed via Homebrew ($brew_path)"
+                    INSTALL_SUCCESS=true
+                    break
+                  fi
+                done
+              else
+                # x86_64 systems
+                if brew install swiftlint 2>/dev/null; then
+                  echo "✅ SwiftLint installed via Homebrew (x86_64)"
+                  INSTALL_SUCCESS=true
+                fi
+              fi
+            fi
+            
+            # Strategy 3: Swift Package Manager
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 3: Swift Package Manager..."
+              if swift build -c release --package-path /tmp --package-url https://github.com/realm/SwiftLint.git --product swiftlint 2>/dev/null; then
+                sudo mv /tmp/.build/release/swiftlint /usr/local/bin/
+                echo "✅ SwiftLint installed via Swift Package Manager"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Final verification
+            if [[ "$INSTALL_SUCCESS" == false ]] || ! command -v swiftlint &> /dev/null; then
+              echo "❌ Failed to install SwiftLint with all strategies"
+              echo "Available tools:"
+              which brew || echo "brew not found"
+              which swift || echo "swift not found"
+              which curl || echo "curl not found"
+              exit 1
             else
-              echo "Using x86_64 architecture for Homebrew..."
-              brew install swiftlint
+              echo "✅ SwiftLint installation verified: $(which swiftlint)"
+              swiftlint version
             fi
           else
-            echo "SwiftLint is already installed"
+            echo "✅ SwiftLint is already installed: $(which swiftlint)"
+            swiftlint version
           fi
           
       - name: Run SwiftLint
@@ -210,20 +312,71 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Check if we're running on ARM64 architecture
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Force ARM64 architecture for Homebrew installation
-            if [[ "$ARCH" == "arm64" ]]; then
-              echo "Using ARM64 architecture for Homebrew..."
-              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
+            # Try multiple installation strategies
+            INSTALL_SUCCESS=false
+            
+            # Strategy 1: Direct download (most reliable)
+            echo "Strategy 1: Direct download from GitHub releases..."
+            if curl -fsSL https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip; then
+              unzip -o xcodegen.zip
+              sudo mv xcodegen /usr/local/bin/
+              sudo chmod +x /usr/local/bin/xcodegen
+              if command -v xcodegen &> /dev/null; then
+                echo "✅ XcodeGen installed via direct download"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Strategy 2: Homebrew with ARM64 forcing
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 2: Homebrew with ARM64 forcing..."
+              if [[ "$ARCH" == "arm64" ]]; then
+                # Try multiple Homebrew paths
+                for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+                  echo "Trying: arch -arm64 $brew_path install xcodegen"
+                  if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+                    echo "✅ XcodeGen installed via Homebrew ($brew_path)"
+                    INSTALL_SUCCESS=true
+                    break
+                  fi
+                done
+              else
+                # x86_64 systems
+                if brew install xcodegen 2>/dev/null; then
+                  echo "✅ XcodeGen installed via Homebrew (x86_64)"
+                  INSTALL_SUCCESS=true
+                fi
+              fi
+            fi
+            
+            # Strategy 3: Swift Package Manager
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 3: Swift Package Manager..."
+              if swift build -c release --package-path /tmp --package-url https://github.com/yonaskolb/XcodeGen.git --product xcodegen 2>/dev/null; then
+                sudo mv /tmp/.build/release/xcodegen /usr/local/bin/
+                echo "✅ XcodeGen installed via Swift Package Manager"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Final verification
+            if [[ "$INSTALL_SUCCESS" == false ]] || ! command -v xcodegen &> /dev/null; then
+              echo "❌ Failed to install XcodeGen with all strategies"
+              echo "Available tools:"
+              which brew || echo "brew not found"
+              which swift || echo "swift not found"
+              which curl || echo "curl not found"
+              exit 1
             else
-              echo "Using x86_64 architecture for Homebrew..."
-              brew install xcodegen
+              echo "✅ XcodeGen installation verified: $(which xcodegen)"
+              xcodegen --version
             fi
           else
-            echo "XcodeGen is already installed"
+            echo "✅ XcodeGen is already installed: $(which xcodegen)"
+            xcodegen --version
           fi
           
       - name: Generate Xcode project
@@ -284,20 +437,71 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Check if we're running on ARM64 architecture
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Force ARM64 architecture for Homebrew installation
-            if [[ "$ARCH" == "arm64" ]]; then
-              echo "Using ARM64 architecture for Homebrew..."
-              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
+            # Try multiple installation strategies
+            INSTALL_SUCCESS=false
+            
+            # Strategy 1: Direct download (most reliable)
+            echo "Strategy 1: Direct download from GitHub releases..."
+            if curl -fsSL https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip; then
+              unzip -o xcodegen.zip
+              sudo mv xcodegen /usr/local/bin/
+              sudo chmod +x /usr/local/bin/xcodegen
+              if command -v xcodegen &> /dev/null; then
+                echo "✅ XcodeGen installed via direct download"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Strategy 2: Homebrew with ARM64 forcing
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 2: Homebrew with ARM64 forcing..."
+              if [[ "$ARCH" == "arm64" ]]; then
+                # Try multiple Homebrew paths
+                for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+                  echo "Trying: arch -arm64 $brew_path install xcodegen"
+                  if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+                    echo "✅ XcodeGen installed via Homebrew ($brew_path)"
+                    INSTALL_SUCCESS=true
+                    break
+                  fi
+                done
+              else
+                # x86_64 systems
+                if brew install xcodegen 2>/dev/null; then
+                  echo "✅ XcodeGen installed via Homebrew (x86_64)"
+                  INSTALL_SUCCESS=true
+                fi
+              fi
+            fi
+            
+            # Strategy 3: Swift Package Manager
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 3: Swift Package Manager..."
+              if swift build -c release --package-path /tmp --package-url https://github.com/yonaskolb/XcodeGen.git --product xcodegen 2>/dev/null; then
+                sudo mv /tmp/.build/release/xcodegen /usr/local/bin/
+                echo "✅ XcodeGen installed via Swift Package Manager"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Final verification
+            if [[ "$INSTALL_SUCCESS" == false ]] || ! command -v xcodegen &> /dev/null; then
+              echo "❌ Failed to install XcodeGen with all strategies"
+              echo "Available tools:"
+              which brew || echo "brew not found"
+              which swift || echo "swift not found"
+              which curl || echo "curl not found"
+              exit 1
             else
-              echo "Using x86_64 architecture for Homebrew..."
-              brew install xcodegen
+              echo "✅ XcodeGen installation verified: $(which xcodegen)"
+              xcodegen --version
             fi
           else
-            echo "XcodeGen is already installed"
+            echo "✅ XcodeGen is already installed: $(which xcodegen)"
+            xcodegen --version
           fi
           
       - name: Generate Xcode project
@@ -413,20 +617,71 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Check if we're running on ARM64 architecture
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Force ARM64 architecture for Homebrew installation
-            if [[ "$ARCH" == "arm64" ]]; then
-              echo "Using ARM64 architecture for Homebrew..."
-              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
+            # Try multiple installation strategies
+            INSTALL_SUCCESS=false
+            
+            # Strategy 1: Direct download (most reliable)
+            echo "Strategy 1: Direct download from GitHub releases..."
+            if curl -fsSL https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip; then
+              unzip -o xcodegen.zip
+              sudo mv xcodegen /usr/local/bin/
+              sudo chmod +x /usr/local/bin/xcodegen
+              if command -v xcodegen &> /dev/null; then
+                echo "✅ XcodeGen installed via direct download"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Strategy 2: Homebrew with ARM64 forcing
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 2: Homebrew with ARM64 forcing..."
+              if [[ "$ARCH" == "arm64" ]]; then
+                # Try multiple Homebrew paths
+                for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+                  echo "Trying: arch -arm64 $brew_path install xcodegen"
+                  if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+                    echo "✅ XcodeGen installed via Homebrew ($brew_path)"
+                    INSTALL_SUCCESS=true
+                    break
+                  fi
+                done
+              else
+                # x86_64 systems
+                if brew install xcodegen 2>/dev/null; then
+                  echo "✅ XcodeGen installed via Homebrew (x86_64)"
+                  INSTALL_SUCCESS=true
+                fi
+              fi
+            fi
+            
+            # Strategy 3: Swift Package Manager
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 3: Swift Package Manager..."
+              if swift build -c release --package-path /tmp --package-url https://github.com/yonaskolb/XcodeGen.git --product xcodegen 2>/dev/null; then
+                sudo mv /tmp/.build/release/xcodegen /usr/local/bin/
+                echo "✅ XcodeGen installed via Swift Package Manager"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Final verification
+            if [[ "$INSTALL_SUCCESS" == false ]] || ! command -v xcodegen &> /dev/null; then
+              echo "❌ Failed to install XcodeGen with all strategies"
+              echo "Available tools:"
+              which brew || echo "brew not found"
+              which swift || echo "swift not found"
+              which curl || echo "curl not found"
+              exit 1
             else
-              echo "Using x86_64 architecture for Homebrew..."
-              brew install xcodegen
+              echo "✅ XcodeGen installation verified: $(which xcodegen)"
+              xcodegen --version
             fi
           else
-            echo "XcodeGen is already installed"
+            echo "✅ XcodeGen is already installed: $(which xcodegen)"
+            xcodegen --version
           fi
           
       - name: Generate Xcode project
@@ -544,20 +799,71 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Check if we're running on ARM64 architecture
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Force ARM64 architecture for Homebrew installation
-            if [[ "$ARCH" == "arm64" ]]; then
-              echo "Using ARM64 architecture for Homebrew..."
-              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
+            # Try multiple installation strategies
+            INSTALL_SUCCESS=false
+            
+            # Strategy 1: Direct download (most reliable)
+            echo "Strategy 1: Direct download from GitHub releases..."
+            if curl -fsSL https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip; then
+              unzip -o xcodegen.zip
+              sudo mv xcodegen /usr/local/bin/
+              sudo chmod +x /usr/local/bin/xcodegen
+              if command -v xcodegen &> /dev/null; then
+                echo "✅ XcodeGen installed via direct download"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Strategy 2: Homebrew with ARM64 forcing
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 2: Homebrew with ARM64 forcing..."
+              if [[ "$ARCH" == "arm64" ]]; then
+                # Try multiple Homebrew paths
+                for brew_path in "/opt/homebrew/bin/brew" "/usr/local/bin/brew" "brew"; do
+                  echo "Trying: arch -arm64 $brew_path install xcodegen"
+                  if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+                    echo "✅ XcodeGen installed via Homebrew ($brew_path)"
+                    INSTALL_SUCCESS=true
+                    break
+                  fi
+                done
+              else
+                # x86_64 systems
+                if brew install xcodegen 2>/dev/null; then
+                  echo "✅ XcodeGen installed via Homebrew (x86_64)"
+                  INSTALL_SUCCESS=true
+                fi
+              fi
+            fi
+            
+            # Strategy 3: Swift Package Manager
+            if [[ "$INSTALL_SUCCESS" == false ]]; then
+              echo "Strategy 3: Swift Package Manager..."
+              if swift build -c release --package-path /tmp --package-url https://github.com/yonaskolb/XcodeGen.git --product xcodegen 2>/dev/null; then
+                sudo mv /tmp/.build/release/xcodegen /usr/local/bin/
+                echo "✅ XcodeGen installed via Swift Package Manager"
+                INSTALL_SUCCESS=true
+              fi
+            fi
+            
+            # Final verification
+            if [[ "$INSTALL_SUCCESS" == false ]] || ! command -v xcodegen &> /dev/null; then
+              echo "❌ Failed to install XcodeGen with all strategies"
+              echo "Available tools:"
+              which brew || echo "brew not found"
+              which swift || echo "swift not found"
+              which curl || echo "curl not found"
+              exit 1
             else
-              echo "Using x86_64 architecture for Homebrew..."
-              brew install xcodegen
+              echo "✅ XcodeGen installation verified: $(which xcodegen)"
+              xcodegen --version
             fi
           else
-            echo "XcodeGen is already installed"
+            echo "✅ XcodeGen is already installed: $(which xcodegen)"
+            xcodegen --version
           fi
           
       - name: Generate Xcode project

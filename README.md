@@ -115,6 +115,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 - **[Haptic Feedback System](docs/haptics/README.md)** - Comprehensive haptic feedback system documentation
 
 ### **CI/CD and Infrastructure**
+- **[GitHub Actions Workflows](.github/ACTIONS_README.md)** - Complete CI/CD pipeline documentation
+- **[CI/CD Troubleshooting Guide](docs/CI_CD_TROUBLESHOOTING.md)** - Common issues and solutions
 - **[GitHub Actions Validation](GITHUB_ACTIONS_VALIDATION.md)** - CI/CD validation and testing
 - **[Migration Documentation](MIGRATION_COMPLETE.md)** - Complete GitHub migration summary
 
