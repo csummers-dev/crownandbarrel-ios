@@ -213,9 +213,12 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
+            -destination "generic/platform=iOS Simulator" \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
             
       - name: Build for Release
         run: |
@@ -223,9 +226,12 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
+            -destination "generic/platform=iOS Simulator" \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
             
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -321,11 +327,14 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
+            -destination "generic/platform=iOS Simulator" \
             "-only-testing:${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
             
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -420,11 +429,14 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
+            -destination "generic/platform=iOS Simulator" \
             "-only-testing:${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
             
       - name: Upload UI test results
         uses: actions/upload-artifact@v4
@@ -476,4 +488,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
