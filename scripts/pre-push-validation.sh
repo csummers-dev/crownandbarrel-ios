@@ -117,7 +117,7 @@ if xcodebuild build \
     VALID_ARCHS="arm64" \
     ARCHS="arm64" \
     ENABLE_BITCODE=NO \
-    IPHONEOS_DEPLOYMENT_TARGET=26.0  # Updated to iOS 26.0 as minimum required version >/dev/null 2>&1; then
+    IPHONEOS_DEPLOYMENT_TARGET=26.0 >/dev/null 2>&1; then
     print_status "success" "Build configuration test passed"
 else
     print_status "error" "Build configuration test failed"
