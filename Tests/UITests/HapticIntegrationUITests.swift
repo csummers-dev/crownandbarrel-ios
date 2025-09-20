@@ -255,7 +255,8 @@ final class HapticIntegrationUITests: XCTestCase {
             XCTAssertTrue(app.navigationBars["Calendar"].waitForExistence(timeout: 5.0))
             
             // Test date selection (should trigger haptic but not break functionality)
-            let calendar = app.calendars.firstMatch
+            // Note: Calendar element may not be available in current UI
+            let calendar = app.otherElements.matching(identifier: "calendar").firstMatch
             if calendar.exists {
                 calendar.tap()
                 // Verify calendar still works
@@ -401,7 +402,8 @@ final class HapticIntegrationUITests: XCTestCase {
             }
             
             // Test chart interactions
-            let charts = app.charts.firstMatch
+            // Note: Charts element may not be available in current UI
+            let charts = app.otherElements.matching(identifier: "chart").firstMatch
             if charts.exists {
                 charts.tap()
                 // Verify chart tap works

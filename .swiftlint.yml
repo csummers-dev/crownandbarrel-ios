@@ -179,4 +179,4 @@ file_header:
                     \/\/
 
 # Reporter configuration
-reporter: "gitlab_codeclimate"
+reporter: "xcode"

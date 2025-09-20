@@ -338,7 +338,7 @@ final class HapticsTests: XCTestCase {
     // MARK: - Phase 2 Haptic Tests
     
     /// Tests calendar interaction haptic feedback for all types.
-    func testCalendarInteractionHaptics() {
+    func testCalendarInteractionHapticsComprehensive() {
         let calendarTypes: [CalendarInteractionType] = [
             .dateSelection,
             .monthNavigation,

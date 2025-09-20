@@ -27,15 +27,15 @@ final class ContrastTests: XCTestCase {
                 let v = Double(v)
                 return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
             }
-            let R = 0.2126 * f(r)
-            let G = 0.7152 * f(g)
-            let B = 0.0722 * f(b)
-            return R + G + B
+            let red = 0.2126 * f(r)
+            let green = 0.7152 * f(g)
+            let blue = 0.0722 * f(b)
+            return red + green + blue
         }
-        let L1 = relLuminance(c1)
-        let L2 = relLuminance(c2)
-        let lighter = max(L1, L2)
-        let darker = min(L1, L2)
+        let l1 = relLuminance(c1)
+        let l2 = relLuminance(c2)
+        let lighter = max(l1, l2)
+        let darker = min(l1, l2)
         return (lighter + 0.05) / (darker + 0.05)
     }
 }
