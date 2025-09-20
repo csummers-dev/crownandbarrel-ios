@@ -445,6 +445,73 @@ The haptic feedback system is a comprehensive, contextually-aware tactile feedba
 - **Contrast**: Verify color contrast ratios
 - **Navigation**: Test accessibility navigation
 
+## **CI/CD Pipeline Architecture**
+
+### **GitHub Actions Workflows**
+
+The project uses GitHub Actions for continuous integration and deployment with the following workflow structure:
+
+#### **Main CI Pipeline** (`.github/workflows/ci.yml`)
+- **Setup Stage**: Install dependencies and generate Xcode project
+- **Lint Stage**: Run SwiftLint for code quality
+- **Build Stage**: Compile for Debug and Release configurations
+- **Test Stage**: Run unit tests and UI tests in parallel
+- **Archive Stage**: Create distribution archives
+- **Cleanup Stage**: Clean up simulator and temporary files
+
+#### **Release Pipeline** (`.github/workflows/release.yml`)
+- **TestFlight Deployment**: Automated TestFlight upload preparation
+- **App Store Deployment**: App Store submission preparation
+- **GitHub Releases**: Automatic release creation for tags
+
+#### **Validation Pipeline** (`.github/workflows/validate.yml`)
+- **YAML Validation**: Configuration file validation
+- **Swift Syntax**: Basic syntax checking
+- **Security Scanning**: Trivy vulnerability scanner
+- **Code Quality**: SwiftLint integration
+- **Performance Monitoring**: Build time tracking
+
+#### **Security Pipeline** (`.github/workflows/security.yml`)
+- **CodeQL Analysis**: GitHub's advanced code analysis
+- **Dependency Scanning**: Comprehensive vulnerability assessment
+- **Secret Detection**: TruffleHog integration
+- **License Compliance**: Dependency license checking
+
+#### **Dependency Update Pipeline** (`.github/workflows/dependency-update.yml`)
+- **Automated Updates**: Weekly dependency updates
+- **Security Patches**: Security vulnerability updates
+- **Version Management**: Automated version bumping
+
+### **Validation System**
+
+#### **Pre-commit Hooks**
+- **GitHub Actions Validation**: Validates workflow files before commit
+- **Swift Syntax Checking**: Validates Swift files
+- **YAML Validation**: Validates configuration files
+
+#### **Pre-push Hooks**
+- **Additional Validation**: Extra validation before pushing
+- **Build Checks**: Basic build validation (if Xcode available)
+
+#### **Validation Scripts**
+- **`scripts/validate-github-actions.sh`**: Comprehensive workflow validation
+- **`scripts/setup-github-hooks.sh`**: Git hooks setup
+
+### **Quality Gates**
+
+#### **Required for Success**
+- ✅ All tests must pass
+- ✅ SwiftLint must pass (warnings allowed)
+- ✅ Security scans must pass
+- ✅ Build must complete successfully
+- ✅ Archive creation must succeed
+
+#### **Security Requirements**
+- ✅ All actions pinned to specific versions
+- ✅ Secrets properly managed via GitHub Secrets
+- ✅ No hardcoded sensitive values
+- ✅ Proper permissions configuration
+
 ---
 
 *This architecture guide is maintained by the Crown & Barrel development team. For questions or suggestions about the architecture, please create an issue or contact the development team.*

@@ -1,8 +1,8 @@
 # Crown & Barrel
 
-[![Build/Test CI](https://gitlab.com/csummersdev/crown-and-barrel/badges/main/pipeline.svg)](https://gitlab.com/csummersdev/crown-and-barrel/-/pipelines)
+[![Build/Test CI](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml/badge.svg)](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
-![Latest release](https://img.shields.io/gitlab/v/release/csummersdev/crown-and-barrel)
+![Latest release](https://img.shields.io/github/v/release/csummers-dev/crownandbarrel-ios)
 ![iOS](https://img.shields.io/badge/iOS-17.0+-blue?logo=ios)
 
 Crown & Barrel is your companion for a life of timepieces. It keeps your watch collection organized with simplicity and elegance, captures the memories of each wear, and distills insights into visualizations. Thoughtfully designed for iOS, Crown & Barrel favors clarity over clutter and longevity over noise. Crown & Barrel will always be free and open-source. Developed with love by @csummersdev.
@@ -119,6 +119,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Developed with ❤️ by [@csummersdev](https://gitlab.com/csummersdev)**
+**Developed with ❤️ by [@csummersdev](https://github.com/csummers-dev)**
 
 For support or feature requests, contact: [csummersdev@icloud.com](mailto:csummersdev@icloud.com)

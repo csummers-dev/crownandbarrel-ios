@@ -1,183 +1,242 @@
-# GitLab CI/CD Validation and Testing Guide
+# GitHub Actions CI/CD Validation and Testing Guide
 
 ## 🎯 **Overview**
 
-This guide explains how to validate and test GitLab CI/CD configurations before pushing to avoid pipeline creation errors.
+This guide explains how to validate and test GitHub Actions workflows before pushing to avoid pipeline creation errors.
 
-## 🚨 **Common GitLab CI Errors and Solutions**
+## 🚨 **Common GitHub Actions Errors and Solutions**
 
-### **Error: "before_script config should be a string or a nested array of strings up to 10 levels deep"**
+### **Error: "Workflow syntax error"**
 
-This error occurs when the `before_script` configuration doesn't follow GitLab CI YAML syntax requirements.
+This error occurs when GitHub Actions workflow YAML doesn't follow the required syntax structure.
 
 #### **Root Causes:**
-1. **Inline comments within arrays**: Comments like `# Set up simulator` inside `before_script` arrays
-2. **Complex variable substitution**: Unquoted variables that cause parsing issues
-3. **Multiline scripts**: Improper use of `|` (pipe) character in script blocks
-4. **Invalid YAML structure**: Arrays containing non-string elements
+1. **Missing required fields**: Missing `name`, `on`, or `jobs` sections
+2. **Invalid YAML syntax**: Improper indentation or structure
+3. **Action version issues**: Using `@main` or `@master` instead of specific versions
+4. **Invalid job configuration**: Missing `runs-on` or improper `steps` structure
 
 #### **Solutions Applied:**
-- ✅ Removed all inline comments from `before_script` arrays
-- ✅ Simplified variable usage and hardcoded simulator names
-- ✅ Converted all multiline scripts to single-line commands
-- ✅ Ensured all script items are strings
+- ✅ Comprehensive validation script for all workflow files
+- ✅ YAML syntax validation with proper error reporting
+- ✅ Action version pinning to specific stable versions
+- ✅ Structure validation for required workflow fields
 
 ## 🔧 **Validation Tools**
 
-### **1. Automated Validation Script**
+### **1. GitHub Actions Validation Script**
 
-Run the comprehensive validation script before pushing:
+**Location**: `scripts/validate-github-actions.sh`
 
+**Features**:
+- ✅ YAML syntax validation for all workflow files
+- ✅ GitHub Actions structure validation
+- ✅ Action version and security checks
+- ✅ Best practices detection and warnings
+- ✅ Performance optimization suggestions
+
+**Usage**:
 ```bash
-./scripts/validate-gitlab-ci.sh
+./scripts/validate-github-actions.sh
 ```
 
-**What it validates:**
-- ✅ YAML syntax correctness
-- ✅ GitLab CI structure compliance
-- ✅ `before_script` and `script` configurations
-- ✅ Job naming conventions
-- ✅ Common configuration issues
+### **2. Git Hooks for Automated Validation**
 
-### **2. Git Hooks (Automatic Validation)**
+**Setup Script**: `scripts/setup-github-hooks.sh`
 
-Git hooks are automatically installed and will run validation on:
-- **Pre-commit**: Validates files before each commit
-- **Pre-push**: Additional validation before pushing to remote
+**Features**:
+- ✅ Pre-commit hook for workflow validation
+- ✅ Pre-push hook for additional validation
+- ✅ Swift syntax checking
+- ✅ YAML file validation
 
-**To bypass hooks temporarily:**
+**Setup**:
 ```bash
-git commit --no-verify  # Skip pre-commit validation
-git push --no-verify    # Skip pre-push validation
+./scripts/setup-github-hooks.sh
 ```
 
-### **3. Manual Validation Commands**
+## 📋 **Validation Checklist**
 
-#### **Basic YAML Syntax Check:**
+### **Required Workflow Fields**
+- [ ] `name` - Workflow name (string, non-empty)
+- [ ] `on` - Trigger configuration (string, list, or dict)
+- [ ] `jobs` - Job definitions (dictionary)
+
+### **Job Requirements**
+- [ ] `runs-on` - Runner specification
+- [ ] `steps` - Step definitions (list of dictionaries)
+
+### **Step Requirements**
+- [ ] `name` OR `uses` OR `run` - At least one required
+- [ ] Proper action versions (avoid `@main`, `@master`)
+- [ ] Secure secrets usage
+
+### **Security Best Practices**
+- [ ] Use specific action versions
+- [ ] Add caching for package installations
+- [ ] Use matrix strategies for parallel builds
+- [ ] Include proper permissions blocks
+- [ ] Use environment variables for secrets
+
+## 🧪 **Testing Workflows**
+
+### **Local Testing**
+
+**Option 1: Using `act` (Recommended)**
 ```bash
-python3 -c "import yaml; yaml.safe_load(open('.gitlab-ci.yml'))"
+# Install act
+brew install act
+
+# Run workflows locally
+act
 ```
 
-#### **GitLab CLI Validation (if available):**
+**Option 2: Manual Validation**
 ```bash
-# Install GitLab CLI
-brew install glab
+# Validate all workflows
+./scripts/validate-github-actions.sh
 
-# Validate CI configuration
-glab ci lint
+# Check specific workflow
+python3 -c "
+import yaml
+with open('.github/workflows/ci.yml', 'r') as f:
+    yaml.safe_load(f)
+print('Workflow is valid')
+"
 ```
 
-## 📋 **Pre-Push Checklist**
+### **GitHub Actions Testing**
 
-Before pushing changes to GitLab CI configuration:
+1. **Push to feature branch**: Test workflows in isolated environment
+2. **Create pull request**: Verify workflow triggers and execution
+3. **Check workflow runs**: Monitor execution in GitHub Actions tab
+4. **Review logs**: Identify and fix any issues
 
-### **✅ Required Checks:**
-1. **Run validation script**: `./scripts/validate-gitlab-ci.sh`
-2. **Check YAML syntax**: Ensure no syntax errors
-3. **Validate script arrays**: All items must be strings
-4. **Remove inline comments**: No comments within arrays
-5. **Test locally**: Run basic commands if possible
+## 🔍 **Troubleshooting**
 
-### **✅ Best Practices:**
-- Use simple, single-line commands in `script` arrays
-- Avoid complex variable substitution in script arrays
-- Keep `before_script` configurations simple and reliable
-- Use quoted strings for variables when possible
-- Test configuration changes in feature branches first
+### **Common Issues and Solutions**
 
-## 🛠️ **Troubleshooting**
+#### **Issue: "Invalid workflow file"**
+**Solution**: Check YAML syntax and required fields
+```bash
+./scripts/validate-github-actions.sh
+```
 
-### **If Validation Fails:**
+#### **Issue: "Action not found"**
+**Solution**: Verify action name and version
+```bash
+# Check action exists
+curl -s "https://api.github.com/repos/OWNER/REPO/actions/workflows"
+```
 
-1. **Check YAML syntax:**
+#### **Issue: "Permission denied"**
+**Solution**: Add required permissions to workflow
+```yaml
+permissions:
+  contents: read
+  actions: write
+```
+
+#### **Issue: "Runner not found"**
+**Solution**: Use supported runner labels
+```yaml
+runs-on: ubuntu-latest  # or macos-latest, windows-latest
+```
+
+### **Debugging Steps**
+
+1. **Check YAML syntax**:
    ```bash
-   python3 -c "import yaml; yaml.safe_load(open('.gitlab-ci.yml'))"
+   python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"
    ```
 
-2. **Look for common issues:**
-   - Inline comments in arrays
-   - Unquoted variables
-   - Multiline scripts with `|`
-   - Non-string items in script arrays
+2. **Validate workflow structure**:
+   ```bash
+   ./scripts/validate-github-actions.sh
+   ```
 
-3. **Simplify problematic sections:**
-   - Replace complex commands with simple ones
-   - Remove unnecessary variable substitution
-   - Use hardcoded values instead of variables when possible
+3. **Test locally with act**:
+   ```bash
+   act -l  # List workflows
+   act     # Run workflows
+   ```
 
-### **If Pipeline Still Fails:**
+4. **Check GitHub Actions logs**:
+   - Go to repository → Actions tab
+   - Click on failed workflow run
+   - Review step logs for specific errors
 
-1. **Check GitLab CI documentation**: [GitLab CI/CD YAML syntax reference](https://docs.gitlab.com/ci/yaml/)
-2. **Validate with GitLab CLI**: `glab ci lint`
-3. **Test in GitLab UI**: Use the CI Lint tool in GitLab
-4. **Simplify configuration**: Remove complex features temporarily
+## 📊 **Validation Output**
 
-## 📁 **File Structure**
-
+### **Success Indicators**
 ```
-scripts/
-├── validate-gitlab-ci.sh      # Comprehensive CI validation
-├── setup-git-hooks.sh         # Git hooks installation
-└── generate-app-icons.sh      # App icon generation
-
-.git/hooks/
-├── pre-commit                 # Pre-commit validation hook
-└── pre-push                   # Pre-push validation hook
-
-.gitlab-ci.yml                 # GitLab CI configuration
-CI_VALIDATION_README.md        # This documentation
+✅ YAML syntax valid: .github/workflows/ci.yml
+✅ GitHub Actions structure valid: .github/workflows/ci.yml
+✅ All basic validations passed
+🚀 Your GitHub Actions workflows are ready to push!
 ```
 
-## 🚀 **Quick Start**
-
-### **1. Initial Setup:**
-```bash
-# Make scripts executable
-chmod +x scripts/*.sh
-
-# Set up git hooks
-./scripts/setup-git-hooks.sh
+### **Warning Indicators**
+```
+⚠️  Found actions using @main - consider using specific versions
+⚠️  Found write permissions without explicit permissions block
+⚠️  Found package installation without caching - consider adding cache
 ```
 
-### **2. Before Each Push:**
-```bash
-# Validate CI configuration
-./scripts/validate-gitlab-ci.sh
-
-# If validation passes, push
-git push origin feature/your-branch
+### **Error Indicators**
+```
+❌ YAML syntax validation failed: .github/workflows/ci.yml
+❌ Missing required section "name" in workflow
+❌ Job build missing required "runs-on" field
 ```
 
-### **3. If You Encounter Issues:**
-```bash
-# Check what's wrong
-./scripts/validate-gitlab-ci.sh
+## 🚀 **Best Practices**
 
-# Fix issues and re-validate
-# ... make changes ...
-./scripts/validate-gitlab-ci.sh
+### **Workflow Design**
+- Use descriptive workflow and job names
+- Organize jobs logically with proper dependencies
+- Use matrix strategies for parallel execution
+- Implement proper error handling and cleanup
 
-# Commit and push
-git add .gitlab-ci.yml
-git commit -m "Fix GitLab CI configuration"
-git push
-```
+### **Security**
+- Pin all actions to specific versions
+- Use GitHub Secrets for sensitive data
+- Apply principle of least privilege
+- Regular security scanning and updates
+
+### **Performance**
+- Use caching for dependencies
+- Optimize workflow execution time
+- Use appropriate runner types
+- Clean up artifacts and temporary files
+
+### **Maintenance**
+- Regular dependency updates
+- Monitor workflow performance
+- Keep documentation updated
+- Test changes in feature branches
 
 ## 📚 **Additional Resources**
 
-- [GitLab CI/CD YAML syntax reference](https://docs.gitlab.com/ci/yaml/)
-- [GitLab CI/CD best practices](https://docs.gitlab.com/ee/ci/pipelines/pipeline_efficiency.html)
-- [GitLab CLI documentation](https://glab.readthedocs.io/)
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [GitHub Actions Security Best Practices](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
+- [Workflow Syntax Reference](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
+- [GitHub Actions Marketplace](https://github.com/marketplace?type=actions)
 
-## 🎯 **Success Criteria**
+## 🔄 **Continuous Improvement**
 
-Your GitLab CI configuration is ready when:
-- ✅ Validation script passes without errors
-- ✅ YAML syntax is valid
-- ✅ All script arrays contain only strings
-- ✅ No inline comments in arrays
-- ✅ Pipeline creates successfully in GitLab
+### **Regular Tasks**
+- [ ] Update action versions monthly
+- [ ] Review and optimize workflow performance
+- [ ] Audit security configurations
+- [ ] Update documentation as needed
+
+### **Monitoring**
+- [ ] Track workflow execution times
+- [ ] Monitor failure rates
+- [ ] Review security scan results
+- [ ] Analyze cost and resource usage
 
 ---
 
-**With these tools and practices, you can avoid GitLab CI pipeline creation errors and ensure reliable CI/CD workflows!** 🎉
+**This validation system ensures reliable, secure, and efficient GitHub Actions workflows for the Crown & Barrel iOS app.**
