@@ -42,13 +42,17 @@ struct WatchDetailView: View {
             // Pull-to-refresh: re-fetch the watch and recompute worn-today + past-only stats.
             await reloadWatch()
             await refreshAllWearState()
+            Haptics.detailViewInteraction(.refreshCompleted)
         }
         .background(AppColors.background.ignoresSafeArea())
         .navigationTitle(watch.manufacturer)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Edit") { isEditing = true }
+                Button("Edit") { 
+                    Haptics.detailViewInteraction(.editInitiated)
+                    isEditing = true 
+                }
             }
         }
         .sheet(isPresented: $isEditing, onDismiss: { Task { await reloadWatch() } }) {
@@ -92,7 +96,10 @@ struct WatchDetailView: View {
                         .accessibilityIdentifier("WornTodayLabel")
                         #endif
                 } else {
-                    Button(action: { Task { await wearToday() } }) {
+                    Button(action: { 
+                        Haptics.detailViewInteraction(.wearMarked)
+                        Task { await wearToday() } 
+                    }) {
                         Text("Mark as worn today")
                             .font(.headline)
                             .foregroundStyle(AppColors.textPrimary)
@@ -130,6 +137,9 @@ struct WatchDetailView: View {
                         .stroke(AppColors.brandSilver.opacity(0.6), lineWidth: 0.5)
                 )
                 .accessibilityLabel("Watch image")
+                .onTapGesture {
+                    Haptics.detailViewInteraction(.imageTap)
+                }
         }
     }
 

@@ -9,6 +9,7 @@ public enum AppError: LocalizedError, Equatable {
     case restoreFailed(String)
     case incompatibleBackup(String)
     case deleteAllRequiresConfirmation
+    case unknown
 
     public var errorDescription: String? {
         switch self {
@@ -26,6 +27,8 @@ public enum AppError: LocalizedError, Equatable {
             return message
         case .deleteAllRequiresConfirmation:
             return "Two confirmations are required to delete all data."
+        case .unknown:
+            return "An unknown error occurred."
         }
     }
 }

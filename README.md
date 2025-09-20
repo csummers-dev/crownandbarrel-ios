@@ -5,7 +5,7 @@
 ![Latest release](https://img.shields.io/gitlab/v/release/csummersdev/crown-and-barrel)
 ![iOS](https://img.shields.io/badge/iOS-17.0+-blue?logo=ios)
 
-An elegant iOS app for managing your watch collection, tracking wear history, and visualizing insights. Built with privacy in mind. Ad-free and open-source.
+Crown & Barrel is your companion for a life of timepieces. It keeps your watch collection organized with simplicity and elegance, captures the memories of each wear, and distills insights into visualizations. Thoughtfully designed for iOS, Crown & Barrel favors clarity over clutter and longevity over noise. Crown & Barrel will always be free and open-source. Developed with love by @csummersdev.
 
 ## Table of Contents
 
@@ -15,18 +15,10 @@ An elegant iOS app for managing your watch collection, tracking wear history, an
 - [Requirements](#requirements)
 - [Privacy & Data](#privacy--data)
 - [Contributing](#contributing)
-- [Development](#development)
-- [Architecture](#architecture)
-- [Testing](#testing)
-- [Troubleshooting](#troubleshooting)
+- [Documentation](#documentation)
 - [License](#license)
 
 ## Features
-
-### 🎨 **Beautiful Design**
-- **6 Themed Color Schemes**: Daytime, Nighttime, Pastel, Forest, Ocean, and Sunset
-- **System-Based Defaults**: Automatically matches your device's appearance on first launch
-- **Consistent UI**: Unified design language across all screens
 
 ### ⌚ **Watch Collection Management**
 - **Add & Edit Watches**: Comprehensive details including manufacturer, model, serial numbers, and photos
@@ -40,6 +32,11 @@ An elegant iOS app for managing your watch collection, tracking wear history, an
 - **Past-Only Analytics**: Excludes future dates from calculations for accurate insights
 - **Visual Charts**: Beautiful pie charts showing wear distribution
 
+### 🎨 **Beautiful Design**
+- **Themed Color Schemes**: Daytime, Nighttime, Pastel, Forest, Ocean, and Sunset
+- **System-Based Defaults**: Automatically matches your device's appearance on first launch
+- **Consistent UI**: Unified design language across all screens
+
 ### 📅 **Calendar Integration**
 - **Visual Calendar**: See which watches you wore on specific dates
 - **Quick Add**: Add wear entries directly from the calendar
@@ -50,18 +47,43 @@ An elegant iOS app for managing your watch collection, tracking wear history, an
 - **Backup & Restore**: Export your collection as a `.crownandbarrel` file
 - **Sample Data**: Load demo watches for testing (debug builds)
 
+## Future Features
+
+We're continuously working to improve Crown & Barrel. Here are some exciting features planned for future releases:
+
+### 🎨 **Enhanced Theming & Design**
+- **Custom App Icons**: Theme-specific app icons for a cohesive experience
+- **Typography Updates**: Enhanced font system and text styling
+- **Remake Placeholder Image**: Improved placeholder graphics
+
+### 📱 **User Experience Improvements**
+- **Save Sort Preferences**: Remember your preferred collection view sorting
+- **Watch Photo Albums**: Create an album of multiple photos for each of your watches
+- **Enhanced Stats Page**: Refreshed analytics and insights
+- **Calendar Enhancements**: Delete entries directly from calendar view
+- **✅ Haptic Feedback**: Comprehensive tactile feedback system with contextual patterns *(Phase 3 Complete - 70+ touch points)*
+- **Landscape Mode**: Support for landscape orientation
+
+### ⚙️ **Smart Features**
+- **Enhanced Field System**: Updated and expanded watch information fields
+
+### 💝 **Community & Support**
+- **Ko-fi Integration**: Support option for users who want to show appreciation
+
+*These features are in various stages of planning and development.*
+
 ## Screenshots
 
-*Screenshots coming soon - showcasing the beautiful interface across different themes*
+*Screenshots coming soon - showcasing the interface across different themes*
 
 ## Installation
 
 ### For Users
 1. Download from the App Store (coming soon)
-2. Or build from source using the [Development](#development) instructions below
+2. Or build from source using the [Development Guide](DEVELOPMENT.md)
 
 ### For Developers
-See the [Development](#development) section for detailed setup instructions.
+See the [Development Guide](DEVELOPMENT.md) for detailed setup instructions.
 
 ## Requirements
 
@@ -78,144 +100,18 @@ See the [Development](#development) section for detailed setup instructions.
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on how to get started.
 
-### Quick Start for Contributors
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+## Documentation
 
-## Development
+### **Core Documentation**
+- **[Development Guide](DEVELOPMENT.md)** - Setup, build, and testing instructions
+- **[Architecture Guide](ARCHITECTURE.md)** - Design patterns, code standards, and technical decisions
+- **[Troubleshooting Guide](TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
 
-### Prerequisites
-- Xcode 16+
-- macOS with command line tools
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (for project generation)
-
-### Setup
-1. **Clone the repository**
-   ```bash
-   git clone https://gitlab.com/csummersdev/crown-and-barrel.git
-   cd crown-and-barrel
-   ```
-
-2. **Install XcodeGen**
-   ```bash
-   brew install xcodegen
-   ```
-
-3. **Generate the Xcode project**
-   ```bash
-   xcodegen generate
-   ```
-
-4. **Open in Xcode**
-   ```bash
-   open CrownAndBarrel.xcodeproj
-   ```
-
-5. **Run the app**
-   - Select iPhone 16 simulator (or newer)
-   - Build and run (⌘+R)
-
-### Project Structure
-```
-Sources/
-├── CrownAndBarrelApp/     # App entry point and root navigation
-├── DesignSystem/          # Colors, typography, spacing, themes
-├── Domain/               # Models, errors, repository protocols
-├── Common/               # Shared components and utilities
-├── Features/             # Feature UIs (Collection, Stats, Calendar, etc.)
-└── Persistence/          # Core Data stack and repositories
-
-Tests/
-├── Unit/                # Unit tests
-└── UITests/             # UI tests
-
-AppResources/            # Assets, themes, launch screen
-```
-
-## Architecture
-
-### **Design Patterns**
-- **MVVM + Repository**: Clean separation of concerns
-- **SwiftUI + Combine**: Modern reactive UI framework
-- **Core Data**: Robust local persistence
-- **Design System**: Consistent tokens for colors, typography, and spacing
-
-### **Key Components**
-- **Theme System**: JSON-driven themes with system integration
-- **Repository Pattern**: Abstracted data access for testability
-- **Image Management**: Square-cropped watch photos with fallback placeholders
-- **Backup System**: Complete data export/import with replace-only semantics
-
-### **Technical Decisions**
-- **iOS 17+**: Modern APIs, full-screen behavior, simplified compatibility
-- **iPhone Portrait Only**: Optimized UX, simpler layout constraints
-- **Local Storage**: Privacy-first, no external dependencies
-- **Replace-Only Backups**: Prevents merge conflicts, deterministic imports
-
-## Testing
-
-### **Test Coverage**
-- **Unit Tests**: Domain logic, repositories, theme system, data validation
-- **UI Tests**: User flows, theme switching, form validation, navigation
-- **Accessibility**: VoiceOver support, Dynamic Type, contrast validation
-
-### **Running Tests**
-```bash
-# Run all tests
-xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' test
-
-# Run specific test target
-xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' test -only-testing:CrownAndBarrelTests
-```
-
-### **Test Features**
-- **Theme Testing**: Automated theme switching and validation
-- **Data Persistence**: Backup/restore functionality testing
-- **Form Validation**: Watch creation and editing workflows
-- **Accessibility**: Screen reader and contrast compliance
-
-## Troubleshooting
-
-### **Common Issues**
-
-#### **Project Generation**
-```bash
-# Ensure all required directories exist
-mkdir -p Sources Tests/Unit Tests/UITests AppResources
-
-# Clean and regenerate
-rm -rf CrownAndBarrel.xcodeproj
-xcodegen generate
-```
-
-#### **Build Errors**
-- Ensure Xcode 16+ is installed
-- Clean build folder (⌘+Shift+K)
-- Reset simulator if needed
-
-#### **Simulator Issues**
-```bash
-# List available simulators
-xcrun simctl list devices | grep -E "iPhone 1|Booted"
-
-# Reset simulator
-xcrun simctl erase "iPhone 16"
-```
-
-#### **App Resources**
-- Verify `AppResources/` is included in project sources
-- Check that `LaunchScreen.storyboard` exists
-- Ensure `Info.plist` contains `UILaunchStoryboardName: LaunchScreen`
-
-### **Getting Help**
-- Check existing [Issues](https://gitlab.com/csummersdev/crown-and-barrel/-/issues)
-- Create a new issue with detailed reproduction steps
-- Include device/simulator information and error logs
+### **Feature Documentation**
+- **[Haptic Feedback System](docs/haptics/README.md)** - Comprehensive haptic feedback system documentation
 
 ## License
 
@@ -226,6 +122,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Developed with ❤️ by [@csummersdev](https://gitlab.com/csummersdev)**
 
 For support or feature requests, contact: [csummersdev@icloud.com](mailto:csummersdev@icloud.com)
-
-
-

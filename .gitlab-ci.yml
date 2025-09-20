@@ -1,0 +1,276 @@
+# GitLab CI/CD Pipeline for Crown & Barrel iOS App
+# This pipeline builds, tests, and deploys the iOS application
+
+# Define stages
+stages:
+  - setup
+  - lint
+  - build
+  - test
+  - deploy
+
+# Define variables
+variables:
+  # iOS build variables
+  XCODE_VERSION: "16.0"
+  IOS_SIMULATOR_NAME: "iPhone 16"
+  IOS_SIMULATOR_OS: "17.5"
+  
+  # Project variables
+  PROJECT_NAME: "CrownAndBarrel"
+  SCHEME_NAME: "CrownAndBarrel"
+  BUNDLE_ID: "com.crownandbarrel.app"
+  
+  # Build settings
+  BUILD_CONFIGURATION: "Release"
+  ARCHIVE_CONFIGURATION: "Release"
+  
+  # Cache settings
+  CACHE_KEY_PREFIX: "crownandbarrel"
+  
+  # GitLab Runner tags (adjust based on your runner configuration)
+  RUNNER_TAGS: "macos,ios,xcode"
+
+# Cache configuration
+cache:
+  key: "${CACHE_KEY_PREFIX}-${CI_COMMIT_REF_SLUG}"
+  paths:
+    - .build/
+    - DerivedData/
+    - ~/Library/Developer/Xcode/DerivedData/
+    - ~/.cache/org.swift.swiftpm/
+  policy: pull-push
+
+# Base template for iOS jobs
+.ios_base:
+  image: registry.gitlab.com/gitlab-org/incubator/mobile-devops/xcode:16.0
+  tags:
+    - macos
+    - ios
+    - xcode
+  before_script:
+    - echo "Starting iOS job: $CI_JOB_NAME"
+    - echo "Xcode version: $(xcodebuild -version)"
+    - echo "Available simulators:"
+    - xcrun simctl list devices available | grep iPhone
+    # Set up simulator
+    - xcrun simctl boot "$IOS_SIMULATOR_NAME" || true
+    - xcrun simctl shutdown "$IOS_SIMULATOR_NAME" || true
+    - xcrun simctl boot "$IOS_SIMULATOR_NAME"
+    - echo "Simulator booted successfully"
+
+# Setup stage - Install dependencies and generate project
+setup_project:
+  extends: .ios_base
+  stage: setup
+  script:
+    # Install XcodeGen if not available
+    - |
+      if ! command -v xcodegen &> /dev/null; then
+        echo "Installing XcodeGen..."
+        brew install xcodegen
+      fi
+    # Verify XcodeGen installation
+    - xcodegen --version
+    # Generate Xcode project
+    - xcodegen generate
+    # Verify project was generated
+    - ls -la "$PROJECT_NAME.xcodeproj"
+    - echo "Project setup completed successfully"
+  artifacts:
+    paths:
+      - "$PROJECT_NAME.xcodeproj/"
+      - "*.xcworkspace/"
+    expire_in: 1 hour
+    when: on_success
+
+# Lint stage - Code quality checks
+lint_code:
+  extends: .ios_base
+  stage: lint
+  dependencies:
+    - setup_project
+  script:
+    # Install SwiftLint if not available
+    - |
+      if ! command -v swiftlint &> /dev/null; then
+        echo "Installing SwiftLint..."
+        brew install swiftlint
+      fi
+    # Run SwiftLint
+    - swiftlint lint --reporter gitlab_codeclimate --config .swiftlint.yml || true
+    # Run SwiftLint with exit code for CI
+    - swiftlint lint --config .swiftlint.yml
+  artifacts:
+    reports:
+      codequality: swiftlint-report.json
+    expire_in: 1 week
+    when: always
+  allow_failure: true
+
+# Build stage - Compile the application
+build_app:
+  extends: .ios_base
+  stage: build
+  dependencies:
+    - setup_project
+  script:
+    # Clean and build the project
+    - xcodebuild clean -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME"
+    # Build for simulator
+    - |
+      xcodebuild build \
+        -project "$PROJECT_NAME.xcodeproj" \
+        -scheme "$SCHEME_NAME" \
+        -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" \
+        -configuration "$BUILD_CONFIGURATION" \
+        CODE_SIGNING_ALLOWED=NO \
+        ONLY_ACTIVE_ARCH=YES
+    - echo "Build completed successfully"
+  artifacts:
+    paths:
+      - DerivedData/
+    expire_in: 1 hour
+    when: on_success
+
+# Unit Tests
+test_unit:
+  extends: .ios_base
+  stage: test
+  dependencies:
+    - setup_project
+  script:
+    # Run unit tests
+    - |
+      xcodebuild test \
+        -project "$PROJECT_NAME.xcodeproj" \
+        -scheme "$SCHEME_NAME" \
+        -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" \
+        -only-testing:"${SCHEME_NAME}Tests" \
+        -resultBundlePath TestResults.xcresult \
+        CODE_SIGNING_ALLOWED=NO
+    # Parse test results using xcresulttool (alternative to xcparse)
+    - xcresulttool get --path TestResults.xcresult --format json > test-results.json || echo "Test result parsing completed"
+    - echo "Unit tests completed"
+  artifacts:
+    reports:
+      junit: "junit.xml"
+    paths:
+      - "TestResults.xcresult"
+    expire_in: 1 week
+    when: always
+
+# UI Tests
+test_ui:
+  extends: .ios_base
+  stage: test
+  dependencies:
+    - setup_project
+  script:
+    # Run UI tests
+    - |
+      xcodebuild test \
+        -project "$PROJECT_NAME.xcodeproj" \
+        -scheme "$SCHEME_NAME" \
+        -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" \
+        -only-testing:"${SCHEME_NAME}UITests" \
+        -resultBundlePath UITestResults.xcresult \
+        CODE_SIGNING_ALLOWED=NO
+    # Parse UI test results using xcresulttool (alternative to xcparse)
+    - xcresulttool get --path UITestResults.xcresult --format json > ui-test-results.json || echo "UI test result parsing completed"
+    - echo "UI tests completed"
+  artifacts:
+    reports:
+      junit: "ui-junit.xml"
+    paths:
+      - "UITestResults.xcresult"
+    expire_in: 1 week
+    when: always
+
+# Archive for distribution
+archive_app:
+  extends: .ios_base
+  stage: deploy
+  dependencies:
+    - setup_project
+  script:
+    # Create archive
+    - |
+      xcodebuild archive \
+        -project "$PROJECT_NAME.xcodeproj" \
+        -scheme "$SCHEME_NAME" \
+        -configuration "$ARCHIVE_CONFIGURATION" \
+        -archivePath "$PROJECT_NAME.xcarchive" \
+        CODE_SIGNING_ALLOWED=NO \
+        DEVELOPMENT_TEAM="" \
+        CODE_SIGN_IDENTITY=""
+    # Export IPA (for manual distribution)
+    - |
+      xcodebuild -exportArchive \
+        -archivePath "$PROJECT_NAME.xcarchive" \
+        -exportPath "./export" \
+        -exportOptionsPlist exportOptions.plist || echo "Export options plist not found, skipping IPA export"
+    - echo "Archive created successfully"
+  artifacts:
+    paths:
+      - "$PROJECT_NAME.xcarchive/"
+      - "export/"
+    expire_in: 1 week
+    when: on_success
+  only:
+    - main
+    - develop
+    - tags
+
+# TestFlight deployment (requires additional setup)
+deploy_testflight:
+  extends: .ios_base
+  stage: deploy
+  dependencies:
+    - archive_app
+  script:
+    - echo "TestFlight deployment would go here"
+    - echo "This requires:"
+    - echo "1. Apple Developer account setup"
+    - echo "2. Provisioning profiles"
+    - echo "3. Code signing certificates"
+    - echo "4. Fastlane configuration"
+    - echo "5. GitLab CI/CD variables for secrets"
+    # Uncomment and configure when ready:
+    # - fastlane ios beta
+  only:
+    - main
+    - tags
+  when: manual
+
+# App Store deployment (requires additional setup)
+deploy_appstore:
+  extends: .ios_base
+  stage: deploy
+  dependencies:
+    - archive_app
+  script:
+    - echo "App Store deployment would go here"
+    - echo "This requires:"
+    - echo "1. Apple Developer account setup"
+    - echo "2. App Store Connect API key"
+    - echo "3. Provisioning profiles"
+    - echo "4. Code signing certificates"
+    - echo "5. Fastlane configuration"
+    - echo "6. GitLab CI/CD variables for secrets"
+    # Uncomment and configure when ready:
+    # - fastlane ios release
+  only:
+    - tags
+  when: manual
+
+# Cleanup job
+cleanup:
+  extends: .ios_base
+  stage: deploy
+  script:
+    - echo "Cleaning up..."
+    - xcrun simctl shutdown "$IOS_SIMULATOR_NAME" || true
+    - echo "Cleanup completed"
+  when: always
+  allow_failure: true

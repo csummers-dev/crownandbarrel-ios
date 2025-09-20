@@ -76,7 +76,13 @@ struct CollectionView: View {
             //      mid-session on theme changes. A custom Menu label lets us explicitly control
             //      the chevron color and guarantees it follows `AppColors.accent`.
             Menu {
-                Picker("Sort", selection: $viewModel.sortOption) {
+                Picker("Sort", selection: Binding<WatchSortOption>(
+                    get: { viewModel.sortOption },
+                    set: { newValue in
+                        Haptics.searchInteraction(.filterChange)
+                        viewModel.sortOption = newValue
+                    }
+                )) {
                     Text("Entry ↑").tag(WatchSortOption.entryDateAscending)
                     Text("Entry ↓").tag(WatchSortOption.entryDateDescending)
                     Text("A–Z").tag(WatchSortOption.manufacturerAZ)
@@ -99,7 +105,13 @@ struct CollectionView: View {
 
             Spacer()
 
-            Picker("View", selection: $viewModel.viewMode) {
+            Picker("View", selection: Binding<CollectionViewMode>(
+                get: { viewModel.viewMode },
+                set: { newValue in
+                    Haptics.collectionInteraction()
+                    viewModel.viewMode = newValue
+                }
+            )) {
                 Image(systemName: "rectangle.grid.2x2").tag(CollectionViewMode.grid)
                 Image(systemName: "list.bullet").tag(CollectionViewMode.list)
             }
@@ -119,17 +131,30 @@ struct CollectionView: View {
                         NavigationLink(destination: WatchDetailView(watch: watch)) {
                             GridCell(watch: watch)
                         }
+                        .onTapGesture {
+                            Haptics.debouncedHaptic {
+                                Haptics.collectionInteraction()
+                            }
+                        }
                     }
                 }
                 .padding(.bottom, 80)
             }
-            .refreshable { await viewModel.load() }
+            .refreshable { 
+                await viewModel.load()
+                Haptics.success()
+            }
         } else {
             List(viewModel.watches) { watch in
                 NavigationLink(destination: WatchDetailView(watch: watch)) {
                     ListRow(watch: watch)
                         .padding(.horizontal, AppSpacing.sm)
                         .padding(.vertical, AppSpacing.xs)
+                }
+                .onTapGesture {
+                    Haptics.debouncedHaptic {
+                        Haptics.collectionInteraction()
+                    }
                 }
                 .accessibilityIdentifier("CollectionCard")
                 // Ensure equal padding around chevron by applying horizontal inset to the row
@@ -150,7 +175,10 @@ struct CollectionView: View {
             .background(AppColors.background)
             .listSectionSeparator(.hidden, edges: .all)
             .listRowSeparator(.hidden, edges: .all)
-            .refreshable { await viewModel.load() }
+            .refreshable { 
+                await viewModel.load()
+                Haptics.success()
+            }
             // Extra defensive: remove any UIAppearance-driven separators at runtime
             .onAppear {
                 UITableView.appearance().separatorStyle = .none

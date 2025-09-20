@@ -2,7 +2,7 @@ import Foundation
 
 /// Represents the high-level category of a watch.
 public enum WatchCategory: String, CaseIterable, Identifiable, Codable {
-    case dress, diver, pilot, field, chronograph, gmt, digital, other
+    case dress, diver, pilot, field, chronograph, gmt, digital, smart, other
     public var id: String { rawValue }
 }
 

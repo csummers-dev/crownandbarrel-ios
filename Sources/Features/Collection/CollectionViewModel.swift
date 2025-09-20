@@ -21,10 +21,16 @@ final class CollectionViewModel: ObservableObject {
     /// Injects a repository (default Core Data) and wires live search/sort.
     init(repository: WatchRepository = WatchRepositoryCoreData()) {
         self.repository = repository
-        // Live search
+        // Live search with haptic feedback for activation
         $searchText
             .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
-            .sink { [weak self] _ in Task { await self?.load() } }
+            .sink { [weak self] newValue in 
+                // Provide haptic feedback when search is activated (first character entered)
+                if let self = self, !newValue.isEmpty && self.searchText.isEmpty {
+                    Haptics.searchInteraction(.searchActivation)
+                }
+                Task { await self?.load() } 
+            }
             .store(in: &cancellables)
         // Sort changes
         $sortOption

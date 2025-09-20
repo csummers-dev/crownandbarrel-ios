@@ -25,6 +25,10 @@ struct StatsView: View {
         .background(AppColors.background.ignoresSafeArea())
         .navigationTitle("Stats")
         .task { await load() }
+        .refreshable {
+            await load()
+            Haptics.statsInteraction(.refreshCompleted)
+        }
         .alert("Error", isPresented: Binding.constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
         .id(themeToken)
     }
@@ -32,11 +36,23 @@ struct StatsView: View {
     private var summaryCards: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Watches: \(watches.count)", systemImage: "applewatch")
+                .onTapGesture {
+                    Haptics.statsInteraction(.dataPointTapped)
+                }
             Label("Manufacturers: \(Set(watches.map { $0.manufacturer }).count)", systemImage: "building.2")
+                .onTapGesture {
+                    Haptics.statsInteraction(.dataPointTapped)
+                }
             let totalPurchase = watches.compactMap { $0.purchasePrice }.reduce(Decimal(0), +)
             let totalValue = watches.compactMap { $0.currentValue }.reduce(Decimal(0), +)
             Label("Total purchased: \(totalPurchase as NSDecimalNumber)", systemImage: "cart")
+                .onTapGesture {
+                    Haptics.statsInteraction(.dataPointTapped)
+                }
             Label("Total value: \(totalValue as NSDecimalNumber)", systemImage: "banknote")
+                .onTapGesture {
+                    Haptics.statsInteraction(.dataPointTapped)
+                }
         }
         .font(.headline)
     }
@@ -46,15 +62,27 @@ struct StatsView: View {
             Text("Most worn")
                 .font(.title3)
                 .foregroundStyle(AppColors.textSecondary)
+                .onTapGesture {
+                    Haptics.statsInteraction(.listHeaderTapped)
+                }
             ForEach(watches.sorted(by: { $0.timesWorn > $1.timesWorn }).prefix(5)) { w in
                 Text("\(w.manufacturer) \(w.model ?? "") — \(w.timesWorn)x")
+                    .onTapGesture {
+                        Haptics.statsInteraction(.watchListItemTapped)
+                    }
             }
             Divider().padding(.vertical, 8)
             Text("Least worn")
                 .font(.title3)
                 .foregroundStyle(AppColors.textSecondary)
+                .onTapGesture {
+                    Haptics.statsInteraction(.listHeaderTapped)
+                }
             ForEach(watches.sorted(by: { $0.timesWorn < $1.timesWorn }).prefix(5)) { w in
                 Text("\(w.manufacturer) \(w.model ?? "") — \(w.timesWorn)x")
+                    .onTapGesture {
+                        Haptics.statsInteraction(.watchListItemTapped)
+                    }
             }
         }
     }
@@ -64,11 +92,17 @@ struct StatsView: View {
             Text("Most worn (Top 5)").font(.title3).foregroundStyle(AppColors.textSecondary)
             PieChart(data: watches.sorted(by: { $0.timesWorn > $1.timesWorn }).prefix(5).map { ($0.displayName, Double($0.timesWorn)) })
                 .frame(height: 220)
+                .onTapGesture {
+                    Haptics.statsInteraction(.chartTapped)
+                }
 
             Divider().padding(.vertical, 8)
             Text("Least worn (Top 5)").font(.title3).foregroundStyle(AppColors.textSecondary)
             PieChart(data: watches.sorted(by: { $0.timesWorn < $1.timesWorn }).prefix(5).map { ($0.displayName, Double($0.timesWorn)) })
                 .frame(height: 220)
+                .onTapGesture {
+                    Haptics.statsInteraction(.chartTapped)
+                }
         }
     }
 

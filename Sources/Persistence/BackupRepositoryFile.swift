@@ -80,12 +80,15 @@ public final class BackupRepositoryFile: BackupRepository {
 
         // Replace store: delete all entities then re-insert
         try await deleteAll()
-        await stack.viewContext.perform { [self] in
-            for w in watches {
+        await stack.viewContext.perform { [weak self] in
+            guard let self = self else { return }
+            let localWatches = watches
+            let localWearEntries = wearEntries
+            for w in localWatches {
                 let obj = CDWatch(entity: NSEntityDescription.entity(forEntityName: "CDWatch", in: self.stack.viewContext)!, insertInto: self.stack.viewContext)
                 Mappers.update(obj, from: w)
             }
-            for e in wearEntries {
+            for e in localWearEntries {
                 let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
                 request.predicate = NSPredicate(format: "id == %@", e.watchId as CVarArg)
                 guard let watch = try? self.stack.viewContext.fetch(request).first else { continue }
@@ -111,7 +114,8 @@ public final class BackupRepositoryFile: BackupRepository {
     /// Deletes all persisted objects and clears image files.
     /// - Why: Useful for reset scenarios and for preparing to restore a backup.
     public func deleteAll() async throws {
-        await stack.viewContext.perform { [self] in
+        await stack.viewContext.perform { [weak self] in
+            guard let self = self else { return }
             for entityName in ["CDWearEntry", "CDWatch", "CDAppSettings"] {
                 let fetch = NSFetchRequest<NSManagedObject>(entityName: entityName)
                 let objects = try? self.stack.viewContext.fetch(fetch)
@@ -133,7 +137,8 @@ private struct BackupMetadata: Codable { let schemaVersion: Int; let exportedAt:
 extension BackupRepositoryFile {
     /// Reads all watches from the current store and returns them as domain models.
     fileprivate func exportWatches() async throws -> [Watch] {
-        try await stack.viewContext.perform { [self] in
+        try await stack.viewContext.perform { [weak self] in
+            guard let self = self else { throw AppError.unknown }
             let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
             request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
             let results = try self.stack.viewContext.fetch(request)
@@ -143,7 +148,8 @@ extension BackupRepositoryFile {
 
     /// Reads all wear entries from the current store and returns them as domain models.
     fileprivate func exportWearEntries() async throws -> [WearEntry] {
-        try await stack.viewContext.perform { [self] in
+        try await stack.viewContext.perform { [weak self] in
+            guard let self = self else { throw AppError.unknown }
             let request = NSFetchRequest<CDWearEntry>(entityName: "CDWearEntry")
             request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
             let results = try self.stack.viewContext.fetch(request)
