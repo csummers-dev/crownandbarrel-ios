@@ -5,6 +5,8 @@
 
 The Crown & Barrel iOS app now uses GitHub Actions for comprehensive CI/CD, security, and monitoring capabilities.
 
+**🔧 Critical Fix Applied**: Resolved iOS 18.0 build error by regenerating Xcode project to eliminate cached scheme configurations that were incorrectly requiring iOS 18.0 SDK for device destinations.
+
 ### ✅ **Migration Summary**
 
 | Phase | Status | Description |
