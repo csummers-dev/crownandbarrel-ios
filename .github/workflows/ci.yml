@@ -394,13 +394,31 @@ jobs:
           
       - name: Build for Debug
         run: |
-          # Target iPhone 16 Pro with iOS 26.0 specifically
-          echo "Targeting iPhone 16 Pro with iOS 26.0 for Debug build"
+          # Find the best available iOS 26.0 simulator for Debug build
+          echo "Looking for available iOS 26.0 simulators for Debug build..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Debug build"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for Debug build"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping Debug build"
+            exit 0
+          fi
+          
+          echo "Using destination: $DESTINATION"
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+            -destination "$DESTINATION" \
             IPHONEOS_DEPLOYMENT_TARGET=26.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
@@ -410,13 +428,31 @@ jobs:
             
       - name: Build for Release
         run: |
-          # Target iPhone 16 Pro with iOS 26.0 specifically
-          echo "Targeting iPhone 16 Pro with iOS 26.0 for Release build"
+          # Find the best available iOS 26.0 simulator for Release build
+          echo "Looking for available iOS 26.0 simulators for Release build..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Release build"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for Release build"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping Release build"
+            exit 0
+          fi
+          
+          echo "Using destination: $DESTINATION"
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+            -destination "$DESTINATION" \
             IPHONEOS_DEPLOYMENT_TARGET=26.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
@@ -581,13 +617,29 @@ jobs:
       - name: Run Unit Tests
         if: steps.check_simulators.outputs.simulators_available > 0
         run: |
-          echo "Running unit tests on iPhone 16 Pro with iOS 26.0..."
+          echo "Looking for available iOS 26.0 simulators for unit tests..."
           
-          # Target iPhone 16 Pro with iOS 26.0 specifically for unit tests
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit tests"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping unit tests"
+            exit 0
+          fi
+          
+          echo "Running unit tests with destination: $DESTINATION"
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+            -destination "$DESTINATION" \
             "-only-testing:${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
@@ -759,20 +811,37 @@ jobs:
       - name: Run UI Tests
         if: steps.check_simulators_ui.outputs.simulators_available > 0
         run: |
-          echo "Running UI tests on iPhone 16 Pro with iOS 26.0..."
+          echo "Looking for available iOS 26.0 simulators for UI tests..."
           
-          # Target iPhone 16 Pro with iOS 26.0 specifically for UI tests
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for UI tests"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for UI tests"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping UI tests"
+            exit 0
+          fi
+          
+          echo "Running UI tests with destination: $DESTINATION"
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+            -destination "$DESTINATION" \
             "-only-testing:${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
             VALID_ARCHS="arm64" \
             ARCHS="arm64" \
-            ENABLE_BITCODE=NO
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
             
       - name: Skip UI Tests - No Simulators Available
         if: steps.check_simulators_ui.outputs.simulators_available == 0
@@ -882,13 +951,31 @@ jobs:
           
       - name: Build Release Archive
         run: |
-          # Target iPhone 16 Pro with iOS 26.0 specifically for Archive build
-          echo "Targeting iPhone 16 Pro with iOS 26.0 for Archive build"
+          # Find the best available iOS 26.0 simulator for Archive build
+          echo "Looking for available iOS 26.0 simulators for Archive build..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Archive build"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for Archive build"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping Archive build"
+            exit 0
+          fi
+          
+          echo "Using destination: $DESTINATION"
           xcodebuild archive \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+            -destination "$DESTINATION" \
             IPHONEOS_DEPLOYMENT_TARGET=26.0  # Updated to iOS 26.0 as minimum required version \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \

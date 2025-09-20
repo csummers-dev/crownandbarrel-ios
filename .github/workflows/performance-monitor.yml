@@ -71,14 +71,30 @@ jobs:
           CLEAN_END_TIME=$(date +%s)
           CLEAN_DURATION=$((CLEAN_END_TIME - BUILD_START_TIME))
           
-          # Full build targeting iPhone 16 Pro with iOS 26.0
-          echo "Performing full build on iPhone 16 Pro with iOS 26.0..."
+          # Find the best available iOS 26.0 simulator for performance monitoring
+          echo "Looking for available iOS 26.0 simulators for performance monitoring..."
           
-          # Target iPhone 16 Pro with iOS 26.0 specifically for performance monitoring
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for performance monitoring"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for performance monitoring"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping performance monitoring"
+            exit 0
+          fi
+          
+          echo "Performing full build with destination: $DESTINATION"
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "$DESTINATION" \
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
@@ -163,14 +179,30 @@ jobs:
           # Record start time
           TEST_START_TIME=$(date +%s)
           
-          # Run unit tests targeting iPhone 16 Pro with iOS 26.0
-          echo "Running unit tests on iPhone 16 Pro with iOS 26.0..."
+          # Find the best available iOS 26.0 simulator for unit test performance monitoring
+          echo "Looking for available iOS 26.0 simulators for unit test performance monitoring..."
           
-          # Target iPhone 16 Pro with iOS 26.0 specifically for unit test performance monitoring
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit test performance monitoring"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit test performance monitoring"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping unit test performance monitoring"
+            exit 0
+          fi
+          
+          echo "Running unit tests with destination: $DESTINATION"
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "$DESTINATION" \
             -only-testing:"${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath UnitTestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
@@ -184,14 +216,30 @@ jobs:
           UNIT_TEST_END_TIME=$(date +%s)
           UNIT_TEST_DURATION=$((UNIT_TEST_END_TIME - TEST_START_TIME))
           
-          # Run UI tests targeting iPhone 16 Pro with iOS 26.0
-          echo "Running UI tests on iPhone 16 Pro with iOS 26.0..."
+          # Find the best available iOS 26.0 simulator for UI test performance monitoring
+          echo "Looking for available iOS 26.0 simulators for UI test performance monitoring..."
           
-          # Target iPhone 16 Pro with iOS 26.0 specifically for UI test performance monitoring
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for UI test performance monitoring"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for UI test performance monitoring"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping UI test performance monitoring"
+            exit 0
+          fi
+          
+          echo "Running UI tests with destination: $DESTINATION"
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "$DESTINATION" \
             -only-testing:"${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
