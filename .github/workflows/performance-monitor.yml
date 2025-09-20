@@ -30,8 +30,8 @@ env:
   PROJECT_NAME: "CrownAndBarrel"
   SCHEME_NAME: "CrownAndBarrel"
   XCODE_VERSION: "16.0"
-  IOS_SIMULATOR_NAME: "iPhone 14"
-  IOS_SIMULATOR_OS: "18.0"
+  IOS_SIMULATOR_NAME: "iPhone 15"
+  IOS_SIMULATOR_OS: "26.0"
 
 jobs:
   # Build performance monitoring
@@ -76,10 +76,14 @@ jobs:
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=18.0" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0
             
           # Record end time
           BUILD_END_TIME=$(date +%s)
@@ -162,10 +166,15 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=18.0" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
             -only-testing:"${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath UnitTestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0
             
           # Record unit test time
           UNIT_TEST_END_TIME=$(date +%s)
@@ -176,10 +185,15 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=18.0" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
             -only-testing:"${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0
             
           # Record end time
           TEST_END_TIME=$(date +%s)
