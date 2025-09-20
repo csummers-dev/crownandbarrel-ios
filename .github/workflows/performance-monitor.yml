@@ -30,8 +30,8 @@ env:
   PROJECT_NAME: "CrownAndBarrel"
   SCHEME_NAME: "CrownAndBarrel"
   XCODE_VERSION: "16.0"
-  IOS_SIMULATOR_NAME: "iPhone 16"
-  IOS_SIMULATOR_OS: "17.5"
+  IOS_SIMULATOR_NAME: "iPhone 15"
+  IOS_SIMULATOR_OS: "18.0"
 
 jobs:
   # Build performance monitoring
@@ -76,7 +76,7 @@ jobs:
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=18.0" \
             -configuration Release \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES
@@ -162,7 +162,7 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=18.0" \
             -only-testing:"${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath UnitTestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO
@@ -176,7 +176,7 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=18.0" \
             -only-testing:"${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO

@@ -12,8 +12,8 @@ on:
 env:
   # iOS build variables
   XCODE_VERSION: "16.0"
-  IOS_SIMULATOR_NAME: "iPhone 16"
-  IOS_SIMULATOR_OS: "17.5"
+  IOS_SIMULATOR_NAME: "iPhone 15"
+  IOS_SIMULATOR_OS: "18.0"
   
   # Project variables
   PROJECT_NAME: "CrownAndBarrel"
@@ -142,11 +142,24 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
+      - name: List available simulators
+        run: |
+          echo "Available iOS Simulators:"
+          xcrun simctl list devices available | grep iPhone
+          
       - name: Setup simulator
         run: |
-          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}" || true
-          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
-          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}"
+          # Try to boot iPhone 15, fallback to iPhone 14 or iPhone 13
+          SIMULATOR_NAME="iPhone 15"
+          if ! xcrun simctl list devices available | grep -q "iPhone 15"; then
+            if xcrun simctl list devices available | grep -q "iPhone 14"; then
+              SIMULATOR_NAME="iPhone 14"
+            elif xcrun simctl list devices available | grep -q "iPhone 13"; then
+              SIMULATOR_NAME="iPhone 13"
+            fi
+          fi
+          echo "Using simulator: $SIMULATOR_NAME"
+          xcrun simctl boot "$SIMULATOR_NAME" || true
           
       - name: Install XcodeGen
         run: |
@@ -161,7 +174,7 @@ jobs:
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=18.0" \
             -configuration "${{ matrix.configuration }}" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES
@@ -188,11 +201,24 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
+      - name: List available simulators
+        run: |
+          echo "Available iOS Simulators:"
+          xcrun simctl list devices available | grep iPhone
+          
       - name: Setup simulator
         run: |
-          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}" || true
-          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
-          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}"
+          # Try to boot iPhone 15, fallback to iPhone 14 or iPhone 13
+          SIMULATOR_NAME="iPhone 15"
+          if ! xcrun simctl list devices available | grep -q "iPhone 15"; then
+            if xcrun simctl list devices available | grep -q "iPhone 14"; then
+              SIMULATOR_NAME="iPhone 14"
+            elif xcrun simctl list devices available | grep -q "iPhone 13"; then
+              SIMULATOR_NAME="iPhone 13"
+            fi
+          fi
+          echo "Using simulator: $SIMULATOR_NAME"
+          xcrun simctl boot "$SIMULATOR_NAME" || true
           
       - name: Install XcodeGen
         run: |
@@ -206,7 +232,7 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=18.0" \
             -only-testing:"${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO
@@ -239,11 +265,24 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
+      - name: List available simulators
+        run: |
+          echo "Available iOS Simulators:"
+          xcrun simctl list devices available | grep iPhone
+          
       - name: Setup simulator
         run: |
-          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}" || true
-          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
-          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}"
+          # Try to boot iPhone 15, fallback to iPhone 14 or iPhone 13
+          SIMULATOR_NAME="iPhone 15"
+          if ! xcrun simctl list devices available | grep -q "iPhone 15"; then
+            if xcrun simctl list devices available | grep -q "iPhone 14"; then
+              SIMULATOR_NAME="iPhone 14"
+            elif xcrun simctl list devices available | grep -q "iPhone 13"; then
+              SIMULATOR_NAME="iPhone 13"
+            fi
+          fi
+          echo "Using simulator: $SIMULATOR_NAME"
+          xcrun simctl boot "$SIMULATOR_NAME" || true
           
       - name: Install XcodeGen
         run: |
@@ -257,7 +296,7 @@ jobs:
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -destination "platform=iOS Simulator,name=iPhone 15,OS=18.0" \
             -only-testing:"${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO
