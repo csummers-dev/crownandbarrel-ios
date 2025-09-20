@@ -72,7 +72,15 @@ jobs:
           else
             echo "✅ XcodeGen already available"
           fi
-          xcodegen generate
+          
+          # Verify XcodeGen is available before using it
+          if command -v xcodegen &> /dev/null; then
+            echo "✅ XcodeGen verified as available"
+            xcodegen generate
+          else
+            echo "❌ XcodeGen installation failed - command not found"
+            exit 1
+          fi
           
       - name: Update Swift Package Manager dependencies
         run: |
