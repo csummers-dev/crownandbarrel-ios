@@ -399,7 +399,7 @@ jobs:
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
             -destination "generic/platform=iOS" \
-            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
             VALID_ARCHS="arm64" \
@@ -413,7 +413,7 @@ jobs:
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
             -destination "generic/platform=iOS" \
-            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
             VALID_ARCHS="arm64" \
@@ -908,7 +908,7 @@ jobs:
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
             -destination "generic/platform=iOS" \
-            IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \

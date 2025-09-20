@@ -103,25 +103,31 @@ fi
 # 7. Test build with available destinations
 print_status "info" "Testing build with available destinations..."
 
-# Get first available iOS destination with specific device
-FIRST_DESTINATION=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS" | grep -v "Any iOS Device" | head -1)
+# Get first available iOS Simulator destination (excluding placeholder)
+FIRST_DESTINATION_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep -v "Any iOS Simulator Device" | head -1)
+if [ -n "$FIRST_DESTINATION_LINE" ]; then
+    # Extract just the platform and ID from the full destination string
+    SIMULATOR_ID=$(echo "$FIRST_DESTINATION_LINE" | grep -o 'id:[A-F0-9\-]*' | cut -d: -f2)
+    FIRST_DESTINATION="platform=iOS Simulator,id=$SIMULATOR_ID"
+else
+    FIRST_DESTINATION=""
+fi
 
 if [ -n "$FIRST_DESTINATION" ]; then
     print_status "info" "Testing build with destination: $FIRST_DESTINATION"
     
-    # Test build (dry run) with deployment target
+    # Test build configuration (without dry-run as it's not supported in new build system)
     if xcodebuild build \
         -project CrownAndBarrel.xcodeproj \
         -scheme CrownAndBarrel \
         -configuration Debug \
         -destination "$FIRST_DESTINATION" \
-        -dry-run \
         CODE_SIGNING_ALLOWED=NO \
         ONLY_ACTIVE_ARCH=YES \
         VALID_ARCHS="arm64" \
         ARCHS="arm64" \
         ENABLE_BITCODE=NO \
-        IPHONEOS_DEPLOYMENT_TARGET=15.0 2>/dev/null; then
+        IPHONEOS_DEPLOYMENT_TARGET=17.0 >/dev/null 2>&1; then
         print_status "success" "Build configuration test passed"
     else
         print_status "error" "Build configuration test failed"
