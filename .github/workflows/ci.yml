@@ -33,6 +33,26 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
         
+      - name: List available iOS runtimes
+        run: |
+          echo "=== Available iOS Simulator Runtimes ==="
+          xcrun simctl list runtimes | grep iOS || echo "No iOS runtimes found"
+          echo ""
+          echo "=== Available iOS Simulator Devices ==="
+          xcrun simctl list devices | grep iPhone || echo "No iPhone simulators found"
+          
+      - name: Check iOS Runtime Compatibility
+        run: |
+          echo "Checking available iOS runtimes and finding compatible version..."
+          AVAILABLE_RUNTIMES=$(xcrun simctl list runtimes | grep iOS | head -1 | awk '{print $NF}' | sed 's/[()]//g')
+          if [ -n "$AVAILABLE_RUNTIMES" ]; then
+            echo "Found compatible iOS runtime: $AVAILABLE_RUNTIMES"
+            echo "IOS_RUNTIME_VERSION=$AVAILABLE_RUNTIMES" >> $GITHUB_OUTPUT
+          else
+            echo "Using default iOS 17.0 runtime"
+            echo "IOS_RUNTIME_VERSION=17.0" >> $GITHUB_OUTPUT
+          fi
+        
       - name: List available simulators
         run: |
           echo "=== Available iOS Simulators ==="
@@ -178,8 +198,9 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
-            -destination "generic/platform=iOS Simulator" \
-            CODE_SIGNING_ALLOWED=NO
+            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES
             
       - name: Build for Release
         run: |
@@ -187,8 +208,9 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "generic/platform=iOS Simulator" \
-            CODE_SIGNING_ALLOWED=NO
+            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES
             
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -274,17 +296,16 @@ jobs:
           
       - name: Run Unit Tests
         run: |
-          # Get the simulator name from the previous step
-          SIMULATOR_NAME=$(echo "${{ steps.setup.outputs.SIMULATOR_NAME || 'iPhone 14' }}")
-          echo "Running unit tests on $SIMULATOR_NAME..."
+          echo "Running unit tests on iPhone 14 simulator..."
           
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "generic/platform=iOS Simulator" \
+            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
             "-only-testing:${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath TestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES
             
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -369,17 +390,16 @@ jobs:
           
       - name: Run UI Tests
         run: |
-          # Get the simulator name from the previous step
-          SIMULATOR_NAME=$(echo "${{ steps.setup.outputs.SIMULATOR_NAME || 'iPhone 14' }}")
-          echo "Running UI tests on $SIMULATOR_NAME..."
+          echo "Running UI tests on iPhone 14 simulator..."
           
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "generic/platform=iOS Simulator" \
+            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
             "-only-testing:${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES
             
       - name: Upload UI test results
         uses: actions/upload-artifact@v4
@@ -425,4 +445,5 @@ jobs:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES
