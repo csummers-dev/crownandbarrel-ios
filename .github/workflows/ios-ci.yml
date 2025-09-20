@@ -23,6 +23,13 @@ jobs:
         run: |
           gem install xcpretty --no-document
 
+      - name: Install XcodeGen and generate project
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+
       - name: Run Unit Tests (only)
         run: |
           # Find first available iPhone simulator
@@ -61,6 +68,13 @@ jobs:
       - name: Install xcpretty
         run: |
           gem install xcpretty --no-document
+
+      - name: Install XcodeGen and generate project
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
 
       - name: Run UI Tests with retries and no parallelization
         run: |
