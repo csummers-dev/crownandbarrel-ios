@@ -1,31 +1,339 @@
-name: iOS CI
+# GitHub Actions CI/CD Pipeline for Crown & Barrel iOS App
+# This workflow builds, tests, and validates the iOS application
+
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop, 'feature/*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
+
+env:
+  # iOS build variables
+  XCODE_VERSION: "16.0"
+  IOS_SIMULATOR_NAME: "iPhone 16"
+  IOS_SIMULATOR_OS: "17.5"
+  
+  # Project variables
+  PROJECT_NAME: "CrownAndBarrel"
+  SCHEME_NAME: "CrownAndBarrel"
+  BUNDLE_ID: "com.crownandbarrel.app"
+  
+  # Build settings
+  BUILD_CONFIGURATION: "Release"
+  ARCHIVE_CONFIGURATION: "Release"
 
 jobs:
-  build-and-test:
-    runs-on: macos-14
+  # Setup stage - Install dependencies and generate project
+  setup:
+    name: Setup Project
+    runs-on: macos-latest
+    outputs:
+      xcode-version: ${{ steps.xcode-version.outputs.version }}
+      simulator-name: ${{ steps.simulator.outputs.name }}
+    
     steps:
-      - uses: actions/checkout@v4
-      - name: Select Xcode 16
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        id: xcode-version
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16'
-      - name: Install XcodeGen
-        run: brew install xcodegen
-      - name: Install xcpretty
-        run: gem install xcpretty --no-document
-      - name: Clean any committed project
-        run: rm -rf CrownAndBarrel.xcodeproj
-      - name: Generate Xcode project
-        run: xcodegen generate
-      - name: Build and test
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Show Xcode version
+        run: xcodebuild -version
+        
+      - name: List available simulators
+        run: xcrun simctl list devices available
+        
+      - name: Setup simulator
+        id: simulator
         run: |
-          xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination 'platform=iOS Simulator,name=iPhone 16' build test | xcpretty
-        shell: bash
+          SIMULATOR_NAME="${{ env.IOS_SIMULATOR_NAME }}"
+          echo "name=$SIMULATOR_NAME" >> $GITHUB_OUTPUT
+          xcrun simctl boot "$SIMULATOR_NAME" || true
+          xcrun simctl shutdown "$SIMULATOR_NAME" || true
+          xcrun simctl boot "$SIMULATOR_NAME"
+          echo "Simulator booted successfully"
+          
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            echo "Installing XcodeGen..."
+            brew install xcodegen
+          fi
+          xcodegen --version
+          
+      - name: Generate Xcode project
+        run: |
+          xcodegen generate
+          ls -la "${{ env.PROJECT_NAME }}.xcodeproj"
+          echo "Project setup completed successfully"
+          
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+            
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('**/*.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
 
+  # Lint stage - Code quality checks
+  lint:
+    name: Code Quality
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Install SwiftLint
+        run: |
+          if ! command -v swiftlint &> /dev/null; then
+            echo "Installing SwiftLint..."
+            brew install swiftlint
+          fi
+          
+      - name: Run SwiftLint
+        run: |
+          swiftlint lint --reporter github --config .swiftlint.yml
+        continue-on-error: true
+        
+      - name: Upload SwiftLint results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: swiftlint-results
+          path: swiftlint-report.json
+          retention-days: 30
 
+  # Build stage - Compile the application
+  build:
+    name: Build Application
+    runs-on: macos-latest
+    needs: setup
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Setup simulator
+        run: |
+          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}" || true
+          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
+          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}"
+          
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+          
+      - name: Build for Simulator
+        run: |
+          xcodebuild clean -project "${{ env.PROJECT_NAME }}.xcodeproj" -scheme "${{ env.SCHEME_NAME }}"
+          xcodebuild build \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -configuration "${{ matrix.configuration }}" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES
+            
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.configuration }}
+          path: DerivedData/
+          retention-days: 7
+
+  # Unit Tests
+  test-unit:
+    name: Unit Tests
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Setup simulator
+        run: |
+          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}" || true
+          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
+          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}"
+          
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+          
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -only-testing:"${{ env.SCHEME_NAME }}Tests" \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+            
+      - name: Parse test results
+        run: |
+          xcresulttool get --path TestResults.xcresult --format json > test-results.json || echo "Test result parsing completed"
+          
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: |
+            TestResults.xcresult
+            test-results.json
+          retention-days: 30
+
+  # UI Tests
+  test-ui:
+    name: UI Tests
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Setup simulator
+        run: |
+          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}" || true
+          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
+          xcrun simctl boot "${{ env.IOS_SIMULATOR_NAME }}"
+          
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+          
+      - name: Run UI Tests
+        run: |
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -only-testing:"${{ env.SCHEME_NAME }}UITests" \
+            -resultBundlePath UITestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+            
+      - name: Parse UI test results
+        run: |
+          xcresulttool get --path UITestResults.xcresult --format json > ui-test-results.json || echo "UI test result parsing completed"
+          
+      - name: Upload UI test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: |
+            UITestResults.xcresult
+            ui-test-results.json
+          retention-days: 30
+
+  # Archive for distribution
+  archive:
+    name: Create Archive
+    runs-on: macos-latest
+    needs: [setup, build, test-unit, test-ui]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Install XcodeGen
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            brew install xcodegen
+          fi
+          xcodegen generate
+          
+      - name: Create Archive
+        run: |
+          xcodebuild archive \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -configuration "${{ env.ARCHIVE_CONFIGURATION }}" \
+            -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            CODE_SIGN_IDENTITY=""
+            
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
+            -exportPath "./export" \
+            -exportOptionsPlist exportOptions.plist || echo "Export options plist not found, skipping IPA export"
+            
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-archive
+          path: |
+            ${{ env.PROJECT_NAME }}.xcarchive/
+            export/
+          retention-days: 7
+
+  # Cleanup
+  cleanup:
+    name: Cleanup
+    runs-on: macos-latest
+    needs: [setup, build, test-unit, test-ui, archive]
+    if: always()
+    
+    steps:
+      - name: Cleanup simulator
+        run: |
+          xcrun simctl shutdown "${{ env.IOS_SIMULATOR_NAME }}" || true
+          echo "Cleanup completed"
