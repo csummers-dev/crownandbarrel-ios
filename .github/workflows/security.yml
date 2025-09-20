@@ -48,13 +48,24 @@ jobs:
             ARCH=$(uname -m)
             echo "Detected architecture: $ARCH"
             
-            # Try multiple installation strategies
+            # Check if we're on ARM64 (more robust detection)
+            IS_ARM64=false
+            if [[ "$ARCH" == "arm64" ]] || [[ -d "/opt/homebrew" ]]; then
+              IS_ARM64=true
+              echo "Running on ARM64 architecture"
+            else
+              echo "Running on $ARCH architecture"
+            fi
+            
             # Strategy 1: Direct download (fastest)
             echo "Trying direct download..."
-            if curl -L https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip && unzip xcodegen.zip && sudo mv xcodegen /usr/local/bin/; then
+            if curl -L https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip && \
+               unzip -o xcodegen.zip && \
+               sudo mv xcodegen /usr/local/bin/; then
               echo "✅ XcodeGen installed via direct download"
-            # Strategy 2: Homebrew with ARM64 forcing
-            elif [ "$ARCH" = "arm64" ]; then
+              rm -f xcodegen.zip
+            # Strategy 2: Homebrew with ARM64 forcing (if on ARM64)
+            elif [ "$IS_ARM64" = true ]; then
               echo "Trying Homebrew with ARM64 forcing..."
               if arch -arm64 /opt/homebrew/bin/brew install xcodegen 2>/dev/null || \
                  arch -arm64 /usr/local/bin/brew install xcodegen 2>/dev/null || \
