@@ -106,12 +106,20 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Ensure we use the correct architecture for Homebrew
-            if [[ $(uname -m) == "arm64" ]]; then
-              arch -arm64 brew install xcodegen
+            # Check if we're running on ARM64 architecture
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Force ARM64 architecture for Homebrew installation
+            if [[ "$ARCH" == "arm64" ]]; then
+              echo "Using ARM64 architecture for Homebrew..."
+              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
             else
+              echo "Using x86_64 architecture for Homebrew..."
               brew install xcodegen
             fi
+          else
+            echo "XcodeGen is already installed"
           fi
           
       - name: Generate Xcode project
@@ -154,12 +162,20 @@ jobs:
         run: |
           if ! command -v swiftlint &> /dev/null; then
             echo "Installing SwiftLint..."
-            # Ensure we use the correct architecture for Homebrew
-            if [[ $(uname -m) == "arm64" ]]; then
-              arch -arm64 brew install swiftlint
+            # Check if we're running on ARM64 architecture
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Force ARM64 architecture for Homebrew installation
+            if [[ "$ARCH" == "arm64" ]]; then
+              echo "Using ARM64 architecture for Homebrew..."
+              arch -arm64 /opt/homebrew/bin/brew install swiftlint || arch -arm64 brew install swiftlint
             else
+              echo "Using x86_64 architecture for Homebrew..."
               brew install swiftlint
             fi
+          else
+            echo "SwiftLint is already installed"
           fi
           
       - name: Run SwiftLint
@@ -194,12 +210,20 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Ensure we use the correct architecture for Homebrew
-            if [[ $(uname -m) == "arm64" ]]; then
-              arch -arm64 brew install xcodegen
+            # Check if we're running on ARM64 architecture
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Force ARM64 architecture for Homebrew installation
+            if [[ "$ARCH" == "arm64" ]]; then
+              echo "Using ARM64 architecture for Homebrew..."
+              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
             else
+              echo "Using x86_64 architecture for Homebrew..."
               brew install xcodegen
             fi
+          else
+            echo "XcodeGen is already installed"
           fi
           
       - name: Generate Xcode project
@@ -260,12 +284,20 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Ensure we use the correct architecture for Homebrew
-            if [[ $(uname -m) == "arm64" ]]; then
-              arch -arm64 brew install xcodegen
+            # Check if we're running on ARM64 architecture
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Force ARM64 architecture for Homebrew installation
+            if [[ "$ARCH" == "arm64" ]]; then
+              echo "Using ARM64 architecture for Homebrew..."
+              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
             else
+              echo "Using x86_64 architecture for Homebrew..."
               brew install xcodegen
             fi
+          else
+            echo "XcodeGen is already installed"
           fi
           
       - name: Generate Xcode project
@@ -381,12 +413,20 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Ensure we use the correct architecture for Homebrew
-            if [[ $(uname -m) == "arm64" ]]; then
-              arch -arm64 brew install xcodegen
+            # Check if we're running on ARM64 architecture
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Force ARM64 architecture for Homebrew installation
+            if [[ "$ARCH" == "arm64" ]]; then
+              echo "Using ARM64 architecture for Homebrew..."
+              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
             else
+              echo "Using x86_64 architecture for Homebrew..."
               brew install xcodegen
             fi
+          else
+            echo "XcodeGen is already installed"
           fi
           
       - name: Generate Xcode project
@@ -504,12 +544,20 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            # Ensure we use the correct architecture for Homebrew
-            if [[ $(uname -m) == "arm64" ]]; then
-              arch -arm64 brew install xcodegen
+            # Check if we're running on ARM64 architecture
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Force ARM64 architecture for Homebrew installation
+            if [[ "$ARCH" == "arm64" ]]; then
+              echo "Using ARM64 architecture for Homebrew..."
+              arch -arm64 /opt/homebrew/bin/brew install xcodegen || arch -arm64 brew install xcodegen
             else
+              echo "Using x86_64 architecture for Homebrew..."
               brew install xcodegen
             fi
+          else
+            echo "XcodeGen is already installed"
           fi
           
       - name: Generate Xcode project
