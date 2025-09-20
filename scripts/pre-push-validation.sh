@@ -124,7 +124,6 @@ else
     print_status "info" "This indicates the same issue that will occur in CI"
     exit 1
 fi
-fi
 
 # 8. Check for common issues
 print_status "info" "Checking for common CI/CD issues..."
