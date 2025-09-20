@@ -102,7 +102,7 @@ jobs:
           xcrun simctl list devices | grep "$SIMULATOR_NAME" | grep "Booted" || echo "Warning: Simulator may not be fully booted"
           echo "Simulator setup completed"
           
-      - name: Install XcodeGen
+      - name: Install XcodeGen and Generate Project
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen using artifact bundle method..."
@@ -154,8 +154,7 @@ jobs:
             xcodegen --version
           fi
           
-      - name: Generate Xcode project
-        run: |
+          # Generate project in the same step
           echo "Generating Xcode project with XcodeGen..."
           xcodegen generate
           
@@ -289,7 +288,7 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
-      - name: Install XcodeGen
+      - name: Install XcodeGen and Generate Project
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen using artifact bundle method..."
@@ -341,8 +340,7 @@ jobs:
             xcodegen --version
           fi
           
-      - name: Generate Xcode project
-        run: |
+          # Generate project in the same step
           echo "Generating Xcode project with XcodeGen..."
           xcodegen generate
           
@@ -445,7 +443,7 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
-      - name: Install XcodeGen
+      - name: Install XcodeGen and Generate Project
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen using artifact bundle method..."
@@ -497,8 +495,7 @@ jobs:
             xcodegen --version
           fi
           
-      - name: Generate Xcode project
-        run: |
+          # Generate project in the same step
           echo "Generating Xcode project with XcodeGen..."
           xcodegen generate
           
@@ -620,7 +617,7 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
-      - name: Install XcodeGen
+      - name: Install XcodeGen and Generate Project
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen using artifact bundle method..."
@@ -672,8 +669,7 @@ jobs:
             xcodegen --version
           fi
           
-      - name: Generate Xcode project
-        run: |
+          # Generate project in the same step
           echo "Generating Xcode project with XcodeGen..."
           xcodegen generate
           
@@ -797,7 +793,7 @@ jobs:
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
           
-      - name: Install XcodeGen
+      - name: Install XcodeGen and Generate Project
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen using artifact bundle method..."
@@ -849,8 +845,7 @@ jobs:
             xcodegen --version
           fi
           
-      - name: Generate Xcode project
-        run: |
+          # Generate project in the same step
           echo "Generating Xcode project with XcodeGen..."
           xcodegen generate
           
