@@ -183,6 +183,146 @@ struct CrownAndBarrelApp: App {
             #endif
         }
     }
+    
+    // MARK: - Private Methods
+    
+    /// Handles app launch setup including splash animation and UI appearance configuration
+    private func handleAppLaunch() {
+        // Fade out the splash overlay shortly after first frame
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            withAnimation(.easeOut(duration: 0.25)) { showSplash = false }
+        }
+        // Apply themed appearances at launch
+        Appearance.applyAllAppearances()
+        setupUITestTheme()
+        configureUIAppearances()
+    }
+    
+    /// Handles theme change by reapplying all UI appearances
+    private func handleThemeChange() {
+        // Reapply appearance proxies on theme changes and refresh visible bars
+        Appearance.applyAllAppearances()
+        Appearance.refreshVisibleBars()
+        configureUIAppearances()
+        // Environment token is bound at the scene; view-level `.id(themeToken)` handles SwiftUI refresh.
+    }
+    
+    /// Sets up UI test theme if specified via launch arguments
+    private func setupUITestTheme() {
+        #if DEBUG
+        // What: Allow UI tests to pin a specific theme via launch argument.
+        // Why: Ensures we can deterministically validate dark vs light cards and containers.
+        // How: Pass e.g. "--uiTestTheme=dark-default" in UITest launch configuration.
+        if let themeArg = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--uiTestTheme=") })?.split(separator: "=").last {
+            UserDefaults.standard.set(String(themeArg), forKey: "selectedThemeId")
+        }
+        #endif
+    }
+    
+    /// Configures all UIKit appearance proxies to match the current theme
+    private func configureUIAppearances() {
+        configureTabBarAppearance()
+        configureNavigationBarAppearance()
+        configureGlobalTints()
+        configureTableViewAppearances()
+        configureCollectionViewAppearances()
+        configureSegmentedControlAppearance()
+        configureButtonAppearances()
+    }
+    
+    /// Configures tab bar appearance with theme colors
+    private func configureTabBarAppearance() {
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithOpaqueBackground()
+        tabAppearance.backgroundColor = UIColor(AppColors.background)
+        tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+        UITabBar.appearance().standardAppearance = tabAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+        UITabBar.appearance().tintColor = UIColor(AppColors.accent)
+        UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
+    }
+    
+    /// Configures navigation bar appearance with theme colors
+    private func configureNavigationBarAppearance() {
+        let navAppearance = UINavigationBarAppearance()
+        navAppearance.configureWithOpaqueBackground()
+        navAppearance.backgroundColor = UIColor(AppColors.background)
+        navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+        navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
+        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
+        
+        // Hide back button titles globally (chevron only)
+        let backItemAppearance = UIBarButtonItemAppearance()
+        let hiddenTitleAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.clear]
+        backItemAppearance.normal.titleTextAttributes = hiddenTitleAttrs
+        backItemAppearance.highlighted.titleTextAttributes = hiddenTitleAttrs
+        backItemAppearance.disabled.titleTextAttributes = hiddenTitleAttrs
+        backItemAppearance.focused.titleTextAttributes = hiddenTitleAttrs
+        navAppearance.backButtonAppearance = backItemAppearance
+        
+        UINavigationBar.appearance().standardAppearance = navAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+        UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
+    }
+    
+    /// Configures global tint colors for UIKit elements
+    private func configureGlobalTints() {
+        // Global control tint (UIKit hosting).
+        // What: Use themed accent instead of system tint.
+        // Why: Some UIKit elements cache tint on creation; this sets a consistent baseline.
+        UIView.appearance().tintColor = UIColor(AppColors.accent)
+        // Ensure calendar header arrow buttons adopt accent
+        UIButton.appearance(whenContainedInInstancesOf: [UICalendarView.self]).tintColor = UIColor(AppColors.accent)
+    }
+    
+    /// Configures table view appearances for custom-styled lists
+    private func configureTableViewAppearances() {
+        // UITableView / Cell / contained scroll backgrounds for SwiftUI List(.plain)
+        // Default clear so screens can supply themed backgrounds.
+        UITableView.appearance().backgroundColor = .clear
+        UITableViewCell.appearance().backgroundColor = .clear
+        UIScrollView.appearance(whenContainedInInstancesOf: [UITableView.self]).backgroundColor = .clear
+        UITableViewHeaderFooterView.appearance().tintColor = .clear
+        UITableViewHeaderFooterView.appearance().backgroundColor = .clear
+        
+        // Remove default hairline separators for visual clarity in custom-styled lists
+        UITableView.appearance().separatorStyle = .none
+        UITableView.appearance().separatorColor = .clear
+        UITableView.appearance().separatorInset = .zero
+        UITableView.appearance().separatorInsetReference = .fromCellEdges
+        UITableView.appearance().separatorEffect = nil
+        UITableView.appearance().tableFooterView = UIView(frame: .zero)
+    }
+    
+    /// Configures collection view appearances
+    private func configureCollectionViewAppearances() {
+        // UICollectionView backgrounds cleared so screens can supply themed backgrounds.
+        UICollectionView.appearance().backgroundColor = .clear
+        UICollectionViewCell.appearance().backgroundColor = .clear
+    }
+    
+    /// Configures segmented control appearance with theme colors
+    private func configureSegmentedControlAppearance() {
+        // Segmented control (used in Collection view toggle)
+        // What: Use accent for selected segment, white text for selected, primary for normal.
+        // Why: Keeps selection visible across themes and avoids system blue.
+        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
+        UISegmentedControl.appearance().setTitleTextAttributes([
+            .foregroundColor: UIColor(AppColors.brandWhite)
+        ], for: .selected)
+        UISegmentedControl.appearance().setTitleTextAttributes([
+            .foregroundColor: UIColor(AppColors.textPrimary)
+        ], for: .normal)
+    }
+    
+    /// Configures button appearances with theme colors
+    private func configureButtonAppearances() {
+        // Common button/bar button tint
+        UIBarButtonItem.appearance().tintColor = UIColor(AppColors.accent)
+        UIButton.appearance().tintColor = UIColor(AppColors.accent)
+        // Calendar labels inside UICalendarView should inherit theme text color
+        UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -203,150 +343,10 @@ struct CrownAndBarrelApp: App {
                 .background(AppColors.background.ignoresSafeArea())
                 .environment(\.themeToken, selectedThemeId)
                 .onAppear {
-                    // Fade out the splash overlay shortly after first frame
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                        withAnimation(.easeOut(duration: 0.25)) { showSplash = false }
-                    }
-                    // Apply themed appearances at launch
-                    Appearance.applyAllAppearances()
-                    #if DEBUG
-                    // What: Allow UI tests to pin a specific theme via launch argument.
-                    // Why: Ensures we can deterministically validate dark vs light cards and containers.
-                    // How: Pass e.g. "--uiTestTheme=dark-default" in UITest launch configuration.
-                    if let themeArg = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--uiTestTheme=") })?.split(separator: "=").last {
-                        UserDefaults.standard.set(String(themeArg), forKey: "selectedThemeId")
-                    }
-                    #endif
-                    // Tab bar appearance
-                    let tabAppearance = UITabBarAppearance()
-                    tabAppearance.configureWithOpaqueBackground()
-                    tabAppearance.backgroundColor = UIColor(AppColors.background)
-                    tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-                    UITabBar.appearance().standardAppearance = tabAppearance
-                    UITabBar.appearance().scrollEdgeAppearance = tabAppearance
-                    UITabBar.appearance().tintColor = UIColor(AppColors.accent)
-                    UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
-
-                    // Navigation bar appearance
-                    let navAppearance = UINavigationBarAppearance()
-                    navAppearance.configureWithOpaqueBackground()
-                    navAppearance.backgroundColor = UIColor(AppColors.background)
-                    navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-                    navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
-                    navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
-                    // Hide back button titles globally (chevron only)
-                    let backItemAppearance = UIBarButtonItemAppearance()
-                    let hiddenTitleAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.clear]
-                    backItemAppearance.normal.titleTextAttributes = hiddenTitleAttrs
-                    backItemAppearance.highlighted.titleTextAttributes = hiddenTitleAttrs
-                    backItemAppearance.disabled.titleTextAttributes = hiddenTitleAttrs
-                    backItemAppearance.focused.titleTextAttributes = hiddenTitleAttrs
-                    navAppearance.backButtonAppearance = backItemAppearance
-                    UINavigationBar.appearance().standardAppearance = navAppearance
-                    UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
-                    UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
-
-                    // Global control tint (UIKit hosting).
-                    // What: Use themed accent instead of system tint.
-                    // Why: Some UIKit elements cache tint on creation; this sets a consistent baseline.
-                    UIView.appearance().tintColor = UIColor(AppColors.accent)
-                    // Ensure calendar header arrow buttons adopt accent
-                    UIButton.appearance(whenContainedInInstancesOf: [UICalendarView.self]).tintColor = UIColor(AppColors.accent)
-
-                    // UITableView / Cell / contained scroll backgrounds for SwiftUI List(.plain)
-                    // Default clear so screens can supply themed backgrounds.
-                    UITableView.appearance().backgroundColor = .clear
-                    UITableViewCell.appearance().backgroundColor = .clear
-                    UIScrollView.appearance(whenContainedInInstancesOf: [UITableView.self]).backgroundColor = .clear
-                    UITableViewHeaderFooterView.appearance().tintColor = .clear
-                    UITableViewHeaderFooterView.appearance().backgroundColor = .clear
-
-                    // UICollectionView backgrounds cleared so screens can supply themed backgrounds.
-                    UICollectionView.appearance().backgroundColor = .clear
-                    UICollectionViewCell.appearance().backgroundColor = .clear
-                    // Remove default hairline separators for visual clarity in custom-styled lists
-                    UITableView.appearance().separatorStyle = .none
-                    UITableView.appearance().separatorColor = .clear
-                    UITableView.appearance().separatorInset = .zero
-                    UITableView.appearance().separatorInsetReference = .fromCellEdges
-                    UITableView.appearance().separatorEffect = nil
-                    UITableView.appearance().tableFooterView = UIView(frame: .zero)
-
-                    // Segmented control (used in Collection view toggle)
-                    // What: Use accent for selected segment, white text for selected, primary for normal.
-                    // Why: Keeps selection visible across themes and avoids system blue.
-                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
-                    UISegmentedControl.appearance().setTitleTextAttributes([
-                        .foregroundColor: UIColor(AppColors.brandWhite)
-                    ], for: .selected)
-                    UISegmentedControl.appearance().setTitleTextAttributes([
-                        .foregroundColor: UIColor(AppColors.textPrimary)
-                    ], for: .normal)
-
-                    // Common button/bar button tint
-                    UIBarButtonItem.appearance().tintColor = UIColor(AppColors.accent)
-                    UIButton.appearance().tintColor = UIColor(AppColors.accent)
-                    // Calendar labels inside UICalendarView should inherit theme text color
-                    UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
+                    handleAppLaunch()
                 }
                 .onChange(of: selectedThemeId) { _, _ in
-                    // Reapply appearance proxies on theme changes and refresh visible bars
-                    Appearance.applyAllAppearances()
-                    Appearance.refreshVisibleBars()
-                    let tabAppearance = UITabBarAppearance()
-                    tabAppearance.configureWithOpaqueBackground()
-                    tabAppearance.backgroundColor = UIColor(AppColors.background)
-                    tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-                    UITabBar.appearance().standardAppearance = tabAppearance
-                    UITabBar.appearance().scrollEdgeAppearance = tabAppearance
-                    UITabBar.appearance().tintColor = UIColor(AppColors.accent)
-                    UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
-
-                    let navAppearance = UINavigationBarAppearance()
-                    navAppearance.configureWithOpaqueBackground()
-                    navAppearance.backgroundColor = UIColor(AppColors.background)
-                    navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-                    navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
-                    navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
-                    let backItemAppearance = UIBarButtonItemAppearance()
-                    let hiddenTitleAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.clear]
-                    backItemAppearance.normal.titleTextAttributes = hiddenTitleAttrs
-                    backItemAppearance.highlighted.titleTextAttributes = hiddenTitleAttrs
-                    backItemAppearance.disabled.titleTextAttributes = hiddenTitleAttrs
-                    backItemAppearance.focused.titleTextAttributes = hiddenTitleAttrs
-                    navAppearance.backButtonAppearance = backItemAppearance
-                    UINavigationBar.appearance().standardAppearance = navAppearance
-                    UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
-                    UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
-
-                    // Re-assert global and calendar-contained button tint to reflect new theme.
-                    UIView.appearance().tintColor = UIColor(AppColors.accent)
-                    UIButton.appearance(whenContainedInInstancesOf: [UICalendarView.self]).tintColor = UIColor(AppColors.accent)
-                    // Keep segmented control selected tint in sync with theme accent on changes
-                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
-                    UISegmentedControl.appearance().setTitleTextAttributes([
-                        .foregroundColor: UIColor(AppColors.brandWhite)
-                    ], for: .selected)
-                    UISegmentedControl.appearance().setTitleTextAttributes([
-                        .foregroundColor: UIColor(AppColors.textPrimary)
-                    ], for: .normal)
-
-                    // Reapply List backgrounds on theme change and ensure separators stay hidden
-                    UITableView.appearance().backgroundColor = .clear
-                    UITableViewCell.appearance().backgroundColor = .clear
-                    UIScrollView.appearance(whenContainedInInstancesOf: [UITableView.self]).backgroundColor = .clear
-                    UITableViewHeaderFooterView.appearance().tintColor = .clear
-                    UITableViewHeaderFooterView.appearance().backgroundColor = .clear
-                    UICollectionView.appearance().backgroundColor = .clear
-                    UICollectionViewCell.appearance().backgroundColor = .clear
-                    UITableView.appearance().separatorStyle = .none
-                    UITableView.appearance().separatorColor = .clear
-                    UITableView.appearance().separatorInset = .zero
-                    UITableView.appearance().separatorInsetReference = .fromCellEdges
-                    UITableView.appearance().separatorEffect = nil
-                    UITableView.appearance().tableFooterView = UIView(frame: .zero)
-                    UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
-                    // Environment token is bound at the scene; view-level `.id(themeToken)` handles SwiftUI refresh.
+                    handleThemeChange()
                 }
         }
     }
