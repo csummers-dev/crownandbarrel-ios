@@ -459,7 +459,7 @@ class WatchFormViewModelTests: XCTestCase {
 
 ## Continuous Integration
 
-### GitLab CI Configuration
+### GitHub Actions Configuration
 ```yaml
 test:
   stage: test

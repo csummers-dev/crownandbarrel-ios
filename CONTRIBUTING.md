@@ -31,11 +31,11 @@ By participating in this project, you agree to abide by our code of conduct:
 - Familiarity with iOS development
 
 ### Initial Setup
-1. **Fork the repository** on GitLab
+1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://gitlab.com/YOUR_USERNAME/crown-and-barrel.git
-   cd crown-and-barrel
+   git clone https://github.com/YOUR_USERNAME/crownandbarrel-ios.git
+   cd crownandbarrel-ios
    ```
 3. **Set up the development environment** following the [Development Guide](DEVELOPMENT.md)
 4. **Verify everything works** by building and running the app
@@ -159,7 +159,7 @@ xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination
 
 ### Creating a Pull Request
 1. **Push your branch** to your fork
-2. **Create a pull request** on GitLab
+2. **Create a pull request** on GitHub
 3. **Fill out the PR template** with relevant information
 4. **Link related issues** if applicable
 5. **Request review** from maintainers
@@ -257,8 +257,8 @@ When requesting features:
 - **Troubleshooting Guide**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 ### Communication
-- **GitLab Issues**: For bug reports and feature requests
-- **GitLab Discussions**: For questions and general discussion
+- **GitHub Issues**: For bug reports and feature requests
+- **GitHub Discussions**: For questions and general discussion
 - **Email**: [csummersdev@icloud.com](mailto:csummersdev@icloud.com)
 
 ### Mentorship

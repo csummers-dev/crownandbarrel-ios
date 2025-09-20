@@ -31,12 +31,12 @@ This guide provides detailed instructions for setting up, building, and testing 
 ### 1. Clone the Repository
 ```bash
 # Clone the main repository
-git clone https://gitlab.com/csummersdev/crown-and-barrel.git
-cd crown-and-barrel
+git clone https://github.com/csummers-dev/crownandbarrel-ios.git
+cd crownandbarrel-ios
 
 # Or clone your fork (for contributors)
-git clone https://gitlab.com/YOUR_USERNAME/crown-and-barrel.git
-cd crown-and-barrel
+git clone https://github.com/YOUR_USERNAME/crownandbarrel-ios.git
+cd crownandbarrel-ios
 ```
 
 ### 2. Install Dependencies

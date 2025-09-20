@@ -365,7 +365,7 @@ xcodebuild -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination
 ### Before Asking for Help
 
 1. **Check this guide** - Your issue might already be documented
-2. **Search existing issues** - Look through [GitLab Issues](https://gitlab.com/csummersdev/crown-and-barrel/-/issues)
+2. **Search existing issues** - Look through [GitHub Issues](https://github.com/csummers-dev/crownandbarrel-ios/issues)
 3. **Try basic solutions** - Clean builds, restart Xcode, reset simulator
 4. **Gather information** - Device/simulator info, error logs, reproduction steps
 
@@ -397,7 +397,7 @@ ls -la Sources/ Tests/
 
 ### Contact
 
-- **GitLab Issues**: [Create an issue](https://gitlab.com/csummersdev/crown-and-barrel/-/issues/new)
+- **GitHub Issues**: [Create an issue](https://github.com/csummers-dev/crownandbarrel-ios/issues/new)
 - **Email**: [csummersdev@icloud.com](mailto:csummersdev@icloud.com)
 
 ## Haptic Feedback Issues

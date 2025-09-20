@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **GitHub Actions CI/CD Migration**: Complete migration from GitLab CI to GitHub Actions
+- **GitHub Actions CI/CD Implementation**: Complete CI/CD pipeline using GitHub Actions
   - Comprehensive GitHub Actions workflows for CI/CD pipeline
   - Automated build, test, and deployment workflows
   - Security scanning and vulnerability assessment
@@ -194,7 +194,7 @@ This project follows [Semantic Versioning](https://semver.org/):
 ### Release Checklist
 - [ ] Update version numbers in project files
 - [ ] Update CHANGELOG.md with release date
-- [ ] Create GitLab release tag
+- [ ] Create GitHub release tag
 - [ ] Update App Store metadata (when applicable)
 - [ ] Test release build thoroughly
 - [ ] Update documentation if needed
@@ -247,7 +247,7 @@ When making changes, please:
 ### Example Entry
 ```markdown
 ### Added
-- Dark mode toggle in settings ([#123](https://gitlab.com/csummersdev/crown-and-barrel/-/issues/123))
+- Dark mode toggle in settings ([#123](https://github.com/csummers-dev/crownandbarrel-ios/issues/123))
 - Haptic feedback for watch wear logging
 - Export functionality for watch collection data
 ```
@@ -256,9 +256,9 @@ When making changes, please:
 
 ## Links
 
-- [GitLab Repository](https://gitlab.com/csummersdev/crown-and-barrel)
-- [Issue Tracker](https://gitlab.com/csummersdev/crown-and-barrel/-/issues)
-- [Release Tags](https://gitlab.com/csummersdev/crown-and-barrel/-/tags)
+- [GitHub Repository](https://github.com/csummers-dev/crownandbarrel-ios)
+- [Issue Tracker](https://github.com/csummers-dev/crownandbarrel-ios/issues)
+- [Release Tags](https://github.com/csummers-dev/crownandbarrel-ios/releases)
 
 ---
 
