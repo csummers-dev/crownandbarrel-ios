@@ -251,8 +251,9 @@ jobs:
           xcodebuild build \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.PROJECT_NAME }}" \
-            -destination "generic/platform=iOS" \
+            -destination "generic/platform=iOS Simulator" \
             CODE_SIGNING_ALLOWED=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             -quiet
           end_time=$(date +%s)
           build_time=$((end_time - start_time))
