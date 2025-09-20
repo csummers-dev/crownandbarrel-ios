@@ -121,8 +121,7 @@ if [ -n "$FIRST_DESTINATION" ]; then
         VALID_ARCHS="arm64" \
         ARCHS="arm64" \
         ENABLE_BITCODE=NO \
-        IPHONEOS_DEPLOYMENT_TARGET=15.0 \
-        SDKROOT=iphoneos15.0 2>/dev/null; then
+        IPHONEOS_DEPLOYMENT_TARGET=15.0 2>/dev/null; then
         print_status "success" "Build configuration test passed"
     else
         print_status "error" "Build configuration test failed"
