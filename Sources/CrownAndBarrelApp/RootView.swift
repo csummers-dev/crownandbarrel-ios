@@ -118,14 +118,29 @@ struct RootView: View {
     private var settingsToolbar: some ToolbarContent {
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
-                Button("Settings") { activeSheet = .settings }
-                Button("App Data") { activeSheet = .appData }
-                Button("Privacy Policy") { activeSheet = .privacy }
-                Button("About") { activeSheet = .about }
+                Button("Settings") { 
+                    Haptics.navigationInteraction(.menuItemSelected)
+                    activeSheet = .settings 
+                }
+                Button("App Data") { 
+                    Haptics.navigationInteraction(.menuItemSelected)
+                    activeSheet = .appData 
+                }
+                Button("Privacy Policy") { 
+                    Haptics.navigationInteraction(.menuItemSelected)
+                    activeSheet = .privacy 
+                }
+                Button("About") { 
+                    Haptics.navigationInteraction(.menuItemSelected)
+                    activeSheet = .about 
+                }
             } label: {
                 Image(systemName: "gearshape").foregroundStyle(AppColors.accent)
                     .symbolRenderingMode(.monochrome)
                     .accessibilityIdentifier("SettingsMenuButton")
+            }
+            .onTapGesture {
+                Haptics.navigationInteraction(.menuOpened)
             }
         }
     }

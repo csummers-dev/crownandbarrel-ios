@@ -37,12 +37,21 @@ struct WatchFormView: View {
                 TextField("Manufacturer", text: $viewModel.manufacturer)
                     .accessibilityIdentifier("manufacturerField")
                     .listRowBackground(AppColors.background)
+                    .onTapGesture {
+                        Haptics.formInteraction()
+                    }
                 TextField("Model", text: $viewModel.model)
                     .listRowBackground(AppColors.background)
+                    .onTapGesture {
+                        Haptics.formInteraction()
+                    }
 
                 Picker("Category", selection: Binding<WatchCategory>(
                     get: { viewModel.category ?? .other },
-                    set: { viewModel.category = $0 }
+                    set: { newValue in
+                        Haptics.formInteraction()
+                        viewModel.category = newValue
+                    }
                 )) {
                     ForEach(WatchCategory.allCases) { cat in
                         Text(cat.rawValue.capitalized).tag(cat)
@@ -52,12 +61,21 @@ struct WatchFormView: View {
 
                 TextField("Serial number", text: $viewModel.serialNumber)
                     .listRowBackground(AppColors.background)
+                    .onTapGesture {
+                        Haptics.formInteraction()
+                    }
                 TextField("Reference number", text: $viewModel.referenceNumber)
                     .listRowBackground(AppColors.background)
+                    .onTapGesture {
+                        Haptics.formInteraction()
+                    }
 
                 Picker("Movement", selection: Binding<WatchMovement>(
                     get: { viewModel.movement ?? .other },
-                    set: { viewModel.movement = $0 }
+                    set: { newValue in
+                        Haptics.formInteraction()
+                        viewModel.movement = newValue
+                    }
                 )) {
                     ForEach(WatchMovement.allCases) { m in
                         Text(m.rawValue.capitalized).tag(m)
@@ -65,7 +83,13 @@ struct WatchFormView: View {
                 }
                 .listRowBackground(AppColors.background)
 
-                Toggle("Favorite", isOn: $viewModel.isFavorite)
+                Toggle("Favorite", isOn: Binding<Bool>(
+                    get: { viewModel.isFavorite },
+                    set: { newValue in
+                        Haptics.formInteraction()
+                        viewModel.isFavorite = newValue
+                    }
+                ))
                     .listRowBackground(AppColors.background)
             }
             header: { EmptyView() }
@@ -73,50 +97,114 @@ struct WatchFormView: View {
             headerRow("Additional details")
             Section {
                 Button(viewModel.isDetailsExpanded ? "Hide additional details" : "Show additional details") {
+                    Haptics.formInteraction()
                     withAnimation { viewModel.isDetailsExpanded.toggle() }
                 }
                 .listRowBackground(AppColors.background)
 
                 if viewModel.isDetailsExpanded {
-                    Toggle("Purchase date", isOn: $hasPurchaseDate)
+                    Toggle("Purchase date", isOn: Binding<Bool>(
+                        get: { hasPurchaseDate },
+                        set: { newValue in
+                            Haptics.formInteraction()
+                            hasPurchaseDate = newValue
+                        }
+                    ))
                         .listRowBackground(AppColors.background)
                     if hasPurchaseDate {
-                        DatePicker("Select date", selection: $tempPurchaseDate, displayedComponents: .date)
+                        DatePicker("Select date", selection: Binding<Date>(
+                            get: { tempPurchaseDate },
+                            set: { newValue in
+                                Haptics.formInteraction()
+                                tempPurchaseDate = newValue
+                            }
+                        ), displayedComponents: .date)
                             .listRowBackground(AppColors.background)
                     }
                     TextField("Service interval (months)", text: $viewModel.serviceIntervalMonths)
                         .keyboardType(.numberPad)
                         .listRowBackground(AppColors.background)
-                    Toggle("Warranty expiration", isOn: $hasWarrantyExpirationDate)
+                        .onTapGesture {
+                            Haptics.formInteraction()
+                        }
+                    Toggle("Warranty expiration", isOn: Binding<Bool>(
+                        get: { hasWarrantyExpirationDate },
+                        set: { newValue in
+                            Haptics.formInteraction()
+                            hasWarrantyExpirationDate = newValue
+                        }
+                    ))
                         .listRowBackground(AppColors.background)
                     if hasWarrantyExpirationDate {
-                        DatePicker("Select date", selection: $tempWarrantyExpirationDate, displayedComponents: .date)
+                        DatePicker("Select date", selection: Binding<Date>(
+                            get: { tempWarrantyExpirationDate },
+                            set: { newValue in
+                                Haptics.formInteraction()
+                                tempWarrantyExpirationDate = newValue
+                            }
+                        ), displayedComponents: .date)
                             .listRowBackground(AppColors.background)
                     }
-                    Toggle("Last service date", isOn: $hasLastServiceDate)
+                    Toggle("Last service date", isOn: Binding<Bool>(
+                        get: { hasLastServiceDate },
+                        set: { newValue in
+                            Haptics.formInteraction()
+                            hasLastServiceDate = newValue
+                        }
+                    ))
                         .listRowBackground(AppColors.background)
                     if hasLastServiceDate {
-                        DatePicker("Select date", selection: $tempLastServiceDate, displayedComponents: .date)
+                        DatePicker("Select date", selection: Binding<Date>(
+                            get: { tempLastServiceDate },
+                            set: { newValue in
+                                Haptics.formInteraction()
+                                tempLastServiceDate = newValue
+                            }
+                        ), displayedComponents: .date)
                             .listRowBackground(AppColors.background)
                     }
                     TextField("Purchase price", text: $viewModel.purchasePrice)
                         .keyboardType(.decimalPad)
                         .listRowBackground(AppColors.background)
+                        .onTapGesture {
+                            Haptics.formInteraction()
+                        }
                     TextField("Current value", text: $viewModel.currentValue)
                         .keyboardType(.decimalPad)
                         .listRowBackground(AppColors.background)
+                        .onTapGesture {
+                            Haptics.formInteraction()
+                        }
                     TextField("Notes", text: $viewModel.notes, axis: .vertical)
                         .frame(minHeight: 88)
                         .listRowBackground(AppColors.background)
-                    Toggle("Sale date", isOn: $hasSaleDate)
+                        .onTapGesture {
+                            Haptics.formInteraction()
+                        }
+                    Toggle("Sale date", isOn: Binding<Bool>(
+                        get: { hasSaleDate },
+                        set: { newValue in
+                            Haptics.formInteraction()
+                            hasSaleDate = newValue
+                        }
+                    ))
                         .listRowBackground(AppColors.background)
                     if hasSaleDate {
-                        DatePicker("Select date", selection: $tempSaleDate, displayedComponents: .date)
+                        DatePicker("Select date", selection: Binding<Date>(
+                            get: { tempSaleDate },
+                            set: { newValue in
+                                Haptics.formInteraction()
+                                tempSaleDate = newValue
+                            }
+                        ), displayedComponents: .date)
                             .listRowBackground(AppColors.background)
                     }
                     TextField("Sale price", text: $viewModel.salePrice)
                         .keyboardType(.decimalPad)
                         .listRowBackground(AppColors.background)
+                        .onTapGesture {
+                            Haptics.formInteraction()
+                        }
                 }
             }
             header: { EmptyView() }
@@ -195,7 +283,12 @@ struct WatchFormView: View {
                 Button("Save") {
                     Task {
                         applyDateSelectionsToViewModel()
-                        if await viewModel.save() { dismiss() }
+                        if await viewModel.save() {
+                            Haptics.successNotification()
+                            dismiss()
+                        } else {
+                            Haptics.error()
+                        }
                     }
                 }
                     .disabled(viewModel.isSaving)
@@ -210,6 +303,7 @@ struct WatchFormView: View {
                     // Enforce square crop on selection
                     let cropped = ImageStore.squareCropped(image)
                     viewModel.selectedImage = cropped
+                    Haptics.success()
                 }
                 // Reset picker selection so user can pick again next time without stale state
                 DispatchQueue.main.async { pickerItem = nil }

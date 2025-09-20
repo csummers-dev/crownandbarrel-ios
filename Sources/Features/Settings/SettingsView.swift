@@ -52,6 +52,9 @@ struct SettingsView: View {
         }
         .toolbarBackground(AppColors.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
+        .onAppear {
+            Haptics.lightImpact()
+        }
         .id(themeToken)
     }
 }
@@ -65,7 +68,13 @@ private extension SettingsView {
     ///        a custom row right above to fully control color and spacing.
     var appearanceSection: some View {
         Section {
-            Picker("Theme", selection: $selectedThemeId) {
+            Picker("Theme", selection: Binding<String>(
+                get: { selectedThemeId },
+                set: { newValue in
+                    Haptics.settingsInteraction(.themeChange)
+                    selectedThemeId = newValue
+                }
+            )) {
                 ForEach(ThemeCatalog.shared.orderedThemes) { theme in
                     ThemeRow(theme: theme)
                         .tag(theme.id)

@@ -1,0 +1,10 @@
+# The Appfile is a configuration file for fastlane. It's usually placed in the root of the project.
+# It contains metadata about your app that can be used by fastlane.
+# If you want to get a list of all available options run `fastlane docs`
+
+app_identifier("com.crownandbarrel.app")
+apple_id("corywatch@icloud.com")
+team_id("G7Z5DDPMSL")
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

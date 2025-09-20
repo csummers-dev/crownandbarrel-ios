@@ -21,6 +21,7 @@
 		1FECAFBA81BEFCF9C6E572B9 /* CollectionGridSizingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22BCAA2343474104007703C3 /* CollectionGridSizingUITests.swift */; };
 		215E571E9B66786BC46095C2 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB76A26B0E9FB5A6116187F /* Layout.swift */; };
 		21CBA0EF574D99452C2B6D91 /* StatsUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B51C43DFAA9D722A37E85418 /* StatsUITests.swift */; };
+		2290B4AF2F81497CD4FAD255 /* AppIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E3F25C6A2072551C6442412 /* AppIconManager.swift */; };
 		23230A62D5182963A143588F /* CollectionCardStyleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32D207210EC8150E958FC738 /* CollectionCardStyleUITests.swift */; };
 		25BBA85D4F1BE90755D647D7 /* BackupRepositoryFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B040BB51355DC6B08325E028 /* BackupRepositoryFile.swift */; };
 		26C4944C357CB0181733291B /* icongen.sh in Resources */ = {isa = PBXBuildFile; fileRef = 2434F861A028AE841FBAD057 /* icongen.sh */; };
@@ -54,6 +55,7 @@
 		68839F25741C217A7F6A75EB /* DetailWornTodayUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4A3A4348CBF2B9F3FEB65F /* DetailWornTodayUITests.swift */; };
 		6DA518CD17F3030AE5C1ED75 /* ThemeResolutionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D74DCE601B81CC4A2D4203AB /* ThemeResolutionTests.swift */; };
 		6E3CAF8EA086B1EE28C78B45 /* ThemeLiveRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */; };
+		7216E4B245F32CA3E242D160 /* HapticIntegrationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B10F4C45F390435802C5F0D /* HapticIntegrationUITests.swift */; };
 		76CC8EAA46FAE4B202473AD0 /* FiltersAndBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4089FC1B0C673A2CE65ACEDC /* FiltersAndBackupTests.swift */; };
 		78CC781C4A7F8F8BFF9AC068 /* SettingsAppearanceHeaderUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */; };
 		87D3F53C9C32477BC2298D90 /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A021FCBFB00FA8A866C416 /* DateUtils.swift */; };
@@ -66,6 +68,7 @@
 		8C2E6EABD323CAA0327E12CE /* CalendarListBackgroundUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B089723905E9829DD7268F4E /* CalendarListBackgroundUITests.swift */; };
 		9853902144754D6AB314734F /* ImageStoreCropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */; };
 		98669173D126E51F59B1CA32 /* WearEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0EAFBD423D5E1C5C8FF2C8 /* WearEntry.swift */; };
+		991346D5F7331BF16592879D /* HapticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437A6973B360720818BB9088 /* HapticsTests.swift */; };
 		9C9F4E073700114208FCBCA8 /* AssetsPresenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 302E7DBBF82190EA0726F703 /* AssetsPresenceTests.swift */; };
 		A5B420DB024B6FC7DC10DAED /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CBAFA9A592B67182F3D74B9B /* LaunchScreen.storyboard */; };
 		AB01C6ED766B3CC335219421 /* ThemeDefaultingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510362C5E1F49E09E688D0F5 /* ThemeDefaultingTests.swift */; };
@@ -81,6 +84,7 @@
 		DE82BD5E26DDCC31030AF29B /* AppDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8A3A6028AAE227C44BAD7 /* AppDataView.swift */; };
 		DF9C95761D1075390E576460 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D394ADB1653A9B3FEF334C9D /* CoreDataStack.swift */; };
 		E0CE542C64C2518590BC298E /* LaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B298A749A64CE6C8DF50C7A /* LaunchConfigurationTests.swift */; };
+		E57D3357D8F964CA9BB061D1 /* AppIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91464DBDAE05DDE30024016A /* AppIconSize.swift */; };
 		E9BD7736E2F341FD0FFEE6DC /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397D8E4F131857CBF1DDE7FF /* StatsView.swift */; };
 		EBB4BB5156BA4162D76CA362 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 3C0B189D594E115D33EBE487 /* ZIPFoundation */; };
 		ED41FF7937B0AA30CBEB6AC9 /* ThemeToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9169B2CE7BD888138D7E710B /* ThemeToken.swift */; };
@@ -109,7 +113,9 @@
 		017DAA579B6AFF18064256E2 /* PrivacyPolicy.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = PrivacyPolicy.html; sourceTree = "<group>"; };
 		018618CC1E01DDCB5622A3C9 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
 		05906912928A2722D7562850 /* WatchEntryPlaceholder-LightMode-1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WatchEntryPlaceholder-LightMode-1000.png"; sourceTree = "<group>"; };
+		0B10F4C45F390435802C5F0D /* HapticIntegrationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticIntegrationUITests.swift; sourceTree = "<group>"; };
 		0E0EAFBD423D5E1C5C8FF2C8 /* WearEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WearEntry.swift; sourceTree = "<group>"; };
+		0E3F25C6A2072551C6442412 /* AppIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconManager.swift; sourceTree = "<group>"; };
 		0F75954B3813C45474FE6264 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		0FBD566F1CBEFB59278DAA5D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		117B23A899CC16DEC0B3473D /* BackupRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepository.swift; sourceTree = "<group>"; };
@@ -130,6 +136,7 @@
 		3A511830ED723836C98668DD /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
 		3CF30BD6973E3AEDA840331C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4089FC1B0C673A2CE65ACEDC /* FiltersAndBackupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersAndBackupTests.swift; sourceTree = "<group>"; };
+		437A6973B360720818BB9088 /* HapticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsTests.swift; sourceTree = "<group>"; };
 		45F71CA37273E920219D48AB /* CollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewModel.swift; sourceTree = "<group>"; };
 		502E892118227F09D2045B03 /* ThemeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalog.swift; sourceTree = "<group>"; };
 		50C277043741583085DC96EE /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
@@ -154,6 +161,7 @@
 		8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeLiveRefreshUITests.swift; sourceTree = "<group>"; };
 		8CEA2F7503083711152B1A2C /* AppEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEvents.swift; sourceTree = "<group>"; };
 		8EEF8A94E53CEC2CD105E3F4 /* SampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
+		91464DBDAE05DDE30024016A /* AppIconSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconSize.swift; sourceTree = "<group>"; };
 		9169B2CE7BD888138D7E710B /* ThemeToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeToken.swift; sourceTree = "<group>"; };
 		9C09ACC0EEECA7B66AD45880 /* WatchFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormView.swift; sourceTree = "<group>"; };
 		A15D1827CE308CDE4224BDEB /* AppDataToastUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataToastUITests.swift; sourceTree = "<group>"; };
@@ -383,6 +391,8 @@
 			isa = PBXGroup;
 			children = (
 				8CEA2F7503083711152B1A2C /* AppEvents.swift */,
+				0E3F25C6A2072551C6442412 /* AppIconManager.swift */,
+				91464DBDAE05DDE30024016A /* AppIconSize.swift */,
 				82A021FCBFB00FA8A866C416 /* DateUtils.swift */,
 				2F2B93F9791B1EC255A7DB33 /* Haptics.swift */,
 				75F4503E1B5222F7098D965A /* ImageStore.swift */,
@@ -423,6 +433,7 @@
 				5E4A3A4348CBF2B9F3FEB65F /* DetailWornTodayUITests.swift */,
 				D4612BEB794509AC43357D48 /* ExampleUITests.swift */,
 				33C55EC07E208EDA47A5696B /* FullScreenLaunchUITests.swift */,
+				0B10F4C45F390435802C5F0D /* HapticIntegrationUITests.swift */,
 				6E93D969C57CA79AC0574164 /* PrivacyPolicyUITests.swift */,
 				B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */,
 				C7F3572E383D9F8AA4E35ADD /* StatsTitleUITests.swift */,
@@ -452,6 +463,7 @@
 				12C0DC54BC572E05BC383A31 /* ContrastTests.swift */,
 				CDC374BA8695D8D090FCC172 /* ExampleTests.swift */,
 				4089FC1B0C673A2CE65ACEDC /* FiltersAndBackupTests.swift */,
+				437A6973B360720818BB9088 /* HapticsTests.swift */,
 				A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */,
 				8B298A749A64CE6C8DF50C7A /* LaunchConfigurationTests.swift */,
 				53799E0EB1FCB8764FDCC04F /* MoreRepositoryTests.swift */,
@@ -599,6 +611,7 @@
 				59CE1E6A24E11B8183FC9A91 /* ContrastTests.swift in Sources */,
 				1793E06CC2D36081B40C52F6 /* ExampleTests.swift in Sources */,
 				76CC8EAA46FAE4B202473AD0 /* FiltersAndBackupTests.swift in Sources */,
+				991346D5F7331BF16592879D /* HapticsTests.swift in Sources */,
 				9853902144754D6AB314734F /* ImageStoreCropTests.swift in Sources */,
 				E0CE542C64C2518590BC298E /* LaunchConfigurationTests.swift in Sources */,
 				F3AA5ACE53B4A598170A1AAE /* MoreRepositoryTests.swift in Sources */,
@@ -619,6 +632,8 @@
 				DE82BD5E26DDCC31030AF29B /* AppDataView.swift in Sources */,
 				3C0578C33576D051C03BD180 /* AppError.swift in Sources */,
 				173EB3B1546EC14939B78DDF /* AppEvents.swift in Sources */,
+				2290B4AF2F81497CD4FAD255 /* AppIconManager.swift in Sources */,
+				E57D3357D8F964CA9BB061D1 /* AppIconSize.swift in Sources */,
 				0D98C4EFB084EA9DE79E6D50 /* Appearance.swift in Sources */,
 				3AB32BCCFE8BEBC021CA7EF6 /* BackupRepository.swift in Sources */,
 				25BBA85D4F1BE90755D647D7 /* BackupRepositoryFile.swift in Sources */,
@@ -674,6 +689,7 @@
 				68839F25741C217A7F6A75EB /* DetailWornTodayUITests.swift in Sources */,
 				33084C24FF0954E5E5F89ED1 /* ExampleUITests.swift in Sources */,
 				2D3F9ABF48D60C108E717F99 /* FullScreenLaunchUITests.swift in Sources */,
+				7216E4B245F32CA3E242D160 /* HapticIntegrationUITests.swift in Sources */,
 				880CD571C23F392806871F0C /* PrivacyPolicyUITests.swift in Sources */,
 				78CC781C4A7F8F8BFF9AC068 /* SettingsAppearanceHeaderUITests.swift in Sources */,
 				341C97D6DED6ABDAD40DE6C1 /* StatsTitleUITests.swift in Sources */,
@@ -705,7 +721,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = AppResources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -761,7 +777,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -778,7 +794,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = AppResources/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -794,7 +810,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -811,7 +827,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -828,7 +844,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -891,7 +907,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -908,7 +924,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

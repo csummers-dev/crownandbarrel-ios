@@ -48,11 +48,14 @@ final class WatchFormViewModel: ObservableObject {
 
     /// Validates required form inputs.
     /// - Returns: True if inputs are acceptable; sets `errorMessage` on failure.
+    /// - Provides haptic feedback for validation results to improve user experience.
     func validate() -> Bool {
         if manufacturer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            Haptics.error()
             errorMessage = "Manufacturer is required."
             return false
         }
+        Haptics.success()
         return true
     }
 
