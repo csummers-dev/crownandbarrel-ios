@@ -249,30 +249,18 @@ jobs:
           echo "Checking build performance..."
           start_time=$(date +%s)
           
-          # Find first available iPhone simulator
-          SIMULATOR_LINE=$(xcrun simctl list devices available | grep iPhone | head -1)
-          if [ -n "$SIMULATOR_LINE" ]; then
-            SIMULATOR_ID=$(echo "$SIMULATOR_LINE" | grep -o '([A-F0-9\-]*)' | tr -d '()')
-            if [ -n "$SIMULATOR_ID" ]; then
-              echo "Using simulator ID: $SIMULATOR_ID"
-              xcodebuild build \
-                -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-                -scheme "${{ env.PROJECT_NAME }}" \
-                -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-                CODE_SIGNING_ALLOWED=NO \
-                IPHONEOS_DEPLOYMENT_TARGET=17.0 \
-                VALID_ARCHS="arm64" \
-                ARCHS="arm64" \
-                ENABLE_BITCODE=NO \
-                -quiet
-            else
-              echo "No simulator ID found, skipping build performance check"
-              exit 0
-            fi
-          else
-            echo "No iPhone simulators found, skipping build performance check"
-            exit 0
-          fi
+          # Target iPhone 16 Pro with iOS 26.0 specifically for performance validation
+          echo "Targeting iPhone 16 Pro with iOS 26.0 for build performance check"
+          xcodebuild build \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.PROJECT_NAME }}" \
+            -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+            CODE_SIGNING_ALLOWED=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            -quiet
           
           end_time=$(date +%s)
           build_time=$((end_time - start_time))

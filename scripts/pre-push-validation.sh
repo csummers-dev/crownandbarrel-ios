@@ -103,39 +103,27 @@ fi
 # 7. Test build with available destinations
 print_status "info" "Testing build with available destinations..."
 
-# Get first available iOS Simulator destination (excluding placeholder)
-FIRST_DESTINATION_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep -v "Any iOS Simulator Device" | head -1)
-if [ -n "$FIRST_DESTINATION_LINE" ]; then
-    # Extract just the platform and ID from the full destination string
-    SIMULATOR_ID=$(echo "$FIRST_DESTINATION_LINE" | grep -o 'id:[A-F0-9\-]*' | cut -d: -f2)
-    FIRST_DESTINATION="platform=iOS Simulator,id=$SIMULATOR_ID"
-else
-    FIRST_DESTINATION=""
-fi
+# Target iPhone 16 Pro with iOS 26.0 specifically for build validation
+print_status "info" "Testing build with iPhone 16 Pro iOS 26.0 destination"
 
-if [ -n "$FIRST_DESTINATION" ]; then
-    print_status "info" "Testing build with destination: $FIRST_DESTINATION"
-    
-    # Test build configuration (without dry-run as it's not supported in new build system)
-    if xcodebuild build \
-        -project CrownAndBarrel.xcodeproj \
-        -scheme CrownAndBarrel \
-        -configuration Debug \
-        -destination "$FIRST_DESTINATION" \
-        CODE_SIGNING_ALLOWED=NO \
-        ONLY_ACTIVE_ARCH=YES \
-        VALID_ARCHS="arm64" \
-        ARCHS="arm64" \
-        ENABLE_BITCODE=NO \
-        IPHONEOS_DEPLOYMENT_TARGET=17.0 >/dev/null 2>&1; then
-        print_status "success" "Build configuration test passed"
-    else
-        print_status "error" "Build configuration test failed"
-        print_status "info" "This indicates the same issue that will occur in CI"
-        exit 1
-    fi
+# Test build configuration targeting iPhone 16 Pro with iOS 26.0
+if xcodebuild build \
+    -project CrownAndBarrel.xcodeproj \
+    -scheme CrownAndBarrel \
+    -configuration Debug \
+    -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+    CODE_SIGNING_ALLOWED=NO \
+    ONLY_ACTIVE_ARCH=YES \
+    VALID_ARCHS="arm64" \
+    ARCHS="arm64" \
+    ENABLE_BITCODE=NO \
+    IPHONEOS_DEPLOYMENT_TARGET=26.0  # Updated to iOS 26.0 as minimum required version >/dev/null 2>&1; then
+    print_status "success" "Build configuration test passed"
 else
-    print_status "warning" "No specific iOS destinations available for testing"
+    print_status "error" "Build configuration test failed"
+    print_status "info" "This indicates the same issue that will occur in CI"
+    exit 1
+fi
 fi
 
 # 8. Check for common issues

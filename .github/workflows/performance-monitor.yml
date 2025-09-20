@@ -30,8 +30,8 @@ env:
   PROJECT_NAME: "CrownAndBarrel"
   SCHEME_NAME: "CrownAndBarrel"
   XCODE_VERSION: "16.0"
-  IOS_SIMULATOR_NAME: "iPhone 15"
-  IOS_SIMULATOR_OS: "26.0"
+  IOS_SIMULATOR_NAME: "iPhone 16 Pro"  # Updated to target iPhone 16 Pro specifically
+  IOS_SIMULATOR_OS: "26.0"  # Updated to target iOS 26.0 specifically
 
 jobs:
   # Build performance monitoring
@@ -71,34 +71,21 @@ jobs:
           CLEAN_END_TIME=$(date +%s)
           CLEAN_DURATION=$((CLEAN_END_TIME - BUILD_START_TIME))
           
-          # Full build
-          echo "Performing full build..."
+          # Full build targeting iPhone 16 Pro with iOS 26.0
+          echo "Performing full build on iPhone 16 Pro with iOS 26.0..."
           
-          # Find first available iPhone simulator
-          SIMULATOR_LINE=$(xcrun simctl list devices available | grep iPhone | head -1)
-          if [ -n "$SIMULATOR_LINE" ]; then
-            SIMULATOR_ID=$(echo "$SIMULATOR_LINE" | grep -o '([A-F0-9\-]*)' | tr -d '()')
-            if [ -n "$SIMULATOR_ID" ]; then
-              echo "Using simulator ID: $SIMULATOR_ID for performance build"
-              xcodebuild build \
-                -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-                -scheme "${{ env.SCHEME_NAME }}" \
-                -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-                -configuration Release \
-                CODE_SIGNING_ALLOWED=NO \
-                ONLY_ACTIVE_ARCH=YES \
-                VALID_ARCHS="arm64" \
-                ARCHS="arm64" \
-                ENABLE_BITCODE=NO \
-                IPHONEOS_DEPLOYMENT_TARGET=17.0
-            else
-              echo "No simulator ID found, skipping performance build"
-              exit 0
-            fi
-          else
-            echo "No iPhone simulators found, skipping performance build"
-            exit 0
-          fi
+          # Target iPhone 16 Pro with iOS 26.0 specifically for performance monitoring
+          xcodebuild build \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
             
           # Record end time
           BUILD_END_TIME=$(date +%s)
@@ -176,69 +163,43 @@ jobs:
           # Record start time
           TEST_START_TIME=$(date +%s)
           
-          # Run unit tests
-          echo "Running unit tests..."
+          # Run unit tests targeting iPhone 16 Pro with iOS 26.0
+          echo "Running unit tests on iPhone 16 Pro with iOS 26.0..."
           
-          # Find first available iPhone simulator
-          SIMULATOR_LINE=$(xcrun simctl list devices available | grep iPhone | head -1)
-          if [ -n "$SIMULATOR_LINE" ]; then
-            SIMULATOR_ID=$(echo "$SIMULATOR_LINE" | grep -o '([A-F0-9\-]*)' | tr -d '()')
-            if [ -n "$SIMULATOR_ID" ]; then
-              echo "Using simulator ID: $SIMULATOR_ID for unit tests"
-              xcodebuild test \
-                -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-                -scheme "${{ env.SCHEME_NAME }}" \
-                -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-                -only-testing:"${{ env.SCHEME_NAME }}Tests" \
-                -resultBundlePath UnitTestResults.xcresult \
-                CODE_SIGNING_ALLOWED=NO \
-                ONLY_ACTIVE_ARCH=YES \
-                VALID_ARCHS="arm64" \
-                ARCHS="arm64" \
-                ENABLE_BITCODE=NO \
-                IPHONEOS_DEPLOYMENT_TARGET=17.0
-            else
-              echo "No simulator ID found, skipping unit tests"
-              exit 0
-            fi
-          else
-            echo "No iPhone simulators found, skipping unit tests"
-            exit 0
-          fi
+          # Target iPhone 16 Pro with iOS 26.0 specifically for unit test performance monitoring
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -only-testing:"${{ env.SCHEME_NAME }}Tests" \
+            -resultBundlePath UnitTestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
             
           # Record unit test time
           UNIT_TEST_END_TIME=$(date +%s)
           UNIT_TEST_DURATION=$((UNIT_TEST_END_TIME - TEST_START_TIME))
           
-          # Run UI tests
-          echo "Running UI tests..."
+          # Run UI tests targeting iPhone 16 Pro with iOS 26.0
+          echo "Running UI tests on iPhone 16 Pro with iOS 26.0..."
           
-          # Find first available iPhone simulator
-          SIMULATOR_LINE=$(xcrun simctl list devices available | grep iPhone | head -1)
-          if [ -n "$SIMULATOR_LINE" ]; then
-            SIMULATOR_ID=$(echo "$SIMULATOR_LINE" | grep -o '([A-F0-9\-]*)' | tr -d '()')
-            if [ -n "$SIMULATOR_ID" ]; then
-              echo "Using simulator ID: $SIMULATOR_ID for UI tests"
-              xcodebuild test \
-                -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-                -scheme "${{ env.SCHEME_NAME }}" \
-                -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-                -only-testing:"${{ env.SCHEME_NAME }}UITests" \
-                -resultBundlePath UITestResults.xcresult \
-                CODE_SIGNING_ALLOWED=NO \
-                ONLY_ACTIVE_ARCH=YES \
-                VALID_ARCHS="arm64" \
-                ARCHS="arm64" \
-                ENABLE_BITCODE=NO \
-                IPHONEOS_DEPLOYMENT_TARGET=17.0
-            else
-              echo "No simulator ID found, skipping UI tests"
-              exit 0
-            fi
-          else
-            echo "No iPhone simulators found, skipping UI tests"
-            exit 0
-          fi
+          # Target iPhone 16 Pro with iOS 26.0 specifically for UI test performance monitoring
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=${{ env.IOS_SIMULATOR_NAME }},OS=${{ env.IOS_SIMULATOR_OS }}" \
+            -only-testing:"${{ env.SCHEME_NAME }}UITests" \
+            -resultBundlePath UITestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
             
           # Record end time
           TEST_END_TIME=$(date +%s)
