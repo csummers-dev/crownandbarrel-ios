@@ -103,15 +103,15 @@ fi
 # 7. Test build with available destinations
 print_status "info" "Testing build with available destinations..."
 
-# Target iPhone 16 Pro with iOS 26.0 specifically for build validation
-print_status "info" "Testing build with iPhone 16 Pro iOS 26.0 destination"
+# Test build with available iOS 26.0 device (iPhone 17 Pro since iPhone 16 Pro iOS 26.0 not available locally)
+print_status "info" "Testing build with iPhone 17 Pro iOS 26.0 destination (local test)"
 
-# Test build configuration targeting iPhone 16 Pro with iOS 26.0
+# Test build configuration targeting iPhone 17 Pro with iOS 26.0 (available locally)
 if xcodebuild build \
     -project CrownAndBarrel.xcodeproj \
     -scheme CrownAndBarrel \
     -configuration Debug \
-    -destination "platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0" \
+    -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.0" \
     CODE_SIGNING_ALLOWED=NO \
     ONLY_ACTIVE_ARCH=YES \
     VALID_ARCHS="arm64" \
