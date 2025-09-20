@@ -52,7 +52,38 @@ jobs:
       - name: Install XcodeGen
         run: |
           if ! command -v xcodegen &> /dev/null; then
-            brew install xcodegen
+            echo "Installing XcodeGen..."
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Try multiple installation strategies
+            # Strategy 1: Direct download (fastest)
+            echo "Trying direct download..."
+            if curl -L https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip && unzip xcodegen.zip && sudo mv xcodegen /usr/local/bin/; then
+              echo "✅ XcodeGen installed via direct download"
+            # Strategy 2: Homebrew with ARM64 forcing
+            elif [ "$ARCH" = "arm64" ]; then
+              echo "Trying Homebrew with ARM64 forcing..."
+              if arch -arm64 /opt/homebrew/bin/brew install xcodegen 2>/dev/null || \
+                 arch -arm64 /usr/local/bin/brew install xcodegen 2>/dev/null || \
+                 arch -arm64 brew install xcodegen 2>/dev/null; then
+                echo "✅ XcodeGen installed via ARM64 Homebrew"
+              else
+                echo "❌ All installation methods failed"
+                exit 1
+              fi
+            # Strategy 3: Standard Homebrew
+            else
+              echo "Trying standard Homebrew..."
+              if brew install xcodegen; then
+                echo "✅ XcodeGen installed via standard Homebrew"
+              else
+                echo "❌ Homebrew installation failed"
+                exit 1
+              fi
+            fi
+          else
+            echo "✅ XcodeGen already available"
           fi
           xcodegen generate
           
@@ -168,7 +199,38 @@ jobs:
       - name: Install XcodeGen
         run: |
           if ! command -v xcodegen &> /dev/null; then
-            brew install xcodegen
+            echo "Installing XcodeGen..."
+            ARCH=$(uname -m)
+            echo "Detected architecture: $ARCH"
+            
+            # Try multiple installation strategies
+            # Strategy 1: Direct download (fastest)
+            echo "Trying direct download..."
+            if curl -L https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip && unzip xcodegen.zip && sudo mv xcodegen /usr/local/bin/; then
+              echo "✅ XcodeGen installed via direct download"
+            # Strategy 2: Homebrew with ARM64 forcing
+            elif [ "$ARCH" = "arm64" ]; then
+              echo "Trying Homebrew with ARM64 forcing..."
+              if arch -arm64 /opt/homebrew/bin/brew install xcodegen 2>/dev/null || \
+                 arch -arm64 /usr/local/bin/brew install xcodegen 2>/dev/null || \
+                 arch -arm64 brew install xcodegen 2>/dev/null; then
+                echo "✅ XcodeGen installed via ARM64 Homebrew"
+              else
+                echo "❌ All installation methods failed"
+                exit 1
+              fi
+            # Strategy 3: Standard Homebrew
+            else
+              echo "Trying standard Homebrew..."
+              if brew install xcodegen; then
+                echo "✅ XcodeGen installed via standard Homebrew"
+              else
+                echo "❌ Homebrew installation failed"
+                exit 1
+              fi
+            fi
+          else
+            echo "✅ XcodeGen already available"
           fi
           xcodegen generate
           
