@@ -41,7 +41,7 @@ jobs:
         with:
           xcode-version: '16.0'
           
-      - name: Install XcodeGen
+      - name: Install XcodeGen and Generate Project
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen using artifact bundle method..."
@@ -96,6 +96,22 @@ jobs:
           # Generate project
           echo "Generating Xcode project..."
           xcodegen generate
+          
+      - name: Build for CodeQL Analysis
+        run: |
+          echo "Building project for CodeQL analysis..."
+          # Build the project so CodeQL can analyze the compiled code
+          xcodebuild build \
+            -project CrownAndBarrel.xcodeproj \
+            -scheme CrownAndBarrel \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
           
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
