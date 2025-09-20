@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README.md now focuses on public-facing information
 - Technical details moved to specialized documentation files
 - Better organization of development resources
+- Fixed CI pipeline build errors
 
 ### Documentation
 - Added detailed setup instructions in DEVELOPMENT.md
