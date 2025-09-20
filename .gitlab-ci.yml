@@ -53,7 +53,6 @@ cache:
     - echo "Xcode version: $(xcodebuild -version)"
     - echo "Available simulators:"
     - xcrun simctl list devices available | grep iPhone
-    # Set up simulator
     - xcrun simctl boot "$IOS_SIMULATOR_NAME" || true
     - xcrun simctl shutdown "$IOS_SIMULATOR_NAME" || true
     - xcrun simctl boot "$IOS_SIMULATOR_NAME"
