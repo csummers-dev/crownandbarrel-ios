@@ -43,11 +43,38 @@ jobs:
             # Try multiple installation strategies
             # Strategy 1: Direct download (fastest)
             echo "Trying direct download..."
-            if curl -L https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.zip -o xcodegen.zip && \
-               unzip -o xcodegen.zip && \
-               sudo mv xcodegen /usr/local/bin/; then
-              echo "✅ XcodeGen installed via direct download"
-              rm -f xcodegen.zip
+            if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
+              echo "✅ Downloaded XcodeGen artifact bundle"
+              
+              # Extract the bundle
+              if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${HOME}/xcodegen/"; then
+                echo "✅ Extracted XcodeGen artifact bundle"
+                
+                # Find the bin directory in the extracted bundle
+                BIN_DIR=$(find "${HOME}/xcodegen" -name "bin" -type d | head -1)
+                if [ -n "$BIN_DIR" ] && [ -f "$BIN_DIR/xcodegen" ]; then
+                  echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
+                  
+                  # Add to PATH for this session
+                  export PATH="$BIN_DIR:$PATH"
+                  echo "✅ Added XcodeGen to PATH"
+                  
+                  # Verify installation
+                  if command -v xcodegen &> /dev/null; then
+                    echo "✅ XcodeGen installation verified"
+                    xcodegen --version
+                  else
+                    echo "❌ XcodeGen not found in PATH after installation"
+                    exit 1
+                  fi
+                else
+                  echo "❌ XcodeGen binary not found in extracted bundle"
+                  exit 1
+                fi
+              else
+                echo "❌ Failed to extract XcodeGen artifact bundle"
+                exit 1
+              fi
             # Strategy 2: Homebrew with ARM64 forcing (if on ARM64)
             elif [ "$IS_ARM64" = true ]; then
               echo "Trying Homebrew with ARM64 forcing..."
