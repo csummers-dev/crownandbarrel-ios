@@ -13,6 +13,8 @@ This document describes the GitHub Actions workflows that power the Crown & Barr
 | **Release Pipeline** | Tags/Manual | Deploy to TestFlight/App Store | ~10-15 min |
 | **Validation Pipeline** | Push/PR/Daily | Validate configs and dependencies | ~5-10 min |
 | **Security Pipeline** | Push/PR/Weekly | Security scanning and analysis | ~10-15 min |
+| **Security Audit** | Weekly/Manual | Comprehensive security auditing | ~15-20 min |
+| **Performance Monitor** | Daily/Manual | Performance monitoring and optimization | ~10-15 min |
 | **Dependency Update** | Weekly/Manual | Update dependencies | ~5-10 min |
 
 ### 🔄 **Main CI/CD Pipeline** (`ci.yml`)
@@ -90,6 +92,37 @@ This document describes the GitHub Actions workflows that power the Crown & Barr
 - ✅ **Weekly Schedule**: Runs every Sunday at 3 AM UTC
 - ✅ **Comprehensive Coverage**: Multiple security scanning tools
 - ✅ **Automated Reporting**: Results automatically uploaded to GitHub
+
+### 🔍 **Security Audit Pipeline** (`security-audit.yml`)
+
+#### **Audit Types:**
+1. **Comprehensive Security Audit** - Full security assessment
+2. **Static Analysis** - Semgrep integration for code analysis
+3. **Custom Security Checks** - Hardcoded secrets, insecure connections
+4. **License Compliance** - Dependency license validation
+5. **Security Policy Validation** - Policy and documentation checks
+6. **GitHub Actions Security** - Workflow security auditing
+
+#### **Features:**
+- ✅ **Weekly Schedule**: Runs every Wednesday at 2 AM UTC
+- ✅ **Manual Trigger**: Can be triggered manually with audit type selection
+- ✅ **Comprehensive Coverage**: Multiple security auditing tools
+- ✅ **Automated Reporting**: Results automatically uploaded to GitHub
+
+### 📊 **Performance Monitor Pipeline** (`performance-monitor.yml`)
+
+#### **Monitoring Types:**
+1. **Build Performance** - Build time monitoring and optimization
+2. **Test Performance** - Test execution time tracking
+3. **Resource Monitoring** - System resource usage tracking
+4. **Performance Analysis** - Automated performance assessment
+5. **Optimization Recommendations** - Performance improvement suggestions
+
+#### **Features:**
+- ✅ **Daily Schedule**: Runs every day at 3 AM UTC
+- ✅ **Manual Trigger**: Can be triggered manually with monitoring type selection
+- ✅ **Comprehensive Metrics**: Build, test, and resource performance tracking
+- ✅ **Performance Recommendations**: Automated optimization suggestions
 
 ### 📦 **Dependency Update Pipeline** (`dependency-update.yml`)
 

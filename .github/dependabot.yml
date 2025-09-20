@@ -21,9 +21,13 @@ updates:
     labels:
       - "dependencies"
       - "swift"
+      - "auto-update"
     ignore:
       # Ignore major version updates for critical dependencies
       - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Ignore specific problematic dependencies
+      - dependency-name: "swift-algorithms"
         update-types: ["version-update:semver-major"]
     groups:
       swift-packages:
@@ -32,6 +36,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      swift-security-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "version-update:semver-patch"
+        exclude-patterns:
+          - "*-alpha"
+          - "*-beta"
+          - "*-rc"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -51,6 +64,14 @@ updates:
     labels:
       - "dependencies"
       - "github-actions"
+      - "auto-update"
+    ignore:
+      # Ignore major version updates for critical actions
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Ignore specific actions that might be problematic
+      - dependency-name: "actions/checkout"
+        update-types: ["version-update:semver-major"]
     groups:
       github-actions:
         patterns:
@@ -58,6 +79,15 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      github-actions-security:
+        patterns:
+          - "*"
+        update-types:
+          - "version-update:semver-patch"
+        exclude-patterns:
+          - "*-alpha"
+          - "*-beta"
+          - "*-rc"
 
   # Enable version updates for npm (if using any Node.js tools)
   - package-ecosystem: "npm"
