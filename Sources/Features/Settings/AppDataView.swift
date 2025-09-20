@@ -42,7 +42,10 @@ struct AppDataView: View {
         Form {
             headerRow("Backup")
             Section {
-                Button("Export backup") { Task { await export() } }
+                Button("Export backup") { 
+                    Haptics.dataInteraction(.exportInitiated)
+                    Task { await export() } 
+                }
                     .fileExporter(
                         isPresented: $isExporting,
                         document: exportDoc,
@@ -51,18 +54,27 @@ struct AppDataView: View {
                     ) { _ in }
                     .listRowBackground(AppColors.background)
                 #if DEBUG
-                Button("Load sample data") { Task { await seedSampleData() } }
+                Button("Load sample data") { 
+                    Haptics.dataInteraction(.seedDataInitiated)
+                    Task { await seedSampleData() } 
+                }
                     .listRowBackground(AppColors.background)
                 #endif
             } header: { EmptyView() }
             headerRow("Restore")
             Section {
-                Button("Import backup") { isImporting = true }
+                Button("Import backup") { 
+                    Haptics.dataInteraction(.importInitiated)
+                    isImporting = true 
+                }
                     .listRowBackground(AppColors.background)
             } header: { EmptyView() }
             headerRow("Danger zone")
             Section {
-                Button(role: .destructive) { confirmDeleteStep1 = true } label: { Text("Delete all data") }
+                Button(role: .destructive) { 
+                    Haptics.dataInteraction(.deleteInitiated)
+                    confirmDeleteStep1 = true 
+                } label: { Text("Delete all data") }
                     .listRowBackground(AppColors.background)
             } header: { EmptyView() }
         }

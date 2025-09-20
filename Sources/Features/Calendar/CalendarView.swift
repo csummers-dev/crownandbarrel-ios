@@ -44,6 +44,7 @@ struct CalendarView: View {
             await loadEntries()
         }
         .onChange(of: selectedDate) { newDate, _ in
+            Haptics.calendarInteraction(.dateSelection)
             // Keep the divider spacing tight (4pt) and reload for the new date
             withAnimation(.easeInOut(duration: 0.2)) {
                 contentTopPadding = AppSpacing.xs
@@ -90,7 +91,10 @@ struct CalendarView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     HStack {
                         Spacer()
-                        Button("Add worn") { isPresentingPicker = true }
+                        Button("Add worn") { 
+                            Haptics.calendarInteraction(.wearEntryAdded)
+                            isPresentingPicker = true 
+                        }
                             .accessibilityIdentifier("Add worn")
                             .buttonStyle(.bordered)
                     }

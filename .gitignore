@@ -26,6 +26,17 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 
+# CI/CD artifacts
+TestResults.xcresult/
+UITestResults.xcresult/
+test-results.json
+ui-test-results.json
+junit.xml
+ui-junit.xml
+swiftlint-report.json
+CrownAndBarrel.xcarchive/
+export/
+
 # Misc
 .DS_Store
 *.swp

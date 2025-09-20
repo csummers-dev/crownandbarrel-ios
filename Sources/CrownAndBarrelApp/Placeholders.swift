@@ -106,7 +106,7 @@ struct AboutView: View {
         Form {
             headerRow("About")
             Section {
-                Text("Crown & Barrel is your companion for a life of timepieces. It keeps your collection organized with simplicity and elegance, captures the memories of each wear, and distills insights into visualizations. Thoughtfully designed for iOS, Crown & Barrel favors clarity over clutter and longevity over noise. Crown & Barrel will always be free and open-source. Developed with love by @csummersdev.")
+                Text("Crown & Barrel is your companion for a life of timepieces. It keeps your watch collection organized with simplicity and elegance, captures the memories of each wear, and distills insights into visualizations. Thoughtfully designed for iOS, Crown & Barrel favors clarity over clutter and longevity over noise. Crown & Barrel will always be free and open-source. Developed with love by @csummersdev.")
                     .listRowBackground(AppColors.background)
             } header: { EmptyView() }
 

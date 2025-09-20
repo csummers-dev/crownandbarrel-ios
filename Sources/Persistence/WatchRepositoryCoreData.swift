@@ -20,7 +20,8 @@ public final class WatchRepositoryCoreData: WatchRepository {
 
     /// Returns all watches sorted by creation date descending.
     public func fetchAll() async throws -> [Watch] {
-        try await stack.viewContext.perform { [stack] in
+        try await stack.viewContext.perform { [weak stack] in
+            guard let stack = stack else { throw AppError.unknown }
             let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
             request.sortDescriptors = [NSSortDescriptor(key: "createdAt", ascending: false)]
             let results = try stack.viewContext.fetch(request)
@@ -32,7 +33,8 @@ public final class WatchRepositoryCoreData: WatchRepository {
     /// - Note: Uses a direct Core Data fetch with `fetchLimit = 1` for efficiency.
     ///   Prefer this for detail refreshes instead of a broader `search` query.
     public func fetchById(_ id: UUID) async throws -> Watch? {
-        try await stack.viewContext.perform { [stack] in
+        try await stack.viewContext.perform { [weak stack] in
+            guard let stack = stack else { throw AppError.unknown }
             let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
             request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
             request.fetchLimit = 1
@@ -43,7 +45,8 @@ public final class WatchRepositoryCoreData: WatchRepository {
 
     /// Inserts or updates a watch based on `id` and updates derived fields as needed.
     public func upsert(_ watch: Watch) async throws {
-        try await stack.viewContext.perform { [stack] in
+        try await stack.viewContext.perform { [weak stack] in
+            guard let stack = stack else { throw AppError.unknown }
             let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
             request.predicate = NSPredicate(format: "id == %@", watch.id as CVarArg)
             let existing = try stack.viewContext.fetch(request).first
@@ -55,7 +58,8 @@ public final class WatchRepositoryCoreData: WatchRepository {
 
     /// Deletes a watch by id. Associated wear entries are removed via cascade rules when applicable.
     public func delete(_ watchId: UUID) async throws {
-        try await stack.viewContext.perform { [stack] in
+        try await stack.viewContext.perform { [weak stack] in
+            guard let stack = stack else { throw AppError.unknown }
             let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
             request.predicate = NSPredicate(format: "id == %@", watchId as CVarArg)
             if let object = try stack.viewContext.fetch(request).first {
@@ -67,7 +71,8 @@ public final class WatchRepositoryCoreData: WatchRepository {
 
     /// Performs search/filter/sort using `WatchFilter`. Search matches manufacturer/model/reference number.
     public func search(filter: WatchFilter) async throws -> [Watch] {
-        try await stack.viewContext.perform { [stack] in
+        try await stack.viewContext.perform { [weak stack] in
+            guard let stack = stack else { throw AppError.unknown }
             let request = NSFetchRequest<CDWatch>(entityName: "CDWatch")
             var predicates: [NSPredicate] = []
             if !filter.searchText.trimmingCharacters(in: .whitespaces).isEmpty {
@@ -106,7 +111,8 @@ public final class WatchRepositoryCoreData: WatchRepository {
     /// Adds a wear entry for a watch on a given date.
     /// - Enforces uniqueness per-day, per-watch. Updates `timesWorn` and `lastWornDate`.
     public func incrementWear(for watchId: UUID, on date: Date) async throws {
-        try await stack.viewContext.perform { [self, stack, calendar] in
+        try await stack.viewContext.perform { [weak self, weak stack] in
+            guard let self = self, let stack = stack else { throw AppError.unknown }
             let normalized = calendar.startOfDay(for: date)
             if try self.existsWearEntrySync(watchId: watchId, date: normalized) {
                 throw AppError.duplicateWear("This watch is already marked as worn on this date.")
@@ -128,17 +134,19 @@ public final class WatchRepositoryCoreData: WatchRepository {
 
     /// Returns true if a wear entry exists for a watch on a given calendar day (normalized).
     public func existsWearEntry(watchId: UUID, date: Date) async throws -> Bool {
-        try await stack.viewContext.perform { [self, calendar] in
-            try self.existsWearEntrySync(watchId: watchId, date: calendar.startOfDay(for: date))
+        try await stack.viewContext.perform { [weak self] in
+            guard let self = self else { throw AppError.unknown }
+            return try self.existsWearEntrySync(watchId: watchId, date: self.calendar.startOfDay(for: date))
         }
     }
 
     /// Returns wear entries on a specific day, sorted by time.
     public func wearEntries(on date: Date) async throws -> [WearEntry] {
-        try await stack.viewContext.perform { [stack, calendar] in
+        try await stack.viewContext.perform { [weak stack] in
+            guard let stack = stack else { throw AppError.unknown }
             let request = NSFetchRequest<CDWearEntry>(entityName: "CDWearEntry")
-            let day = calendar.startOfDay(for: date)
-            let next = calendar.date(byAdding: .day, value: 1, to: day)!
+            let day = self.calendar.startOfDay(for: date)
+            let next = self.calendar.date(byAdding: .day, value: 1, to: day)!
             request.predicate = NSPredicate(format: "date >= %@ AND date < %@", day as NSDate, next as NSDate)
             request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
             return try stack.viewContext.fetch(request).map(Mappers.toDomain)
@@ -151,9 +159,10 @@ public final class WatchRepositoryCoreData: WatchRepository {
     ///   - watchId: watch identifier
     ///   - date: inclusive upper bound
     public func wearEntriesUpTo(watchId: UUID, through date: Date) async throws -> [WearEntry] {
-        try await stack.viewContext.perform { [stack, calendar] in
+        try await stack.viewContext.perform { [weak self, weak stack] in
+            guard let self = self, let stack = stack else { throw AppError.unknown }
             guard let watch = try self.fetchCDWatch(by: watchId) else { return [] }
-            let end = calendar.startOfDay(for: date)
+            let end = self.calendar.startOfDay(for: date)
             let request = NSFetchRequest<CDWearEntry>(entityName: "CDWearEntry")
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                 NSPredicate(format: "watch == %@", watch),
