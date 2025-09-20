@@ -64,17 +64,10 @@ setup_project:
   extends: .ios_base
   stage: setup
   script:
-    # Install XcodeGen if not available
-    - |
-      if ! command -v xcodegen &> /dev/null; then
-        echo "Installing XcodeGen..."
-        brew install xcodegen
-      fi
-    # Verify XcodeGen installation
+    - echo "Installing XcodeGen..."
+    - brew install xcodegen || echo "XcodeGen already installed"
     - xcodegen --version
-    # Generate Xcode project
     - xcodegen generate
-    # Verify project was generated
     - ls -la "$PROJECT_NAME.xcodeproj"
     - echo "Project setup completed successfully"
   artifacts:
@@ -91,15 +84,9 @@ lint_code:
   dependencies:
     - setup_project
   script:
-    # Install SwiftLint if not available
-    - |
-      if ! command -v swiftlint &> /dev/null; then
-        echo "Installing SwiftLint..."
-        brew install swiftlint
-      fi
-    # Run SwiftLint
+    - echo "Installing SwiftLint..."
+    - brew install swiftlint || echo "SwiftLint already installed"
     - swiftlint lint --reporter gitlab_codeclimate --config .swiftlint.yml || true
-    # Run SwiftLint with exit code for CI
     - swiftlint lint --config .swiftlint.yml
   artifacts:
     reports:
@@ -115,17 +102,8 @@ build_app:
   dependencies:
     - setup_project
   script:
-    # Clean and build the project
     - xcodebuild clean -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME"
-    # Build for simulator
-    - |
-      xcodebuild build \
-        -project "$PROJECT_NAME.xcodeproj" \
-        -scheme "$SCHEME_NAME" \
-        -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" \
-        -configuration "$BUILD_CONFIGURATION" \
-        CODE_SIGNING_ALLOWED=NO \
-        ONLY_ACTIVE_ARCH=YES
+    - xcodebuild build -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" -configuration "$BUILD_CONFIGURATION" CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=YES
     - echo "Build completed successfully"
   artifacts:
     paths:
@@ -140,16 +118,7 @@ test_unit:
   dependencies:
     - setup_project
   script:
-    # Run unit tests
-    - |
-      xcodebuild test \
-        -project "$PROJECT_NAME.xcodeproj" \
-        -scheme "$SCHEME_NAME" \
-        -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" \
-        -only-testing:"${SCHEME_NAME}Tests" \
-        -resultBundlePath TestResults.xcresult \
-        CODE_SIGNING_ALLOWED=NO
-    # Parse test results using xcresulttool (alternative to xcparse)
+    - xcodebuild test -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" -only-testing:"${SCHEME_NAME}Tests" -resultBundlePath TestResults.xcresult CODE_SIGNING_ALLOWED=NO
     - xcresulttool get --path TestResults.xcresult --format json > test-results.json || echo "Test result parsing completed"
     - echo "Unit tests completed"
   artifacts:
@@ -167,16 +136,7 @@ test_ui:
   dependencies:
     - setup_project
   script:
-    # Run UI tests
-    - |
-      xcodebuild test \
-        -project "$PROJECT_NAME.xcodeproj" \
-        -scheme "$SCHEME_NAME" \
-        -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" \
-        -only-testing:"${SCHEME_NAME}UITests" \
-        -resultBundlePath UITestResults.xcresult \
-        CODE_SIGNING_ALLOWED=NO
-    # Parse UI test results using xcresulttool (alternative to xcparse)
+    - xcodebuild test -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -destination "platform=iOS Simulator,name=$IOS_SIMULATOR_NAME,OS=$IOS_SIMULATOR_OS" -only-testing:"${SCHEME_NAME}UITests" -resultBundlePath UITestResults.xcresult CODE_SIGNING_ALLOWED=NO
     - xcresulttool get --path UITestResults.xcresult --format json > ui-test-results.json || echo "UI test result parsing completed"
     - echo "UI tests completed"
   artifacts:
@@ -194,22 +154,8 @@ archive_app:
   dependencies:
     - setup_project
   script:
-    # Create archive
-    - |
-      xcodebuild archive \
-        -project "$PROJECT_NAME.xcodeproj" \
-        -scheme "$SCHEME_NAME" \
-        -configuration "$ARCHIVE_CONFIGURATION" \
-        -archivePath "$PROJECT_NAME.xcarchive" \
-        CODE_SIGNING_ALLOWED=NO \
-        DEVELOPMENT_TEAM="" \
-        CODE_SIGN_IDENTITY=""
-    # Export IPA (for manual distribution)
-    - |
-      xcodebuild -exportArchive \
-        -archivePath "$PROJECT_NAME.xcarchive" \
-        -exportPath "./export" \
-        -exportOptionsPlist exportOptions.plist || echo "Export options plist not found, skipping IPA export"
+    - xcodebuild archive -project "$PROJECT_NAME.xcodeproj" -scheme "$SCHEME_NAME" -configuration "$ARCHIVE_CONFIGURATION" -archivePath "$PROJECT_NAME.xcarchive" CODE_SIGNING_ALLOWED=NO DEVELOPMENT_TEAM="" CODE_SIGN_IDENTITY=""
+    - xcodebuild -exportArchive -archivePath "$PROJECT_NAME.xcarchive" -exportPath "./export" -exportOptionsPlist exportOptions.plist || echo "Export options plist not found, skipping IPA export"
     - echo "Archive created successfully"
   artifacts:
     paths:
