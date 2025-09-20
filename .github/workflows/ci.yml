@@ -398,7 +398,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
-            -destination "generic/platform=iOS" \
+            -destination "generic/platform=iOS Simulator" \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
@@ -412,7 +412,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "generic/platform=iOS" \
+            -destination "generic/platform=iOS Simulator" \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
@@ -588,6 +588,7 @@ jobs:
               exit 0
             fi
             echo "Using simulator ID: $SIMULATOR_ID"
+            echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_OUTPUT
           else
             echo "No iPhone simulators found, skipping tests"
             exit 0
@@ -778,6 +779,7 @@ jobs:
               exit 0
             fi
             echo "Using simulator ID: $SIMULATOR_ID"
+            echo "SIMULATOR_ID=$SIMULATOR_ID" >> $GITHUB_OUTPUT
           else
             echo "No iPhone simulators found, skipping tests"
             exit 0
@@ -907,7 +909,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "generic/platform=iOS" \
+            -destination "generic/platform=iOS Simulator" \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
