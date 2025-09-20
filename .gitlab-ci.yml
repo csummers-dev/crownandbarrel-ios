@@ -49,13 +49,13 @@ cache:
     - ios
     - xcode
   before_script:
-    - echo "Starting iOS job: $CI_JOB_NAME"
-    - echo "Xcode version: $(xcodebuild -version)"
+    - echo "Starting iOS job"
+    - xcodebuild -version
     - echo "Available simulators:"
-    - xcrun simctl list devices available | grep iPhone
-    - xcrun simctl boot "$IOS_SIMULATOR_NAME" || true
-    - xcrun simctl shutdown "$IOS_SIMULATOR_NAME" || true
-    - xcrun simctl boot "$IOS_SIMULATOR_NAME"
+    - xcrun simctl list devices available
+    - xcrun simctl boot "iPhone 16" || true
+    - xcrun simctl shutdown "iPhone 16" || true
+    - xcrun simctl boot "iPhone 16"
     - echo "Simulator booted successfully"
 
 # Setup stage - Install dependencies and generate project
@@ -181,8 +181,6 @@ deploy_testflight:
     - echo "3. Code signing certificates"
     - echo "4. Fastlane configuration"
     - echo "5. GitLab CI/CD variables for secrets"
-    # Uncomment and configure when ready:
-    # - fastlane ios beta
   only:
     - main
     - tags
@@ -203,8 +201,6 @@ deploy_appstore:
     - echo "4. Code signing certificates"
     - echo "5. Fastlane configuration"
     - echo "6. GitLab CI/CD variables for secrets"
-    # Uncomment and configure when ready:
-    # - fastlane ios release
   only:
     - tags
   when: manual
@@ -215,7 +211,7 @@ cleanup:
   stage: deploy
   script:
     - echo "Cleaning up..."
-    - xcrun simctl shutdown "$IOS_SIMULATOR_NAME" || true
+    - xcrun simctl shutdown "iPhone 16" || true
     - echo "Cleanup completed"
   when: always
   allow_failure: true
