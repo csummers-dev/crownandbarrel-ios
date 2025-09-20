@@ -154,7 +154,17 @@ else
     print_status "warning" "GitHub Actions validation script not found"
 fi
 
-# 10. Final summary
+# 10. Check workflow consistency
+print_status "info" "Checking workflow consistency..."
+if ./scripts/workflow-consistency-check.sh >/dev/null 2>&1; then
+    print_status "success" "Workflow consistency check passed"
+else
+    print_status "error" "Workflow consistency issues found"
+    print_status "info" "Run './scripts/workflow-consistency-check.sh' for details"
+    exit 1
+fi
+
+# 11. Final summary
 print_status "success" "Pre-push validation completed successfully!"
 print_status "info" "All checks passed - ready to push to GitHub"
 
@@ -167,5 +177,6 @@ echo "✅ Required tools: Available"
 echo "✅ Project configuration: Valid"
 echo "✅ Build configuration: Tested"
 echo "✅ GitHub Actions: Validated"
+echo "✅ Workflow consistency: Checked"
 echo ""
 echo "🚀 Ready to push to GitHub!"

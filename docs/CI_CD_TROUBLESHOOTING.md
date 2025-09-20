@@ -207,6 +207,7 @@ For CI/CD issues:
 
 ## Related Documentation
 
+- [Pipeline Maintenance Guide](PIPELINE_MAINTENANCE_GUIDE.md) - **CRITICAL**: Systematic procedures to prevent missed workflow updates
 - [GitHub Actions Workflows](.github/ACTIONS_README.md)
 - [Migration Summary](MIGRATION_COMPLETE.md)
 - [Architecture Guide](ARCHITECTURE.md)
