@@ -67,8 +67,8 @@ jobs:
           # Find the first available iPhone simulator
           echo "Searching for available iPhone simulators..."
           
-          # Try different iPhone models in order of preference
-          for model in "iPhone 15" "iPhone 14" "iPhone 13" "iPhone 12" "iPhone 11"; do
+          # Try different iPhone models in order of preference (most advanced first)
+          for model in "iPhone 15 Pro" "iPhone 15" "iPhone 14 Pro" "iPhone 14" "iPhone 13 Pro" "iPhone 13" "iPhone 12 Pro" "iPhone 12" "iPhone 11 Pro" "iPhone 11"; do
             echo "Checking for $model..."
             if xcrun simctl list devices available | grep -q "$model"; then
               echo "Found $model simulator"
@@ -106,7 +106,12 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            brew install xcodegen
+            # Ensure we use the correct architecture for Homebrew
+            if [[ $(uname -m) == "arm64" ]]; then
+              arch -arm64 brew install xcodegen
+            else
+              brew install xcodegen
+            fi
           fi
           
       - name: Generate Xcode project
@@ -149,7 +154,12 @@ jobs:
         run: |
           if ! command -v swiftlint &> /dev/null; then
             echo "Installing SwiftLint..."
-            brew install swiftlint
+            # Ensure we use the correct architecture for Homebrew
+            if [[ $(uname -m) == "arm64" ]]; then
+              arch -arm64 brew install swiftlint
+            else
+              brew install swiftlint
+            fi
           fi
           
       - name: Run SwiftLint
@@ -184,7 +194,12 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            brew install xcodegen
+            # Ensure we use the correct architecture for Homebrew
+            if [[ $(uname -m) == "arm64" ]]; then
+              arch -arm64 brew install xcodegen
+            else
+              brew install xcodegen
+            fi
           fi
           
       - name: Generate Xcode project
@@ -198,7 +213,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES
             
@@ -208,7 +223,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration Release \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES
             
@@ -239,7 +254,12 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            brew install xcodegen
+            # Ensure we use the correct architecture for Homebrew
+            if [[ $(uname -m) == "arm64" ]]; then
+              arch -arm64 brew install xcodegen
+            else
+              brew install xcodegen
+            fi
           fi
           
       - name: Generate Xcode project
@@ -260,8 +280,8 @@ jobs:
           # Find the first available iPhone simulator
           echo "Searching for available iPhone simulators..."
           
-          # Try different iPhone models in order of preference
-          for model in "iPhone 15" "iPhone 14" "iPhone 13" "iPhone 12" "iPhone 11"; do
+          # Try different iPhone models in order of preference (most advanced first)
+          for model in "iPhone 15 Pro" "iPhone 15" "iPhone 14 Pro" "iPhone 14" "iPhone 13 Pro" "iPhone 13" "iPhone 12 Pro" "iPhone 12" "iPhone 11 Pro" "iPhone 11"; do
             echo "Checking for $model..."
             if xcrun simctl list devices available | grep -q "$model"; then
               echo "Found $model simulator"
@@ -296,12 +316,12 @@ jobs:
           
       - name: Run Unit Tests
         run: |
-          echo "Running unit tests on iPhone 14 simulator..."
+          echo "Running unit tests on iPhone 15 Pro simulator..."
           
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
             "-only-testing:${{ env.SCHEME_NAME }}Tests" \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
@@ -333,7 +353,12 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            brew install xcodegen
+            # Ensure we use the correct architecture for Homebrew
+            if [[ $(uname -m) == "arm64" ]]; then
+              arch -arm64 brew install xcodegen
+            else
+              brew install xcodegen
+            fi
           fi
           
       - name: Generate Xcode project
@@ -354,8 +379,8 @@ jobs:
           # Find the first available iPhone simulator
           echo "Searching for available iPhone simulators..."
           
-          # Try different iPhone models in order of preference
-          for model in "iPhone 15" "iPhone 14" "iPhone 13" "iPhone 12" "iPhone 11"; do
+          # Try different iPhone models in order of preference (most advanced first)
+          for model in "iPhone 15 Pro" "iPhone 15" "iPhone 14 Pro" "iPhone 14" "iPhone 13 Pro" "iPhone 13" "iPhone 12 Pro" "iPhone 12" "iPhone 11 Pro" "iPhone 11"; do
             echo "Checking for $model..."
             if xcrun simctl list devices available | grep -q "$model"; then
               echo "Found $model simulator"
@@ -390,12 +415,12 @@ jobs:
           
       - name: Run UI Tests
         run: |
-          echo "Running UI tests on iPhone 14 simulator..."
+          echo "Running UI tests on iPhone 15 Pro simulator..."
           
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "platform=iOS Simulator,name=iPhone 14,OS=17.0" \
+            -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.0" \
             "-only-testing:${{ env.SCHEME_NAME }}UITests" \
             -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
@@ -429,7 +454,12 @@ jobs:
         run: |
           if ! command -v xcodegen &> /dev/null; then
             echo "Installing XcodeGen..."
-            brew install xcodegen
+            # Ensure we use the correct architecture for Homebrew
+            if [[ $(uname -m) == "arm64" ]]; then
+              arch -arm64 brew install xcodegen
+            else
+              brew install xcodegen
+            fi
           fi
           
       - name: Generate Xcode project
