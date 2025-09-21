@@ -153,6 +153,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration "${{ env.ARCHIVE_CONFIGURATION }}" \
+            -destination "generic/platform=iOS" \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=YES \
             DEVELOPMENT_TEAM="${{ secrets.TEAM_ID }}" \
@@ -315,6 +316,7 @@ jobs:
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration "${{ env.ARCHIVE_CONFIGURATION }}" \
+            -destination "generic/platform=iOS" \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
             CODE_SIGNING_ALLOWED=YES \
             DEVELOPMENT_TEAM="${{ secrets.TEAM_ID }}" \
