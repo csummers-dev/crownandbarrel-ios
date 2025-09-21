@@ -1,0 +1,130 @@
+[
+  {
+    "id": "light-default",
+    "name": "Daytime",
+    "colorScheme": "light",
+    "colors": {
+      "accent": "#4A90E2",
+      "background": "#FAFAF9",
+      "secondaryBackground": "#F5F5F4",
+      "tertiaryBackground": "#F9F9F8",
+      "separator": "rgba(70,70,73,0.25)",
+      "textPrimary": "#2C2C2E",
+      "textSecondary": "rgba(44,44,46,0.65)",
+      "tabBarHairline": "rgba(70,70,73,0.20)",
+      "chartPalette": ["#4A90E2", "#5AC8FA", "#FF9F0A", "#FF6B6B", "#A78BFA"]
+    }
+  },
+  {
+    "id": "dark-default",
+    "name": "Nighttime",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#64B5F6",
+      "background": "#0F0F0F",
+      "secondaryBackground": "#1E1E1E",
+      "tertiaryBackground": "#2D2D2D",
+      "separator": "rgba(100,181,246,0.25)",
+      "textPrimary": "#F5F5F5",
+      "textSecondary": "rgba(245,245,245,0.75)",
+      "tabBarHairline": "rgba(100,181,246,0.18)",
+      "chartPalette": ["#64B5F6", "#4FC3F7", "#FFB74D", "#F06292", "#BA68C8"]
+    }
+  },
+  {
+    "id": "champagne-gold",
+    "name": "Champagne Gold",
+    "colorScheme": "light",
+    "colors": {
+      "accent": "#B8860B",
+      "background": "#FBF9F5",
+      "secondaryBackground": "#F5F1E8",
+      "tertiaryBackground": "#EFE8DC",
+      "separator": "rgba(184,134,11,0.20)",
+      "textPrimary": "#2F2B26",
+      "textSecondary": "rgba(47,43,38,0.70)",
+      "tabBarHairline": "rgba(184,134,11,0.15)",
+      "chartPalette": ["#B8860B", "#DAA520", "#F4D03F", "#8B7355", "#654321"]
+    }
+  },
+  {
+    "id": "royal-sapphire",
+    "name": "Royal Sapphire",
+    "colorScheme": "light",
+    "colors": {
+      "accent": "#1E3A8A",
+      "background": "#FAFBFC",
+      "secondaryBackground": "#F0F2F5",
+      "tertiaryBackground": "#E4E8ED",
+      "separator": "rgba(30,58,138,0.22)",
+      "textPrimary": "#1F2937",
+      "textSecondary": "rgba(31,41,55,0.70)",
+      "tabBarHairline": "rgba(30,58,138,0.15)",
+      "chartPalette": ["#1E3A8A", "#3B82F6", "#60A5FA", "#1D4ED8", "#1E40AF"]
+    }
+  },
+  {
+    "id": "emerald-heritage",
+    "name": "Emerald Heritage",
+    "colorScheme": "light",
+    "colors": {
+      "accent": "#047857",
+      "background": "#FAF9F7",
+      "secondaryBackground": "#F0EDE8",
+      "tertiaryBackground": "#E6E0D6",
+      "separator": "rgba(4,120,87,0.20)",
+      "textPrimary": "#1F2937",
+      "textSecondary": "rgba(31,41,55,0.70)",
+      "tabBarHairline": "rgba(4,120,87,0.15)",
+      "chartPalette": ["#047857", "#059669", "#10B981", "#065F46", "#064E3B"]
+    }
+  },
+  {
+    "id": "onyx-prestige",
+    "name": "Onyx Prestige",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#D4AF37",
+      "background": "#0F0E0D",
+      "secondaryBackground": "#1C1B19",
+      "tertiaryBackground": "#2A2826",
+      "separator": "rgba(212,175,55,0.25)",
+      "textPrimary": "#F5F4F2",
+      "textSecondary": "rgba(245,244,242,0.80)",
+      "tabBarHairline": "rgba(212,175,55,0.18)",
+      "chartPalette": ["#D4AF37", "#F4D03F", "#FFE135", "#B8860B", "#9A7B0A"]
+    }
+  },
+  {
+    "id": "burgundy-elite",
+    "name": "Burgundy Elite",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#E8B4CB",
+      "background": "#1A0F0F",
+      "secondaryBackground": "#2D1B1B",
+      "tertiaryBackground": "#3D2626",
+      "separator": "rgba(232,180,203,0.25)",
+      "textPrimary": "#F7E7E7",
+      "textSecondary": "rgba(247,231,231,0.80)",
+      "tabBarHairline": "rgba(232,180,203,0.18)",
+      "chartPalette": ["#E8B4CB", "#F4C2C2", "#D1A3A4", "#C08497", "#A0677A"]
+    }
+  },
+  {
+    "id": "midnight-platinum",
+    "name": "Midnight Platinum",
+    "colorScheme": "dark",
+    "colors": {
+      "accent": "#C0C0C0",
+      "background": "#0B1426",
+      "secondaryBackground": "#1A2332",
+      "tertiaryBackground": "#293340",
+      "separator": "rgba(192,192,192,0.25)",
+      "textPrimary": "#E8F0FF",
+      "textSecondary": "rgba(232,240,255,0.80)",
+      "tabBarHairline": "rgba(192,192,192,0.18)",
+      "chartPalette": ["#C0C0C0", "#D3D3D3", "#A9A9A9", "#808080", "#696969"]
+    }
+  }
+]
