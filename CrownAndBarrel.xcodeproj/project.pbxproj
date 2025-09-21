@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -46,6 +46,7 @@
 		5420940E5758B635C2F6628E /* AppDataToastUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15D1827CE308CDE4224BDEB /* AppDataToastUITests.swift */; };
 		55282FE62588F8DFE578529A /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A511830ED723836C98668DD /* Watch.swift */; };
 		56FCEEE42FA6235AE47398E9 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C277043741583085DC96EE /* ThemeManager.swift */; };
+		58EF653EB99A87EC2D4801B7 /* ThemeRegressionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A99B220BD8533C60C8D87BB /* ThemeRegressionUITests.swift */; };
 		59CE1E6A24E11B8183FC9A91 /* ContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C0DC54BC572E05BC383A31 /* ContrastTests.swift */; };
 		5AB6A721EB32C7551223CE19 /* WatchFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C09ACC0EEECA7B66AD45880 /* WatchFormView.swift */; };
 		5D44DDE7D6E68E6B1A63CAC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74509E100C9332C647116B14 /* Assets.xcassets */; };
@@ -66,6 +67,7 @@
 		8AF94E8301261190B6F046B3 /* WatchEntryPlaceholder-DarkMode-1000.png in Resources */ = {isa = PBXBuildFile; fileRef = A77D104A99A098F7889A0DD0 /* WatchEntryPlaceholder-DarkMode-1000.png */; };
 		8C0DE8CDAE4033A0AE1BF3F1 /* ThemeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502E892118227F09D2045B03 /* ThemeCatalog.swift */; };
 		8C2E6EABD323CAA0327E12CE /* CalendarListBackgroundUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B089723905E9829DD7268F4E /* CalendarListBackgroundUITests.swift */; };
+		97BB3604804CD26CE641BCEB /* ThemeSystemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FBD6EF55E517D2CFB1CAD1A /* ThemeSystemTests.swift */; };
 		9853902144754D6AB314734F /* ImageStoreCropTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */; };
 		98669173D126E51F59B1CA32 /* WearEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0EAFBD423D5E1C5C8FF2C8 /* WearEntry.swift */; };
 		991346D5F7331BF16592879D /* HapticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437A6973B360720818BB9088 /* HapticsTests.swift */; };
@@ -87,6 +89,7 @@
 		E57D3357D8F964CA9BB061D1 /* AppIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91464DBDAE05DDE30024016A /* AppIconSize.swift */; };
 		E9BD7736E2F341FD0FFEE6DC /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397D8E4F131857CBF1DDE7FF /* StatsView.swift */; };
 		EBB4BB5156BA4162D76CA362 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 3C0B189D594E115D33EBE487 /* ZIPFoundation */; };
+		EC8EB63616F194262A00A86C /* TabBarColorValidationUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF763C48914C493B928EC76B /* TabBarColorValidationUITests.swift */; };
 		ED41FF7937B0AA30CBEB6AC9 /* ThemeToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9169B2CE7BD888138D7E710B /* ThemeToken.swift */; };
 		F3AA5ACE53B4A598170A1AAE /* MoreRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53799E0EB1FCB8764FDCC04F /* MoreRepositoryTests.swift */; };
 		F65B5191AAC9FCDD94BA81CF /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AB4B9FBFC7C731F033FA86 /* RootView.swift */; };
@@ -154,6 +157,8 @@
 		70AB4B9FBFC7C731F033FA86 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		74509E100C9332C647116B14 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75F4503E1B5222F7098D965A /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
+		7A99B220BD8533C60C8D87BB /* ThemeRegressionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeRegressionUITests.swift; sourceTree = "<group>"; };
+		7FBD6EF55E517D2CFB1CAD1A /* ThemeSystemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSystemTests.swift; sourceTree = "<group>"; };
 		80ACAAE048C456FE5AA3FD94 /* WatchFormViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFormViewModelTests.swift; sourceTree = "<group>"; };
 		82A021FCBFB00FA8A866C416 /* DateUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtils.swift; sourceTree = "<group>"; };
 		86F1DC1ADC976AFD8AB01DD7 /* Themes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Themes.json; sourceTree = "<group>"; };
@@ -175,7 +180,7 @@
 		B02611C4BD7A91D382299E62 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		B040BB51355DC6B08325E028 /* BackupRepositoryFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepositoryFile.swift; sourceTree = "<group>"; };
 		B089723905E9829DD7268F4E /* CalendarListBackgroundUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarListBackgroundUITests.swift; sourceTree = "<group>"; };
-		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51C43DFAA9D722A37E85418 /* StatsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsUITests.swift; sourceTree = "<group>"; };
 		B5A6FF1EA983B5DBC3BC4195 /* ThemeCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalogTests.swift; sourceTree = "<group>"; };
 		B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppearanceHeaderUITests.swift; sourceTree = "<group>"; };
@@ -195,6 +200,7 @@
 		DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWatchFlowUITests.swift; sourceTree = "<group>"; };
 		E79BB55FBEEBDD119F94BC7E /* Radius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Radius.swift; sourceTree = "<group>"; };
 		EEE8EDC01E647A849E28EA06 /* SpacingTokensTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacingTokensTests.swift; sourceTree = "<group>"; };
+		EF763C48914C493B928EC76B /* TabBarColorValidationUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarColorValidationUITests.swift; sourceTree = "<group>"; };
 		F45751E182AB37CBAD741AFA /* Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Appearance.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -438,8 +444,10 @@
 				B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */,
 				C7F3572E383D9F8AA4E35ADD /* StatsTitleUITests.swift */,
 				B51C43DFAA9D722A37E85418 /* StatsUITests.swift */,
+				EF763C48914C493B928EC76B /* TabBarColorValidationUITests.swift */,
 				A8FAD41D241F344B60E7EF87 /* ThemeDefaultingUITests.swift */,
 				8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */,
+				7A99B220BD8533C60C8D87BB /* ThemeRegressionUITests.swift */,
 			);
 			name = UITests;
 			path = Tests/UITests;
@@ -472,6 +480,7 @@
 				B5A6FF1EA983B5DBC3BC4195 /* ThemeCatalogTests.swift */,
 				510362C5E1F49E09E688D0F5 /* ThemeDefaultingTests.swift */,
 				D74DCE601B81CC4A2D4203AB /* ThemeResolutionTests.swift */,
+				7FBD6EF55E517D2CFB1CAD1A /* ThemeSystemTests.swift */,
 				80ACAAE048C456FE5AA3FD94 /* WatchFormViewModelTests.swift */,
 				6B29B563C0CF159D293A1C28 /* WatchRepositoryTests.swift */,
 			);
@@ -574,6 +583,7 @@
 			packageReferences = (
 				C29A45FE54EAAB10B4467041 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -619,6 +629,7 @@
 				39647468C6B02C1C8B817273 /* ThemeCatalogTests.swift in Sources */,
 				AB01C6ED766B3CC335219421 /* ThemeDefaultingTests.swift in Sources */,
 				6DA518CD17F3030AE5C1ED75 /* ThemeResolutionTests.swift in Sources */,
+				97BB3604804CD26CE641BCEB /* ThemeSystemTests.swift in Sources */,
 				4A811AA5444D5D5FA3996449 /* WatchFormViewModelTests.swift in Sources */,
 				896D3432066C19F0C0A7CE79 /* WatchRepositoryTests.swift in Sources */,
 			);
@@ -693,8 +704,10 @@
 				78CC781C4A7F8F8BFF9AC068 /* SettingsAppearanceHeaderUITests.swift in Sources */,
 				341C97D6DED6ABDAD40DE6C1 /* StatsTitleUITests.swift in Sources */,
 				21CBA0EF574D99452C2B6D91 /* StatsUITests.swift in Sources */,
+				EC8EB63616F194262A00A86C /* TabBarColorValidationUITests.swift in Sources */,
 				429D905C0D73FC831096328D /* ThemeDefaultingUITests.swift in Sources */,
 				6E3CAF8EA086B1EE28C78B45 /* ThemeLiveRefreshUITests.swift in Sources */,
+				58EF653EB99A87EC2D4801B7 /* ThemeRegressionUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -719,7 +732,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -793,7 +805,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
