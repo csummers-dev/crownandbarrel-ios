@@ -11,6 +11,7 @@ enum Appearance {
         applyNavigationBarAppearance()
         applyListAndCollectionAppearance()
         applyControlTints()
+        applySearchTextFieldAppearance()
     }
 
     private static func applyTabBarAppearance() {
@@ -18,6 +19,23 @@ enum Appearance {
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(AppColors.background)
         appearance.shadowColor = UIColor(AppColors.tabBarHairline)
+        
+        // Configure tab bar item colors directly on the appearance object
+        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
+        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppColors.accent)
+        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
+        
+        appearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
+        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+        appearance.inlineLayoutAppearance.selected.iconColor = UIColor(AppColors.accent)
+        appearance.inlineLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
+        
+        appearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
+        appearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
+        appearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(AppColors.accent)
+        appearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
+        
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().tintColor = UIColor(AppColors.accent)
@@ -77,113 +95,127 @@ enum Appearance {
         UIButton.appearance().tintColor = UIColor(AppColors.accent)
         UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
     }
+    
+    private static func applySearchTextFieldAppearance() {
+        // APPROACH 1: Direct search text field configuration
+        UISearchBar.appearance().searchTextField.backgroundColor = UIColor(AppColors.secondaryBackground)
+        UISearchBar.appearance().searchTextField.textColor = UIColor(AppColors.textPrimary)
+        UISearchBar.appearance().searchTextField.tintColor = UIColor(AppColors.accent)
+        
+        // APPROACH 2: Direct layer styling on search text field for iOS 26.0 Liquid Glass
+        UISearchBar.appearance().searchTextField.layer.backgroundColor = UIColor(AppColors.secondaryBackground).cgColor
+        UISearchBar.appearance().searchTextField.layer.cornerRadius = 18.0
+        UISearchBar.appearance().searchTextField.layer.masksToBounds = true
+        UISearchBar.appearance().searchTextField.clipsToBounds = true
 
-    /// Applies updated appearances directly to any visible UINavigationBar/UITabBar instances.
-    /// - Why: UIAppearance proxies do not always propagate to already-present bars; assigning
-    ///        appearances on live instances ensures immediate visual updates on theme change.
-    static func refreshVisibleBars() {
-        let navAppearance = UINavigationBarAppearance()
-        navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = UIColor(AppColors.background)
-        navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-        navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
-        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
+        // APPROACH 3: UITextField appearance as fallback
+        let textFieldAppearance = UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self])
+        textFieldAppearance.backgroundColor = UIColor(AppColors.secondaryBackground)
+        textFieldAppearance.textColor = UIColor(AppColors.textPrimary)
+        textFieldAppearance.tintColor = UIColor(AppColors.accent)
+        textFieldAppearance.layer.backgroundColor = UIColor(AppColors.secondaryBackground).cgColor
+        textFieldAppearance.layer.cornerRadius = 18.0
+        textFieldAppearance.layer.masksToBounds = true
 
-        let tabAppearance = UITabBarAppearance()
-        tabAppearance.configureWithOpaqueBackground()
-        tabAppearance.backgroundColor = UIColor(AppColors.background)
-        tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
+        // APPROACH 4: Search bar container styling
+        UISearchBar.appearance().backgroundColor = UIColor(AppColors.background)
+        UISearchBar.appearance().barTintColor = UIColor(AppColors.background)
+        UISearchBar.appearance().isTranslucent = false
+        UISearchBar.appearance().barStyle = .default
 
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-            for window in windowScene.windows {
-                func applyRecursively(_ view: UIView) {
-                    if let navBar = view as? UINavigationBar {
-                        navBar.standardAppearance = navAppearance
-                        navBar.scrollEdgeAppearance = navAppearance
-                        navBar.setNeedsLayout(); navBar.layoutIfNeeded()
-                    } else if let tabBar = view as? UITabBar {
-                        tabBar.standardAppearance = tabAppearance
-                        tabBar.scrollEdgeAppearance = tabAppearance
-                        tabBar.tintColor = UIColor(AppColors.accent)
-                        tabBar.unselectedItemTintColor = UIColor(AppColors.textSecondary)
-                        tabBar.setNeedsLayout(); tabBar.layoutIfNeeded()
-                    }
-                    for sub in view.subviews { applyRecursively(sub) }
-                }
-                applyRecursively(window)
-                window.setNeedsLayout(); window.layoutIfNeeded()
-            }
+        // APPROACH 5: Remove system background images that could override styling
+        UISearchBar.appearance().setSearchFieldBackgroundImage(nil, for: .normal)
+        UISearchBar.appearance().setSearchFieldBackgroundImage(nil, for: .disabled)
+        UISearchBar.appearance().setSearchFieldBackgroundImage(nil, for: .highlighted)
+        UISearchBar.appearance().setSearchFieldBackgroundImage(nil, for: .selected)
+
+        // Configure placeholder text
+        UISearchBar.appearance().searchTextField.attributedPlaceholder = NSAttributedString(
+            string: "Search",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor(AppColors.textSecondary)]
+        )
+        
+        // CRITICAL: Force runtime color application to prevent system default override
+        DispatchQueue.main.async {
+            forceSearchFieldColorRefresh()
         }
     }
+    
+    /// Forces search field colors to be applied at runtime while preserving Liquid Glass shape.
+    /// - What: Applies theme colors to existing search fields without affecting corner radius.
+    /// - Why: System defaults can override appearance-based colors, but shape is preserved.
+    /// - How: Finds and updates existing UISearchBar instances with fresh theme colors.
+    static func forceSearchFieldColorRefresh() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+        
+        for window in windowScene.windows {
+            updateSearchFieldColors(in: window)
+        }
+    }
+    
+    /// Recursively updates search field colors in view hierarchy.
+    /// - Parameter view: The root view to search for UISearchBar instances.
+    private static func updateSearchFieldColors(in view: UIView) {
+        if let searchBar = view as? UISearchBar {
+            // Apply theme colors without affecting the perfect Liquid Glass shape
+            searchBar.searchTextField.backgroundColor = UIColor(AppColors.secondaryBackground)
+            searchBar.searchTextField.textColor = UIColor(AppColors.textPrimary)
+            searchBar.searchTextField.tintColor = UIColor(AppColors.accent)
+            
+            // Ensure layer background color matches without changing corner radius
+            searchBar.searchTextField.layer.backgroundColor = UIColor(AppColors.secondaryBackground).cgColor
+            // DO NOT modify layer.cornerRadius here - it's already perfect at 18pt
+        }
+        
+        // Continue recursively through all subviews
+        for subview in view.subviews {
+            updateSearchFieldColors(in: subview)
+        }
+    }
+    
 }
 
 /// The main application entry point.
-/// - What: Composes the root window and applies the theme (light/dark/system) via a small theme manager.
-/// - Why: Centralized control of color scheme and scene lifecycle makes system-wide behavior (e.g., iOS 17 full-screen behavior) predictable.
-/// - How: SwiftUI `App` creates a `WindowGroup` hosting `RootView`. The theme manager maps persisted preference to a `ColorScheme?`.
-
 @main
 struct CrownAndBarrelApp: App {
     private let theme = ThemeManager()
     @AppStorage("selectedThemeId") private var selectedThemeId: String = ThemeCatalog.shared.defaultThemeId
-    /// Controls the visibility of the splash overlay at boot.
-    /// - What: Starts true so the user sees a branded, theme-matching screen.
-    /// - Why: Avoids a flash of unthemed UI between process launch and SwiftUI render.
-    /// - How: Fades out shortly after the first frame using a small, non-blocking delay.
     @State private var showSplash: Bool = true
 
     init() {
         // On first launch, if no saved theme preference exists, choose a default
         // based on the current system appearance (light → Daytime, dark → Nighttime).
         let key = "selectedThemeId"
-        #if DEBUG
-        let args = ProcessInfo.processInfo.arguments
-        let env = ProcessInfo.processInfo.environment
-        let uiTestSuite = env["UITestDefaultsSuite"].flatMap { UserDefaults(suiteName: $0) }
-        if args.contains("--uiTestResetTheme") {
-            UserDefaults.standard.removeObject(forKey: key)
-            uiTestSuite?.removeObject(forKey: key)
+        if UserDefaults.standard.object(forKey: key) == nil {
+            let detected = UIScreen.main.traitCollection.userInterfaceStyle
+            let defaultId = ThemeManager.defaultThemeId(for: detected)
+            UserDefaults.standard.set(defaultId, forKey: key)
         }
-        if args.contains("--uiTestExposeThemeInfo") {
-            // Allow forcing the perceived system style for deterministic tests
-            let forcedArg = args.first { $0.hasPrefix("--uiTestForceSystemStyle=") }
-            let forcedValue = forcedArg?.split(separator: "=").last.map(String.init)
-            let detected: UIUserInterfaceStyle
-            if let forcedValue, forcedValue.lowercased() == "dark" {
-                detected = .dark
-            } else if let forcedValue, forcedValue.lowercased() == "light" {
-                detected = .light
-            } else {
-                detected = UIScreen.main.traitCollection.userInterfaceStyle
-            }
-            let detectedString = (detected == .dark) ? "dark" : "light"
-            UserDefaults.standard.set(detectedString, forKey: "uiTestDetectedSystemStyle")
-            uiTestSuite?.set(detectedString, forKey: "uiTestDetectedSystemStyle")
-        }
-        #endif
-        if UserDefaults.standard.string(forKey: key) == nil {
-            #if DEBUG
-            let forcedArg = ProcessInfo.processInfo.arguments.first { $0.hasPrefix("--uiTestForceSystemStyle=") }
-            let forcedValue = forcedArg?.split(separator: "=").last.map(String.init)
-            let style: UIUserInterfaceStyle
-            if let forcedValue, forcedValue.lowercased() == "dark" {
-                style = .dark
-            } else if let forcedValue, forcedValue.lowercased() == "light" {
-                style = .light
-            } else {
-                style = UIScreen.main.traitCollection.userInterfaceStyle
-            }
-            #else
-            let style = UIScreen.main.traitCollection.userInterfaceStyle
-            #endif
-            let initialId = ThemeManager.defaultThemeId(for: style)
-            UserDefaults.standard.set(initialId, forKey: key)
-            #if DEBUG
-            uiTestSuite?.set(initialId, forKey: key)
-            #endif
+        
+        // Apply initial theme setup
+        Appearance.applyAllAppearances()
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            RootView()
+                .preferredColorScheme(theme.preferredColorScheme)
+                .background(AppColors.background.ignoresSafeArea())
+                .environment(\.themeToken, selectedThemeId)
+                .onAppear {
+                    handleAppLaunch()
+                }
+                .onChange(of: selectedThemeId) { _, _ in
+                    handleThemeChange()
+                }
+                .overlay {
+                    if showSplash {
+                        splashOverlay
+                    }
+                }
         }
     }
-    
+
     // MARK: - Private Methods
     
     /// Handles app launch setup including splash animation and UI appearance configuration
@@ -194,169 +226,23 @@ struct CrownAndBarrelApp: App {
         }
         // Apply themed appearances at launch
         Appearance.applyAllAppearances()
-        setupUITestTheme()
-        configureUIAppearances()
     }
     
-    /// Handles theme change by reapplying all UI appearances
+    /// Handles theme change with clean, minimal approach
     private func handleThemeChange() {
-        // Reapply appearance proxies on theme changes and refresh visible bars
+        // Single, clean appearance application
         Appearance.applyAllAppearances()
-        Appearance.refreshVisibleBars()
-        configureUIAppearances()
-        // Environment token is bound at the scene; view-level `.id(themeToken)` handles SwiftUI refresh.
-    }
-    
-    /// Sets up UI test theme if specified via launch arguments
-    private func setupUITestTheme() {
-        #if DEBUG
-        // What: Allow UI tests to pin a specific theme via launch argument.
-        // Why: Ensures we can deterministically validate dark vs light cards and containers.
-        // How: Pass e.g. "--uiTestTheme=dark-default" in UITest launch configuration.
-        if let themeArg = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--uiTestTheme=") })?.split(separator: "=").last {
-            UserDefaults.standard.set(String(themeArg), forKey: "selectedThemeId")
+        
+        // Force search field color refresh to prevent system default override
+        DispatchQueue.main.async {
+            Appearance.forceSearchFieldColorRefresh()
         }
-        #endif
-    }
-    
-    /// Configures all UIKit appearance proxies to match the current theme
-    private func configureUIAppearances() {
-        configureTabBarAppearance()
-        configureNavigationBarAppearance()
-        configureGlobalTints()
-        configureTableViewAppearances()
-        configureCollectionViewAppearances()
-        configureSegmentedControlAppearance()
-        configureButtonAppearances()
-    }
-    
-    /// Configures tab bar appearance with theme colors
-    private func configureTabBarAppearance() {
-        let tabAppearance = UITabBarAppearance()
-        tabAppearance.configureWithOpaqueBackground()
-        tabAppearance.backgroundColor = UIColor(AppColors.background)
-        tabAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-        UITabBar.appearance().standardAppearance = tabAppearance
-        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
-        UITabBar.appearance().tintColor = UIColor(AppColors.accent)
-        UITabBar.appearance().unselectedItemTintColor = UIColor(AppColors.textSecondary)
-    }
-    
-    /// Configures navigation bar appearance with theme colors
-    private func configureNavigationBarAppearance() {
-        let navAppearance = UINavigationBarAppearance()
-        navAppearance.configureWithOpaqueBackground()
-        navAppearance.backgroundColor = UIColor(AppColors.background)
-        navAppearance.shadowColor = UIColor(AppColors.tabBarHairline)
-        navAppearance.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
-        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
         
-        // Hide back button titles globally (chevron only)
-        let backItemAppearance = UIBarButtonItemAppearance()
-        let hiddenTitleAttrs: [NSAttributedString.Key: Any] = [.foregroundColor: UIColor.clear]
-        backItemAppearance.normal.titleTextAttributes = hiddenTitleAttrs
-        backItemAppearance.highlighted.titleTextAttributes = hiddenTitleAttrs
-        backItemAppearance.disabled.titleTextAttributes = hiddenTitleAttrs
-        backItemAppearance.focused.titleTextAttributes = hiddenTitleAttrs
-        navAppearance.backButtonAppearance = backItemAppearance
-        
-        UINavigationBar.appearance().standardAppearance = navAppearance
-        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
-        UINavigationBar.appearance().tintColor = UIColor(AppColors.accent)
-    }
-    
-    /// Configures global tint colors for UIKit elements
-    private func configureGlobalTints() {
-        // Global control tint (UIKit hosting).
-        // What: Use themed accent instead of system tint.
-        // Why: Some UIKit elements cache tint on creation; this sets a consistent baseline.
-        UIView.appearance().tintColor = UIColor(AppColors.accent)
-        // Ensure calendar header arrow buttons adopt accent
-        UIButton.appearance(whenContainedInInstancesOf: [UICalendarView.self]).tintColor = UIColor(AppColors.accent)
-    }
-    
-    /// Configures table view appearances for custom-styled lists
-    private func configureTableViewAppearances() {
-        // UITableView / Cell / contained scroll backgrounds for SwiftUI List(.plain)
-        // Default clear so screens can supply themed backgrounds.
-        UITableView.appearance().backgroundColor = .clear
-        UITableViewCell.appearance().backgroundColor = .clear
-        UIScrollView.appearance(whenContainedInInstancesOf: [UITableView.self]).backgroundColor = .clear
-        UITableViewHeaderFooterView.appearance().tintColor = .clear
-        UITableViewHeaderFooterView.appearance().backgroundColor = .clear
-        
-        // Remove default hairline separators for visual clarity in custom-styled lists
-        UITableView.appearance().separatorStyle = .none
-        UITableView.appearance().separatorColor = .clear
-        UITableView.appearance().separatorInset = .zero
-        UITableView.appearance().separatorInsetReference = .fromCellEdges
-        UITableView.appearance().separatorEffect = nil
-        UITableView.appearance().tableFooterView = UIView(frame: .zero)
-    }
-    
-    /// Configures collection view appearances
-    private func configureCollectionViewAppearances() {
-        // UICollectionView backgrounds cleared so screens can supply themed backgrounds.
-        UICollectionView.appearance().backgroundColor = .clear
-        UICollectionViewCell.appearance().backgroundColor = .clear
-    }
-    
-    /// Configures segmented control appearance with theme colors
-    private func configureSegmentedControlAppearance() {
-        // Segmented control (used in Collection view toggle)
-        // What: Use accent for selected segment, white text for selected, primary for normal.
-        // Why: Keeps selection visible across themes and avoids system blue.
-        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(AppColors.accent)
-        UISegmentedControl.appearance().setTitleTextAttributes([
-            .foregroundColor: UIColor(AppColors.brandWhite)
-        ], for: .selected)
-        UISegmentedControl.appearance().setTitleTextAttributes([
-            .foregroundColor: UIColor(AppColors.textPrimary)
-        ], for: .normal)
-    }
-    
-    /// Configures button appearances with theme colors
-    private func configureButtonAppearances() {
-        // Common button/bar button tint
-        UIBarButtonItem.appearance().tintColor = UIColor(AppColors.accent)
-        UIButton.appearance().tintColor = UIColor(AppColors.accent)
-        // Calendar labels inside UICalendarView should inherit theme text color
-        UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
+        // SwiftUI will handle view updates via environment changes
     }
 
-    var body: some Scene {
-        WindowGroup {
-            // Compose the app root with a transient, theme-driven splash overlay.
-            // The overlay uses the current theme's background and secondary text color
-            // to ensure immediate visual consistency with user preferences.
-            ZStack {
-                RootView()
-                if showSplash {
-                    SplashOverlay()
-                        .transition(.opacity)
-                }
-            }
-                .preferredColorScheme(theme.preferredColorScheme)
-                // What: Bind SwiftUI tint to the theme accent.
-                // Why: Ensures SwiftUI controls (e.g., segmented controls) adopt the accent immediately.
-                .tint(AppColors.accent)
-                .background(AppColors.background.ignoresSafeArea())
-                .environment(\.themeToken, selectedThemeId)
-                .onAppear {
-                    handleAppLaunch()
-                }
-                .onChange(of: selectedThemeId) { _, _ in
-                    handleThemeChange()
-                }
-        }
-    }
-}
-
-
-/// A lightweight, theme-driven splash overlay shown briefly on app launch.
-/// Uses the user's saved theme: primary background and secondary text color.
-private struct SplashOverlay: View {
-    var body: some View {
+    /// Splash overlay shown during app launch
+    private var splashOverlay: some View {
         ZStack {
             AppColors.background.ignoresSafeArea()
             VStack(spacing: 8) {
@@ -368,5 +254,3 @@ private struct SplashOverlay: View {
         .accessibilityIdentifier("SplashOverlay")
     }
 }
-
-

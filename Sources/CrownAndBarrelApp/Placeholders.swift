@@ -22,6 +22,13 @@ struct PrivacyPolicyView: View {
         }
         .navigationTitle("Privacy Policy")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Privacy Policy")
+                    .font(AppTypography.titleCompact)
+                    .foregroundStyle(AppColors.accent)
+            }
+        }
         .background(AppColors.background.ignoresSafeArea())
     }
 

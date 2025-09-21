@@ -191,7 +191,12 @@ struct CollectionView: View {
     }
 
     private var addButton: some View {
-        Button(action: { viewModel.isPresentingAdd = true }) {
+        Button(action: { 
+            // Provide haptic feedback for important add action
+            // Use medium impact for significant user action that opens a form
+            Haptics.mediumImpact()
+            viewModel.isPresentingAdd = true 
+        }) {
             Image(systemName: "plus")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(AppColors.brandWhite)
@@ -221,8 +226,8 @@ private struct GridCell: View {
         //      container width so layout does not shift based on text length. Truncate long text.
         VStack(alignment: .leading, spacing: 6) {
             Text(watch.manufacturer)
-                .font(.headline)
-                .foregroundStyle(AppColors.textPrimary)
+                .font(AppTypography.luxury)
+                .foregroundStyle(AppColors.accent)
                 .lineLimit(1)
                 .truncationMode(.tail)
                 .accessibilityIdentifier("GridCellManufacturer")
@@ -287,8 +292,8 @@ private struct ListRow: View {
             )
             VStack(alignment: .leading, spacing: 4) {
                 Text(watch.manufacturer)
-                    .font(.body)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .font(AppTypography.luxury)
+                    .foregroundStyle(AppColors.accent)
                     .lineLimit(1)
                 Text(watch.model ?? "")
                     .font(.subheadline)

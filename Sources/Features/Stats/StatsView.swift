@@ -97,7 +97,9 @@ struct StatsView: View {
                 }
 
             Divider().padding(.vertical, 8)
-            Text("Least worn (Top 5)").font(.title3).foregroundStyle(AppColors.textSecondary)
+            Text("Least worn (Top 5)")
+                .font(AppTypography.heading)
+                .foregroundStyle(AppColors.textSecondary)
             PieChart(data: watches.sorted(by: { $0.timesWorn < $1.timesWorn }).prefix(5).map { ($0.displayName, Double($0.timesWorn)) })
                 .frame(height: 220)
                 .onTapGesture {
