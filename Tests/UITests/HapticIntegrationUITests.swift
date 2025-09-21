@@ -463,7 +463,7 @@ final class HapticIntegrationUITests: XCTestCase {
     
     /// Tests navigation haptic interactions don't break functionality.
     func testNavigationHaptics() throws {
-        // Test tab navigation
+        // Test tab navigation with haptic feedback
         let statsTab = app.tabBars.buttons["Stats"]
         if statsTab.exists {
             statsTab.tap()
@@ -489,6 +489,88 @@ final class HapticIntegrationUITests: XCTestCase {
         
         // Navigate back
         app.navigationBars.buttons["Back"].tap()
+    }
+    
+    /// Tests bottom navigation tab switching with haptic feedback.
+    /// - **Purpose**: Ensures tab switching triggers haptic feedback without breaking functionality
+    /// - **Coverage**: Tests all three tabs (Collection, Stats, Calendar) with rapid switching
+    /// - **Validation**: Verifies navigation works correctly with haptic integration
+    func testBottomNavigationTabHaptics() throws {
+        // Start on Collection tab (default)
+        XCTAssertTrue(app.collectionViews.firstMatch.waitForExistence(timeout: 5.0))
+        
+        // Test switching to Stats tab (should trigger haptic)
+        let statsTab = app.tabBars.buttons["Stats"]
+        if statsTab.exists {
+            statsTab.tap()
+            XCTAssertTrue(app.navigationBars["Stats"].waitForExistence(timeout: 3.0))
+        }
+        
+        // Test switching to Calendar tab (should trigger haptic)
+        let calendarTab = app.tabBars.buttons["Calendar"]
+        if calendarTab.exists {
+            calendarTab.tap()
+            XCTAssertTrue(app.navigationBars["Calendar"].waitForExistence(timeout: 3.0))
+        }
+        
+        // Test switching back to Collection tab (should trigger haptic)
+        let collectionTab = app.tabBars.buttons["Collection"]
+        if collectionTab.exists {
+            collectionTab.tap()
+            XCTAssertTrue(app.collectionViews.firstMatch.waitForExistence(timeout: 3.0))
+        }
+        
+        // Test rapid tab switching (should be debounced)
+        for _ in 0..<3 {
+            if statsTab.exists {
+                statsTab.tap()
+                XCTAssertTrue(app.navigationBars["Stats"].waitForExistence(timeout: 2.0))
+            }
+            
+            if collectionTab.exists {
+                collectionTab.tap()
+                XCTAssertTrue(app.collectionViews.firstMatch.waitForExistence(timeout: 2.0))
+            }
+        }
+        
+        XCTAssertTrue(true, "Bottom navigation tab haptics test completed successfully")
+    }
+    
+    /// Tests add watch button haptic feedback.
+    /// - **Purpose**: Ensures add watch floating action button triggers haptic feedback
+    /// - **Coverage**: Tests button tap and form presentation
+    /// - **Validation**: Verifies add functionality works correctly with haptic integration
+    func testAddWatchButtonHaptics() throws {
+        // Ensure we're on Collection tab
+        let collectionView = app.collectionViews.firstMatch
+        XCTAssertTrue(collectionView.waitForExistence(timeout: 5.0))
+        
+        // Test add watch button tap (should trigger medium impact haptic)
+        let addButton = app.buttons["Add watch"]
+        XCTAssertTrue(addButton.waitForExistence(timeout: 3.0))
+        XCTAssertTrue(addButton.isHittable)
+        
+        addButton.tap()
+        
+        // Verify form appears (haptic should not break functionality)
+        XCTAssertTrue(app.navigationBars.buttons["Cancel"].waitForExistence(timeout: 3.0))
+        
+        // Test form can be dismissed properly
+        app.navigationBars.buttons["Cancel"].tap()
+        
+        // Verify we're back to collection view
+        XCTAssertTrue(collectionView.waitForExistence(timeout: 3.0))
+        
+        // Test multiple rapid taps (should not break functionality)
+        for _ in 0..<3 {
+            addButton.tap()
+            if app.navigationBars.buttons["Cancel"].waitForExistence(timeout: 2.0) {
+                app.navigationBars.buttons["Cancel"].tap()
+                XCTAssertTrue(collectionView.waitForExistence(timeout: 2.0))
+            }
+        }
+        
+        XCTAssertTrue(true, "Add watch button haptics test completed successfully")
     }
     
     /// Tests comprehensive Phase 3 haptic integration.

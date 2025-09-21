@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -175,7 +175,7 @@
 		B02611C4BD7A91D382299E62 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
 		B040BB51355DC6B08325E028 /* BackupRepositoryFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRepositoryFile.swift; sourceTree = "<group>"; };
 		B089723905E9829DD7268F4E /* CalendarListBackgroundUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarListBackgroundUITests.swift; sourceTree = "<group>"; };
-		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B1938D8EDF12548D994A044A /* CrownAndBarrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CrownAndBarrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B51C43DFAA9D722A37E85418 /* StatsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsUITests.swift; sourceTree = "<group>"; };
 		B5A6FF1EA983B5DBC3BC4195 /* ThemeCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalogTests.swift; sourceTree = "<group>"; };
 		B5A9B9D006C46635695997FE /* SettingsAppearanceHeaderUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAppearanceHeaderUITests.swift; sourceTree = "<group>"; };
@@ -574,7 +574,6 @@
 			packageReferences = (
 				C29A45FE54EAAB10B4467041 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -720,6 +719,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -793,6 +793,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (

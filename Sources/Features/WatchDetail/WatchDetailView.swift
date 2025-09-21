@@ -48,6 +48,11 @@ struct WatchDetailView: View {
         .navigationTitle(watch.manufacturer)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text(watch.manufacturer)
+                    .font(AppTypography.titleCompact)
+                    .foregroundStyle(AppColors.accent)
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Edit") { 
                     Haptics.detailViewInteraction(.editInitiated)

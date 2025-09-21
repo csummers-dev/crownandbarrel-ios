@@ -190,7 +190,7 @@ private extension AppDataView {
     func headerRow(_ title: String) -> some View {
         HStack {
             Text(title)
-                .font(.footnote)
+                .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textSecondary)
                 .textCase(.none)
             Spacer(minLength: 0)

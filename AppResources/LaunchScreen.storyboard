@@ -17,7 +17,7 @@
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Crown &amp; Barrel" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="1" translatesAutoresizingMaskIntoConstraints="NO" id="titleLabel">
                                 <rect key="frame" x="116.5" y="416" width="160" height="20"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <fontDescription key="fontDescription" name="NewYorkMedium-Medium" family="New York" pointSize="20"/>
                                 <color key="textColor" systemColor="labelColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
