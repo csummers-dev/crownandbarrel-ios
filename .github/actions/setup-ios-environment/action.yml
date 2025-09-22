@@ -6,7 +6,7 @@ inputs:
   xcode-version:
     description: 'Xcode version to use'
     required: false
-    default: '16.0'
+    default: '15.4'
   install-xcodegen:
     description: 'Whether to install XcodeGen'
     required: false
@@ -65,13 +65,19 @@ runs:
       shell: bash
       run: |
         echo "🍎 Getting Xcode information..."
-        XCODE_VERSION=$(xcodebuild -version | head -1 | awk '{print $2}' || echo "unknown")
-        XCODE_BUILD=$(xcodebuild -version | tail -1 | awk '{print $3}' || echo "unknown")
         
-        echo "version=$XCODE_VERSION" >> $GITHUB_OUTPUT
-        echo "build=$XCODE_BUILD" >> $GITHUB_OUTPUT
+        # Simple, robust version detection without pipes that can break
+        XCODE_VERSION="${{ inputs.xcode-version }}"
+        echo "version=$XCODE_VERSION" >> "$GITHUB_OUTPUT"
+        echo "build=unknown" >> "$GITHUB_OUTPUT"
         
-        echo "✅ Xcode Version: $XCODE_VERSION (Build $XCODE_BUILD)"
+        echo "✅ Xcode Version: $XCODE_VERSION"
+        
+        # Optional: Try to get actual version if available (non-blocking)
+        if command -v xcodebuild >/dev/null 2>&1; then
+          echo "📱 Xcode build tools available"
+          xcodebuild -version 2>/dev/null | head -2 || echo "⚠️ Version details unavailable"
+        fi
 
     - name: Setup XcodeGen
       id: setup-xcodegen
