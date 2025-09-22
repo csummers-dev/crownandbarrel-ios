@@ -27,9 +27,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: 'unit-${{ hashFiles("Package.resolved") }}'
+          cache-key: 'unit-${{ hashFiles('Package.resolved') }}'
           restore-keys: |
-            unit-${{ hashFiles("Package.swift") }}
+            unit-${{ hashFiles('Package.swift') }}
             unit-latest
 
       - name: Run Unit Tests
@@ -82,9 +82,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: 'ui-${{ hashFiles("Package.resolved") }}'
+          cache-key: 'ui-${{ hashFiles('Package.resolved') }}'
           restore-keys: |
-            ui-${{ hashFiles("Package.swift") }}
+            ui-${{ hashFiles('Package.swift') }}
             ui-latest
 
       - name: Run UI Tests with retries and no parallelization

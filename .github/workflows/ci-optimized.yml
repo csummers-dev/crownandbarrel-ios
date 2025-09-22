@@ -38,9 +38,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: '${{ hashFiles('**/Package.resolved') }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
+            ${{ hashFiles('**/Package.swift') }}
             latest
           cache-suffix: 'setup'
             
@@ -48,9 +48,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'derived-data'
-          cache-key: '${{ hashFiles("**/*.swift") }}'
+          cache-key: '${{ hashFiles('**/*.swift') }}'
           restore-keys: |
-            ${{ hashFiles("Sources/**/*.swift") }}
+            ${{ hashFiles('Sources/**/*.swift') }}
             base
           cache-suffix: 'setup'
 
@@ -110,9 +110,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: '${{ hashFiles('**/Package.resolved') }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
+            ${{ hashFiles('**/Package.swift') }}
             latest
           cache-suffix: 'build'
           
@@ -215,9 +215,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: '${{ hashFiles('**/Package.resolved') }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
+            ${{ hashFiles('**/Package.swift') }}
             latest
           cache-suffix: 'unit-tests'
           
@@ -285,9 +285,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: '${{ hashFiles('**/Package.resolved') }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
+            ${{ hashFiles('**/Package.swift') }}
             latest
           cache-suffix: 'ui-tests'
           
@@ -357,9 +357,9 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: '${{ hashFiles('**/Package.resolved') }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
+            ${{ hashFiles('**/Package.swift') }}
             latest
           cache-suffix: 'deploy'
           
