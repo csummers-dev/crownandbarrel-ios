@@ -29,7 +29,7 @@ on:
 env:
   PROJECT_NAME: "CrownAndBarrel"
   SCHEME_NAME: "CrownAndBarrel"
-  XCODE_VERSION: "16.0"
+  XCODE_VERSION: "26.0.0"
   IOS_SIMULATOR_NAME: "iPhone 16 Pro"  # Updated to target iPhone 16 Pro specifically
   IOS_SIMULATOR_OS: "26.0"  # Updated to target iOS 26.0 specifically
 
@@ -153,16 +153,15 @@ jobs:
           echo "Looking for available iOS 26.0 simulators for performance monitoring..."
           
           # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for performance monitoring"
           # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
             # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for performance monitoring"
+            # Use iPhone 16 as reliable fallback
+            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
+            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for performance monitoring"
           else
             echo "❌ No iOS 26.0 simulators found, skipping performance monitoring"
             exit 0
@@ -218,9 +217,11 @@ jobs:
           fi
           
           # Store metrics for reporting
-          echo "BUILD_DURATION=${BUILD_DURATION}" >> $GITHUB_ENV
-          echo "CLEAN_DURATION=${CLEAN_DURATION}" >> $GITHUB_ENV
-          echo "TOTAL_DURATION=${TOTAL_DURATION}" >> $GITHUB_ENV
+          {
+            echo "BUILD_DURATION=${BUILD_DURATION}"
+            echo "CLEAN_DURATION=${CLEAN_DURATION}"
+            echo "TOTAL_DURATION=${TOTAL_DURATION}"
+          } >> "$GITHUB_ENV"
 
   # Test performance monitoring
   test-performance:
@@ -339,16 +340,15 @@ jobs:
           echo "Looking for available iOS 26.0 simulators for unit test performance monitoring..."
           
           # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit test performance monitoring"
           # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
             # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit test performance monitoring"
+            # Use iPhone 16 as reliable fallback
+            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
+            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for unit test performance monitoring"
           else
             echo "❌ No iOS 26.0 simulators found, skipping unit test performance monitoring"
             exit 0
@@ -376,13 +376,13 @@ jobs:
           echo "Looking for available iOS 26.0 simulators for UI test performance monitoring..."
           
           # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for UI test performance monitoring"
           # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
             # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep "26.0" | head -1)
             IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
             DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
             echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for UI test performance monitoring"
@@ -442,9 +442,11 @@ jobs:
           fi
           
           # Store metrics for reporting
-          echo "UNIT_TEST_DURATION=${UNIT_TEST_DURATION}" >> $GITHUB_ENV
-          echo "UI_TEST_DURATION=${UI_TEST_DURATION}" >> $GITHUB_ENV
-          echo "TOTAL_TEST_DURATION=${TOTAL_TEST_DURATION}" >> $GITHUB_ENV
+          {
+            echo "UNIT_TEST_DURATION=${UNIT_TEST_DURATION}"
+            echo "UI_TEST_DURATION=${UI_TEST_DURATION}"
+            echo "TOTAL_TEST_DURATION=${TOTAL_TEST_DURATION}"
+          } >> "$GITHUB_ENV"
 
   # Resource usage monitoring
   resource-monitor:
@@ -493,7 +495,7 @@ jobs:
           # Network monitoring
           echo "## Network Monitoring"
           echo "===================="
-          echo "🌐 **Network Interfaces**: $(ifconfig | grep "inet " | wc -l) active interfaces"
+          echo "🌐 **Network Interfaces**: $(ifconfig | grep -c "inet ") active interfaces"
           echo "📡 **Network Status**: $(ping -c 1 8.8.8.8 > /dev/null 2>&1 && echo "Connected" || echo "Disconnected")"
           echo ""
           

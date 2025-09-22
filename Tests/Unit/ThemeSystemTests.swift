@@ -1,4 +1,5 @@
 import XCTest
+import SwiftUI
 @testable import CrownAndBarrel
 
 /// Unit tests for theme system stability and typography implementation.
@@ -57,46 +58,28 @@ final class ThemeSystemTests: XCTestCase {
     /// - Why: Prevents regression of typography implementation.
     /// - How: Tests each typography style for proper font configuration.
     func testTypographySystemCompleteness() throws {
-        // Test primary navigation font
+        // Test all current typography tokens (4 total after cleanup)
+        
+        // Navigation & Branding
         let titleCompact = AppTypography.titleCompact
         XCTAssertNotNil(titleCompact, "titleCompact should be defined")
         
-        // Test content hierarchy fonts
-        let title = AppTypography.title
-        XCTAssertNotNil(title, "title should be defined")
-        
+        // Content Hierarchy
         let heading = AppTypography.heading
         XCTAssertNotNil(heading, "heading should be defined")
-        
-        let body = AppTypography.body
-        XCTAssertNotNil(body, "body should be defined")
         
         let caption = AppTypography.caption
         XCTAssertNotNil(caption, "caption should be defined")
         
-        // Test luxury elements
+        // Luxury Elements
         let luxury = AppTypography.luxury
         XCTAssertNotNil(luxury, "luxury should be defined")
         
-        let luxuryLight = AppTypography.luxuryLight
-        XCTAssertNotNil(luxuryLight, "luxuryLight should be defined")
-        
-        // Test interactive elements
-        let button = AppTypography.button
-        XCTAssertNotNil(button, "button should be defined")
-        
-        let input = AppTypography.input
-        XCTAssertNotNil(input, "input should be defined")
-        
-        // Test specialized fonts
-        let displayNumber = AppTypography.displayNumber
-        XCTAssertNotNil(displayNumber, "displayNumber should be defined")
-        
-        let monoNumber = AppTypography.monoNumber
-        XCTAssertNotNil(monoNumber, "monoNumber should be defined")
-        
-        let emphasis = AppTypography.emphasis
-        XCTAssertNotNil(emphasis, "emphasis should be defined")
+        // Verify these are actually Font instances
+        XCTAssertTrue(titleCompact is Font, "titleCompact should be a Font")
+        XCTAssertTrue(heading is Font, "heading should be a Font")
+        XCTAssertTrue(caption is Font, "caption should be a Font")
+        XCTAssertTrue(luxury is Font, "luxury should be a Font")
     }
     
     /// Tests theme change notification system.
@@ -208,36 +191,23 @@ final class ThemeSystemTests: XCTestCase {
         // Note: In unit tests, we can't directly test UIFont properties from SwiftUI Font,
         // but we can test that the fonts are defined and don't cause crashes
         
-        // Test that serif fonts are defined for luxury elements
+        // Test all current typography tokens (4 total after cleanup)
         let titleCompact = AppTypography.titleCompact
-        let title = AppTypography.title
         let heading = AppTypography.heading
+        let caption = AppTypography.caption
         let luxury = AppTypography.luxury
-        let luxuryLight = AppTypography.luxuryLight
-        let displayNumber = AppTypography.displayNumber
-        let emphasis = AppTypography.emphasis
         
         // These should all be non-nil and not cause crashes when used
         XCTAssertNotNil(titleCompact)
-        XCTAssertNotNil(title)
         XCTAssertNotNil(heading)
-        XCTAssertNotNil(luxury)
-        XCTAssertNotNil(luxuryLight)
-        XCTAssertNotNil(displayNumber)
-        XCTAssertNotNil(emphasis)
-        
-        // Test that system fonts are defined for body elements
-        let body = AppTypography.body
-        let caption = AppTypography.caption
-        let button = AppTypography.button
-        let input = AppTypography.input
-        let monoNumber = AppTypography.monoNumber
-        
-        XCTAssertNotNil(body)
         XCTAssertNotNil(caption)
-        XCTAssertNotNil(button)
-        XCTAssertNotNil(input)
-        XCTAssertNotNil(monoNumber)
+        XCTAssertNotNil(luxury)
+        
+        // Verify font characteristics
+        XCTAssertTrue(titleCompact is Font, "titleCompact should be a Font")
+        XCTAssertTrue(heading is Font, "heading should be a Font")
+        XCTAssertTrue(caption is Font, "caption should be a Font")
+        XCTAssertTrue(luxury is Font, "luxury should be a Font")
     }
     
     /// Tests that theme changes don't cause memory leaks or retain cycles.

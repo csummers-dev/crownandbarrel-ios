@@ -19,10 +19,10 @@ final class ThemeResolutionTests: XCTestCase {
         XCTAssertGreaterThan(ThemeResolutionTests.contrastRatio(text, bg), 4.0)
     }
 
-    func testPastelTextIsDarkOnLightBackground() {
-        UserDefaults.standard.set("pastel", forKey: "selectedThemeId")
+    func testChampagneGoldTextIsDarkOnLightBackground() {
+        UserDefaults.standard.set("champagne-gold", forKey: "selectedThemeId")
         let theme = ThemeAccess.currentTheme()
-        XCTAssertEqual(theme.id, "pastel")
+        XCTAssertEqual(theme.id, "champagne-gold")
         let text = UIColor(AppColors.textPrimary)
         let bg = UIColor(AppColors.background)
         XCTAssertGreaterThan(ThemeResolutionTests.contrastRatio(text, bg), 4.0)

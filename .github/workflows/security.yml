@@ -39,7 +39,7 @@ jobs:
       - name: Setup iOS Environment
         uses: ./.github/actions/setup-ios-environment
         with:
-          xcode-version: '16.0'
+          xcode-version: '26.0.0'
           install-xcodegen: 'true'
           install-swiftlint: 'false'
           install-xcpretty: 'false'
@@ -53,13 +53,13 @@ jobs:
           echo "Looking for available iOS 26.0 simulators for CodeQL analysis..."
           
           # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          if xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for CodeQL analysis"
           # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep -q "iPhone.*26.0"; then
+          elif xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
             # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep "26.0" | head -1)
             IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
             DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
             echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for CodeQL analysis"
@@ -135,7 +135,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           
