@@ -39,8 +39,13 @@ Complete documentation for the Crown & Barrel watch collection management app.
 - [`deployment/TESTFLIGHT_PREPARATION_PROJECT_PLAN.md`](deployment/TESTFLIGHT_PREPARATION_PROJECT_PLAN.md) - Complete TestFlight setup guide
 
 ### **CI/CD**
+- [`CI_CD_FINAL_APPROACH.md`](CI_CD_FINAL_APPROACH.md) - **Final streamlined CI/CD approach**
 - [`CI_CD_TROUBLESHOOTING.md`](CI_CD_TROUBLESHOOTING.md) - Pipeline troubleshooting
 - [`PIPELINE_MAINTENANCE_GUIDE.md`](PIPELINE_MAINTENANCE_GUIDE.md) - Maintenance procedures
+- [`CI_OPTIMIZATION_COMPLETE_SUMMARY.md`](CI_OPTIMIZATION_COMPLETE_SUMMARY.md) - Optimization results
+- [`CI_SUITE_ANALYSIS_AND_OPTIMIZATION_PLAN.md`](CI_SUITE_ANALYSIS_AND_OPTIMIZATION_PLAN.md) - Analysis and planning
+- [`SECURITY_WORKFLOW_FIXES_COMPLETE.md`](SECURITY_WORKFLOW_FIXES_COMPLETE.md) - Security workflow fixes
+- [`UI_TEST_OVERHAUL_PROJECT_PLAN.md`](UI_TEST_OVERHAUL_PROJECT_PLAN.md) - UI test improvements
 
 ## 📁 **Archive**
 
@@ -65,8 +70,8 @@ Start with [`themes/README.md`](themes/README.md) → [`LUXURY_TYPOGRAPHY_GUIDE.
 ### **For Deployment**
 Start with [`deployment/TESTFLIGHT_PREPARATION_PROJECT_PLAN.md`](deployment/TESTFLIGHT_PREPARATION_PROJECT_PLAN.md) → [`deployment/APP_STORE_CONTENT.md`](deployment/APP_STORE_CONTENT.md)
 
-### **For QA/Testing**
-Start with [`../TESTING.md`](../TESTING.md) → [`haptics/`](haptics/) → [`deployment/TESTFLIGHT_CONTENT.md`](deployment/TESTFLIGHT_CONTENT.md)
+### **For CI/CD & DevOps**
+Start with [`CI_CD_FINAL_APPROACH.md`](CI_CD_FINAL_APPROACH.md) → [`PIPELINE_MAINTENANCE_GUIDE.md`](PIPELINE_MAINTENANCE_GUIDE.md) → [`CI_CD_TROUBLESHOOTING.md`](CI_CD_TROUBLESHOOTING.md)
 
 ---
 

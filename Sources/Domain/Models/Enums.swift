@@ -1,13 +1,13 @@
 import Foundation
 
 /// Represents the high-level category of a watch.
-public enum WatchCategory: String, CaseIterable, Identifiable, Codable {
+public enum WatchCategory: String, CaseIterable, Identifiable, Codable, Sendable {
     case dress, diver, pilot, field, chronograph, gmt, digital, smart, other
     public var id: String { rawValue }
 }
 
 /// Represents the movement type of a watch.
-public enum WatchMovement: String, CaseIterable, Identifiable, Codable {
+public enum WatchMovement: String, CaseIterable, Identifiable, Codable, Sendable {
     case automatic, manual, quartz, solar, kinetic, smart, other
     public var id: String { rawValue }
 }
@@ -19,7 +19,7 @@ public enum ThemePreference: String, CaseIterable, Identifiable, Codable {
 }
 
 /// Sorting options for the collection screen.
-public enum WatchSortOption: String, CaseIterable, Identifiable, Codable {
+public enum WatchSortOption: String, CaseIterable, Identifiable, Codable, Sendable {
     case entryDateAscending
     case entryDateDescending
     case manufacturerAZ
@@ -32,7 +32,7 @@ public enum WatchSortOption: String, CaseIterable, Identifiable, Codable {
 }
 
 /// Preferred layout mode for the collection.
-public enum CollectionViewMode: String, CaseIterable, Identifiable, Codable {
+public enum CollectionViewMode: String, CaseIterable, Identifiable, Codable, Sendable {
     case grid
     case list
 

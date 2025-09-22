@@ -1,7 +1,7 @@
 import Foundation
 
 /// Domain model representing a single watch in the collection.
-public struct Watch: Identifiable, Hashable, Codable {
+public struct Watch: Identifiable, Hashable, Codable, Sendable {
     public let id: UUID
 
     // Required

@@ -5,7 +5,7 @@ import Foundation
 /// - Why: Keeps repository interfaces stable and composable.
 /// - How: View models build this struct and pass to the repository.
 
-public struct WatchFilter: Codable, Equatable {
+public struct WatchFilter: Codable, Equatable, Sendable {
     public var searchText: String
     public var sortOption: WatchSortOption
     public var viewMode: CollectionViewMode
