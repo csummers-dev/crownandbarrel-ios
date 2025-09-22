@@ -1,4 +1,5 @@
 import XCTest
+import SwiftUI
 @testable import CrownAndBarrel
 
 /// Unit tests for theme system stability and typography implementation.

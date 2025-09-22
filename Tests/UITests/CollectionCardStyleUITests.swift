@@ -20,7 +20,7 @@ final class CollectionCardStyleUITests: XCTestCase {
         // If no cells exist, add one quickly
         if !app.cells.firstMatch.exists {
             app.buttons["Add watch"].tap()
-            let manufacturer = app.textFields["Manufacturer"]
+            let manufacturer = app.textFields["manufacturerField"]
             XCTAssertTrue(manufacturer.waitForExistence(timeout: 2))
             manufacturer.tap()
             manufacturer.typeText("UITestCardRow")

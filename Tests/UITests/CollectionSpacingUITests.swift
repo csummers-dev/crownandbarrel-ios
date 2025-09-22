@@ -28,7 +28,7 @@ final class CollectionSpacingUITests: XCTestCase {
         // How: Create minimal watches via the add flow if the list is sparse.
         func createWatch(named name: String) {
             app.buttons["Add watch"].tap()
-            let manufacturer = app.textFields["Manufacturer"]
+            let manufacturer = app.textFields["manufacturerField"]
             XCTAssertTrue(manufacturer.waitForExistence(timeout: 2))
             manufacturer.tap()
             manufacturer.typeText(name)
