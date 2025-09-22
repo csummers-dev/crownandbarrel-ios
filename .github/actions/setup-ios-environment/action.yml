@@ -1,0 +1,299 @@
+name: 'Setup iOS Environment'
+description: 'Complete iOS development environment setup with Xcode, XcodeGen, and optional tools'
+author: 'Crown & Barrel Development Team'
+
+inputs:
+  xcode-version:
+    description: 'Xcode version to use'
+    required: false
+    default: '16.0'
+  install-xcodegen:
+    description: 'Whether to install XcodeGen'
+    required: false
+    default: 'true'
+  xcodegen-version:
+    description: 'XcodeGen version to install'
+    required: false
+    default: 'latest'
+  install-swiftlint:
+    description: 'Whether to install SwiftLint'
+    required: false
+    default: 'false'
+  install-xcpretty:
+    description: 'Whether to install xcpretty for formatted output'
+    required: false
+    default: 'false'
+  generate-project:
+    description: 'Whether to generate Xcode project with XcodeGen'
+    required: false
+    default: 'true'
+  cache-key-suffix:
+    description: 'Custom suffix for cache keys'
+    required: false
+    default: ''
+
+outputs:
+  xcode-version:
+    description: 'The configured Xcode version'
+    value: ${{ steps.xcode-info.outputs.version }}
+  xcodegen-version:
+    description: 'The installed XcodeGen version (if installed)'
+    value: ${{ steps.setup-xcodegen.outputs.xcodegen-version }}
+  swiftlint-version:
+    description: 'The installed SwiftLint version (if installed)'
+    value: ${{ steps.setup-swiftlint.outputs.version }}
+  ios-sdks:
+    description: 'Available iOS SDKs (JSON array)'
+    value: ${{ steps.detect-sdks.outputs.ios-sdks }}
+  simulators:
+    description: 'Available simulators (JSON array)'
+    value: ${{ steps.detect-simulators.outputs.simulators }}
+  environment-ready:
+    description: 'Whether the environment is ready for iOS development'
+    value: ${{ steps.validate.outputs.ready }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: ${{ inputs.xcode-version }}
+
+    - name: Get Xcode information
+      id: xcode-info
+      shell: bash
+      run: |
+        echo "🍎 Getting Xcode information..."
+        XCODE_VERSION=$(xcodebuild -version | head -1 | awk '{print $2}' || echo "unknown")
+        XCODE_BUILD=$(xcodebuild -version | tail -1 | awk '{print $3}' || echo "unknown")
+        
+        echo "version=$XCODE_VERSION" >> $GITHUB_OUTPUT
+        echo "build=$XCODE_BUILD" >> $GITHUB_OUTPUT
+        
+        echo "✅ Xcode Version: $XCODE_VERSION (Build $XCODE_BUILD)"
+
+    - name: Setup XcodeGen
+      id: setup-xcodegen
+      if: inputs.install-xcodegen == 'true'
+      uses: ./.github/actions/setup-xcodegen
+      with:
+        version: ${{ inputs.xcodegen-version }}
+        cache-key-suffix: ${{ inputs.cache-key-suffix }}
+        generate-project: ${{ inputs.generate-project }}
+
+    - name: Setup SwiftLint
+      id: setup-swiftlint
+      if: inputs.install-swiftlint == 'true'
+      shell: bash
+      run: |
+        echo "🧹 Setting up SwiftLint..."
+        
+        # Check if SwiftLint is already installed
+        if command -v swiftlint &> /dev/null; then
+          EXISTING_VERSION=$(swiftlint version 2>/dev/null || echo "unknown")
+          echo "✅ SwiftLint already available: $EXISTING_VERSION"
+          echo "version=$EXISTING_VERSION" >> $GITHUB_OUTPUT
+          echo "method=pre-installed" >> $GITHUB_OUTPUT
+        else
+          echo "📥 Installing SwiftLint via Homebrew..."
+          
+          # Detect architecture for optimized installation
+          ARCH=$(uname -m)
+          if [[ "$ARCH" == "arm64" ]] || [[ -d "/opt/homebrew" ]]; then
+            echo "🏗️  Using ARM64 Homebrew for SwiftLint installation..."
+            if arch -arm64 /opt/homebrew/bin/brew install swiftlint 2>/dev/null || \
+               arch -arm64 /usr/local/bin/brew install swiftlint 2>/dev/null || \
+               arch -arm64 brew install swiftlint 2>/dev/null; then
+              echo "✅ SwiftLint installed via ARM64 Homebrew"
+              echo "method=homebrew-arm64" >> $GITHUB_OUTPUT
+            else
+              echo "❌ ARM64 Homebrew installation failed, trying standard..."
+              if brew install swiftlint; then
+                echo "✅ SwiftLint installed via standard Homebrew"
+                echo "method=homebrew-standard" >> $GITHUB_OUTPUT
+              else
+                echo "❌ SwiftLint installation failed"
+                echo "method=failed" >> $GITHUB_OUTPUT
+                exit 1
+              fi
+            fi
+          else
+            echo "🏗️  Using standard Homebrew for SwiftLint installation..."
+            if brew install swiftlint; then
+              echo "✅ SwiftLint installed via standard Homebrew"
+              echo "method=homebrew-standard" >> $GITHUB_OUTPUT
+            else
+              echo "❌ SwiftLint installation failed"
+              echo "method=failed" >> $GITHUB_OUTPUT
+              exit 1
+            fi
+          fi
+          
+          # Verify installation
+          if command -v swiftlint &> /dev/null; then
+            INSTALLED_VERSION=$(swiftlint version 2>/dev/null || echo "unknown")
+            echo "✅ SwiftLint installation verified: $INSTALLED_VERSION"
+            echo "version=$INSTALLED_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "❌ SwiftLint installation verification failed"
+            echo "version=not-installed" >> $GITHUB_OUTPUT
+            echo "method=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        fi
+
+    - name: Setup xcpretty
+      if: inputs.install-xcpretty == 'true'
+      shell: bash
+      run: |
+        echo "💎 Setting up xcpretty..."
+        
+        # Check if xcpretty is already installed
+        if command -v xcpretty &> /dev/null; then
+          echo "✅ xcpretty already available"
+        else
+          echo "📥 Installing xcpretty via gem..."
+          gem install xcpretty --no-document
+          
+          # Verify installation
+          if command -v xcpretty &> /dev/null; then
+            echo "✅ xcpretty installation verified"
+          else
+            echo "❌ xcpretty installation failed"
+            exit 1
+          fi
+        fi
+
+    - name: Detect iOS SDKs
+      id: detect-sdks
+      shell: bash
+      run: |
+        echo "📱 Detecting available iOS SDKs..."
+        
+        # Get iOS SDKs
+        IOS_SDKS=$(xcodebuild -showsdks | grep iphoneos | awk '{print $NF}' | sed 's/iphoneos//' || echo "")
+        
+        if [[ -n "$IOS_SDKS" ]]; then
+          # Convert to JSON array
+          IOS_SDKS_JSON=$(echo "$IOS_SDKS" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "ios-sdks=$IOS_SDKS_JSON" >> $GITHUB_OUTPUT
+          
+          echo "✅ Available iOS SDKs:"
+          echo "$IOS_SDKS" | while read -r sdk; do
+            [[ -n "$sdk" ]] && echo "  - iOS $sdk"
+          done
+        else
+          echo "ios-sdks=[]" >> $GITHUB_OUTPUT
+          echo "⚠️  No iOS SDKs detected"
+        fi
+
+    - name: Detect simulators
+      id: detect-simulators
+      shell: bash
+      run: |
+        echo "📱 Detecting available simulators..."
+        
+        # Get available iPhone simulators
+        SIMULATORS=$(xcrun simctl list devices available | grep iPhone | head -10 || echo "")
+        
+        if [[ -n "$SIMULATORS" ]]; then
+          # Extract simulator names and create JSON array
+          SIMULATOR_NAMES=$(echo "$SIMULATORS" | sed -E 's/.*iPhone ([^(]*).*/iPhone \1/' | sed 's/[[:space:]]*$//' | head -5)
+          SIMULATORS_JSON=$(echo "$SIMULATOR_NAMES" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "simulators=$SIMULATORS_JSON" >> $GITHUB_OUTPUT
+          
+          echo "✅ Available iPhone Simulators (top 5):"
+          echo "$SIMULATOR_NAMES" | while read -r sim; do
+            [[ -n "$sim" ]] && echo "  - $sim"
+          done
+        else
+          echo "simulators=[]" >> $GITHUB_OUTPUT
+          echo "⚠️  No iPhone simulators detected"
+        fi
+
+    - name: Validate environment
+      id: validate
+      shell: bash
+      run: |
+        echo "✅ Validating iOS development environment..."
+        
+        VALIDATION_ERRORS=0
+        
+        # Check Xcode
+        if command -v xcodebuild &> /dev/null; then
+          echo "✅ Xcode: Available"
+        else
+          echo "❌ Xcode: Not available"
+          ((VALIDATION_ERRORS++))
+        fi
+        
+        # Check XcodeGen (if requested)
+        if [[ "${{ inputs.install-xcodegen }}" == "true" ]]; then
+          if command -v xcodegen &> /dev/null; then
+            echo "✅ XcodeGen: Available"
+          else
+            echo "❌ XcodeGen: Not available"
+            ((VALIDATION_ERRORS++))
+          fi
+        fi
+        
+        # Check SwiftLint (if requested)
+        if [[ "${{ inputs.install-swiftlint }}" == "true" ]]; then
+          if command -v swiftlint &> /dev/null; then
+            echo "✅ SwiftLint: Available"
+          else
+            echo "❌ SwiftLint: Not available"
+            ((VALIDATION_ERRORS++))
+          fi
+        fi
+        
+        # Check xcpretty (if requested)
+        if [[ "${{ inputs.install-xcpretty }}" == "true" ]]; then
+          if command -v xcpretty &> /dev/null; then
+            echo "✅ xcpretty: Available"
+          else
+            echo "❌ xcpretty: Not available"
+            ((VALIDATION_ERRORS++))
+          fi
+        fi
+        
+        # Set output based on validation results
+        if [[ $VALIDATION_ERRORS -eq 0 ]]; then
+          echo "ready=true" >> $GITHUB_OUTPUT
+          echo "🎉 Environment validation passed!"
+        else
+          echo "ready=false" >> $GITHUB_OUTPUT
+          echo "❌ Environment validation failed with $VALIDATION_ERRORS errors"
+          exit 1
+        fi
+
+    - name: Environment summary
+      shell: bash
+      run: |
+        echo "## 🎉 iOS Environment Setup Complete"
+        echo "===================================="
+        echo "🍎 **Xcode Version**: ${{ steps.xcode-info.outputs.version }}"
+        
+        if [[ "${{ inputs.install-xcodegen }}" == "true" ]]; then
+          echo "🔧 **XcodeGen Version**: ${{ steps.setup-xcodegen.outputs.xcodegen-version }}"
+          echo "🔧 **XcodeGen Method**: ${{ steps.setup-xcodegen.outputs.installation-method }}"
+        fi
+        
+        if [[ "${{ inputs.install-swiftlint }}" == "true" ]]; then
+          echo "🧹 **SwiftLint Version**: ${{ steps.setup-swiftlint.outputs.version }}"
+        fi
+        
+        if [[ "${{ inputs.install-xcpretty }}" == "true" ]]; then
+          echo "💎 **xcpretty**: Installed"
+        fi
+        
+        echo "📱 **iOS SDKs**: ${{ steps.detect-sdks.outputs.ios-sdks }}"
+        echo "📱 **Simulators**: Available"
+        echo "✅ **Environment Ready**: ${{ steps.validate.outputs.environment-ready }}"
+        echo ""
+        echo "🚀 iOS development environment is ready for use!"
+
+branding:
+  icon: 'smartphone'
+  color: 'blue'

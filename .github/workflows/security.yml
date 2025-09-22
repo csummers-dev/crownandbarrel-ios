@@ -36,66 +36,14 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1
+      - name: Setup iOS Environment
+        uses: ./.github/actions/setup-ios-environment
         with:
           xcode-version: '16.0'
-          
-      - name: Install XcodeGen and Generate Project
-        run: |
-          if ! command -v xcodegen &> /dev/null; then
-            echo "Installing XcodeGen using artifact bundle method..."
-            
-            # Create XcodeGen directory
-            XCODEGEN_DIR="$HOME/xcodegen"
-            mkdir -p "$XCODEGEN_DIR"
-            
-            # Download and extract XcodeGen artifact bundle
-            echo "Downloading XcodeGen artifact bundle..."
-            if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
-              echo "✅ Downloaded XcodeGen artifact bundle"
-              
-              # Extract the bundle
-              if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${XCODEGEN_DIR}/"; then
-                echo "✅ Extracted XcodeGen artifact bundle"
-                
-                # Find the bin directory in the extracted bundle
-                BIN_DIR=$(find "$XCODEGEN_DIR" -name "bin" -type d | head -1)
-                if [ -n "$BIN_DIR" ] && [ -f "$BIN_DIR/xcodegen" ]; then
-                  echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
-                  
-                  # Add to PATH for this session
-                  export PATH="$BIN_DIR:$PATH"
-                  echo "✅ Added XcodeGen to PATH"
-                  
-                  # Verify installation
-                  if command -v xcodegen &> /dev/null; then
-                    echo "✅ XcodeGen installation verified"
-                    xcodegen --version
-                  else
-                    echo "❌ XcodeGen not found in PATH after installation"
-                    exit 1
-                  fi
-                else
-                  echo "❌ XcodeGen binary not found in extracted bundle"
-                  exit 1
-                fi
-              else
-                echo "❌ Failed to extract XcodeGen artifact bundle"
-                exit 1
-              fi
-            else
-              echo "❌ Failed to download XcodeGen artifact bundle"
-              exit 1
-            fi
-          else
-            echo "✅ XcodeGen already available"
-            xcodegen --version
-          fi
-          
-          # Generate project
-          echo "Generating Xcode project..."
-          xcodegen generate
+          install-xcodegen: 'true'
+          install-swiftlint: 'false'
+          install-xcpretty: 'false'
+          cache-key-suffix: 'security'
           
       - name: Build for CodeQL Analysis
         run: |
@@ -191,6 +139,14 @@ jobs:
         with:
           python-version: '3.11'
           
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            
       - name: Install license checker
         run: |
           pip install pip-licenses

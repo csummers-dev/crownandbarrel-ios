@@ -2,10 +2,20 @@
 
 [![Build/Test CI](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml/badge.svg)](https://github.com/csummers-dev/crownandbarrel-ios/actions/workflows/ci.yml)
 ![SwiftLint](https://img.shields.io/badge/lint-SwiftLint-FA7343?logo=swift)
-![Latest release](https://img.shields.io/github/v/release/csummers-dev/crownandbarrel-ios)
-![iOS](https://img.shields.io/badge/iOS-17.0+-blue?logo=ios)
+![Beta Status](https://img.shields.io/badge/status-Beta%20Testing-orange?logo=testflight)
+![iOS](https://img.shields.io/badge/iOS-26.0+-blue?logo=ios)
 
-Crown & Barrel is a sophisticated watch collection management application for iOS. Built with SwiftUI and designed for luxury timepiece enthusiasts, it combines elegant aesthetics with powerful functionality to organize, track, and analyze your watch collection.
+Crown & Barrel is a sophisticated digital watch collection management application for iOS. Built with SwiftUI and designed for watch enthusiasts and collectors, it combines elegant aesthetics with powerful functionality to organize, track, and analyze your timepiece collection.
+
+## Beta Testing Phase
+
+**Crown & Barrel is currently in active beta testing through TestFlight.** The app features comprehensive watch collection management with sophisticated theming, haptic feedback, and luxury typography systems.
+
+### Beta Status
+- **Internal Testing**: Active and ongoing
+- **External Testing**: Available for invited testers
+- **TestFlight**: Fully deployed and functional
+- **Target**: Public App Store release following successful beta validation
 
 ## Features
 
@@ -110,9 +120,16 @@ Crown & Barrel prioritizes user privacy and data security:
 - **[Theme System](docs/themes/README.md)** - Theme implementation and customization guide
 - **[Typography Guide](docs/LUXURY_TYPOGRAPHY_GUIDE.md)** - Typography system documentation
 
+### Deployment Documentation
+- **[TestFlight Setup](docs/deployment/README.md)** - Complete deployment guide
+- **[App Store Content](docs/deployment/APP_STORE_CONTENT.md)** - Marketing and listing content
+
 ### Infrastructure Documentation
 - **[CI/CD Pipeline](docs/CI_CD_TROUBLESHOOTING.md)** - Continuous integration and deployment
 - **[Pipeline Maintenance](docs/PIPELINE_MAINTENANCE_GUIDE.md)** - Infrastructure maintenance guide
+
+### Complete Documentation Index
+- **[Documentation Hub](docs/README.md)** - Complete documentation overview and navigation
 
 ## Contributing
 

@@ -1,0 +1,694 @@
+name: iOS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  # iOS build variables
+  XCODE_VERSION: "16.0"
+  
+  # Project variables
+  PROJECT_NAME: "CrownAndBarrel"
+  SCHEME_NAME: "CrownAndBarrel"
+  BUNDLE_ID: "com.crownandbarrel.app"
+
+jobs:
+  # Setup stage - Prepare environment and dependencies
+  setup:
+    name: Environment Setup
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup iOS Environment
+        uses: ./.github/actions/setup-ios-environment
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          install-xcodegen: 'true'
+          install-swiftlint: 'false'
+          install-xcpretty: 'false'
+          cache-key-suffix: 'setup'
+          
+      - name: Environment validation
+        run: |
+          echo "🎉 iOS Environment Setup Complete!"
+          echo "✅ Xcode: $(xcodebuild -version | head -1)"
+          echo "✅ XcodeGen: $(xcodegen --version 2>/dev/null || echo 'Not available')"
+          echo "📱 Available iOS SDKs: $(xcodebuild -showsdks | grep iphoneos | wc -l | tr -d ' ') found"
+          echo "📱 Available Simulators: $(xcrun simctl list devices available | grep iPhone | wc -l | tr -d ' ') found"
+          
+      - name: Cache Swift Packages
+        uses: ./.github/actions/cache-dependencies
+        with:
+          cache-type: 'swift-packages'
+          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          restore-keys: |
+            ${{ hashFiles("**/Package.swift") }}
+            latest
+          cache-suffix: 'setup'
+            
+      - name: Cache DerivedData
+        uses: ./.github/actions/cache-dependencies
+        with:
+          cache-type: 'derived-data'
+          cache-key: '${{ hashFiles("**/*.swift") }}'
+          restore-keys: |
+            ${{ hashFiles("Sources/**/*.swift") }}
+            base
+          cache-suffix: 'setup'
+
+  # Lint stage - Code quality checks
+  lint:
+    name: Code Quality
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup iOS Environment
+        uses: ./.github/actions/setup-ios-environment
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          install-xcodegen: 'false'
+          install-swiftlint: 'true'
+          install-xcpretty: 'false'
+          generate-project: 'false'
+          cache-key-suffix: 'lint'
+          
+          
+      - name: Run SwiftLint
+        run: |
+          swiftlint lint --reporter github --config .swiftlint.yml
+        continue-on-error: true
+        
+      - name: Upload SwiftLint results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: swiftlint-results
+          path: swiftlint-report.json
+          retention-days: 30
+
+  # Build stage - Compile the application
+  build:
+    name: Build Application
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup iOS Environment
+        uses: ./.github/actions/setup-ios-environment
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          install-xcodegen: 'true'
+          install-swiftlint: 'false'
+          install-xcpretty: 'false'
+          cache-key-suffix: 'build'
+          
+      - name: Install XcodeGen and Generate Project
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            echo "Installing XcodeGen using artifact bundle method..."
+            
+            # Create XcodeGen directory
+            XCODEGEN_DIR="$HOME/xcodegen"
+            mkdir -p "$XCODEGEN_DIR"
+            
+            # Download and extract XcodeGen artifact bundle
+            echo "Downloading XcodeGen artifact bundle..."
+            if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
+              echo "✅ Downloaded XcodeGen artifact bundle"
+              
+              # Extract the bundle
+              if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${XCODEGEN_DIR}/"; then
+                echo "✅ Extracted XcodeGen artifact bundle"
+                
+                # Find the bin directory in the extracted bundle
+                BIN_DIR=$(find "$XCODEGEN_DIR" -name "bin" -type d | head -1)
+                if [ -n "$BIN_DIR" ] && [ -f "$BIN_DIR/xcodegen" ]; then
+                  echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
+                  
+                  # Add to PATH for this session
+                  export PATH="$BIN_DIR:$PATH"
+                  echo "✅ Added XcodeGen to PATH"
+                  
+                  # Verify installation
+                  if command -v xcodegen &> /dev/null; then
+                    echo "✅ XcodeGen installation verified"
+                    xcodegen --version
+                  else
+                    echo "❌ XcodeGen not found in PATH after installation"
+                    exit 1
+                  fi
+                else
+                  echo "❌ XcodeGen binary not found in extracted bundle"
+                  exit 1
+                fi
+              else
+                echo "❌ Failed to extract XcodeGen artifact bundle"
+                exit 1
+              fi
+            else
+              echo "❌ Failed to download XcodeGen artifact bundle"
+              exit 1
+            fi
+          else
+            echo "✅ XcodeGen already available"
+            xcodegen --version
+          fi
+          
+          # Generate project in the same step
+          echo "Generating Xcode project with XcodeGen..."
+          xcodegen generate
+          
+      - name: Check available iOS platforms
+        run: |
+          echo "=== Available iOS Platforms ==="
+          xcodebuild -showsdks | grep iOS || echo "No iOS SDKs found"
+          echo ""
+          echo "=== Available iOS Destinations ==="
+          xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" || echo "No destinations found"
+          
+      - name: Build for Debug
+        run: |
+          # Find the best available iOS 26.0 simulator for Debug build
+          echo "Looking for available iOS 26.0 simulators for Debug build..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Debug build"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for Debug build"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping Debug build"
+            exit 0
+          fi
+          
+          echo "Using destination: $DESTINATION"
+          xcodebuild build \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -configuration Debug \
+            -destination "$DESTINATION" \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
+            
+      - name: Build for Release
+        run: |
+          # Find the best available iOS 26.0 simulator for Release build
+          echo "Looking for available iOS 26.0 simulators for Release build..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Release build"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for Release build"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping Release build"
+            exit 0
+          fi
+          
+          echo "Using destination: $DESTINATION"
+          xcodebuild build \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -configuration Release \
+            -destination "$DESTINATION" \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO
+            
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/
+          retention-days: 7
+
+  # Test stage - Run unit and UI tests
+  test-unit:
+    name: Unit Tests
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Install XcodeGen and Generate Project
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            echo "Installing XcodeGen using artifact bundle method..."
+            
+            # Create XcodeGen directory
+            XCODEGEN_DIR="$HOME/xcodegen"
+            mkdir -p "$XCODEGEN_DIR"
+            
+            # Download and extract XcodeGen artifact bundle
+            echo "Downloading XcodeGen artifact bundle..."
+            if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
+              echo "✅ Downloaded XcodeGen artifact bundle"
+              
+              # Extract the bundle
+              if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${XCODEGEN_DIR}/"; then
+                echo "✅ Extracted XcodeGen artifact bundle"
+                
+                # Find the bin directory in the extracted bundle
+                BIN_DIR=$(find "$XCODEGEN_DIR" -name "bin" -type d | head -1)
+                if [ -n "$BIN_DIR" ] && [ -f "$BIN_DIR/xcodegen" ]; then
+                  echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
+                  
+                  # Add to PATH for this session
+                  export PATH="$BIN_DIR:$PATH"
+                  echo "✅ Added XcodeGen to PATH"
+                  
+                  # Verify installation
+                  if command -v xcodegen &> /dev/null; then
+                    echo "✅ XcodeGen installation verified"
+                    xcodegen --version
+                  else
+                    echo "❌ XcodeGen not found in PATH after installation"
+                    exit 1
+                  fi
+                else
+                  echo "❌ XcodeGen binary not found in extracted bundle"
+                  exit 1
+                fi
+              else
+                echo "❌ Failed to extract XcodeGen artifact bundle"
+                exit 1
+              fi
+            else
+              echo "❌ Failed to download XcodeGen artifact bundle"
+              exit 1
+            fi
+          else
+            echo "✅ XcodeGen already available"
+            xcodegen --version
+          fi
+          
+          # Generate project in the same step
+          echo "Generating Xcode project with XcodeGen..."
+          xcodegen generate
+          
+      - name: List available simulators
+        run: |
+          echo "=== Available iOS Simulators ==="
+          xcrun simctl list devices available | grep iPhone || echo "No iPhone simulators found"
+          echo ""
+          echo "=== All Available Devices ==="
+          xcrun simctl list devices available
+          
+      - name: Setup simulator
+        run: |
+          # Find the first available iPhone simulator
+          echo "Searching for available iPhone simulators..."
+          
+          # Try different iPhone models in order of preference (most advanced first)
+          for model in "iPhone 15 Pro" "iPhone 15" "iPhone 14 Pro" "iPhone 14" "iPhone 13 Pro" "iPhone 13" "iPhone 12 Pro" "iPhone 12" "iPhone 11 Pro" "iPhone 11"; do
+            echo "Checking for $model..."
+            if xcrun simctl list devices available | grep -q "$model"; then
+              echo "Found $model simulator"
+              SIMULATOR_NAME="$model"
+              break
+            fi
+          done
+          
+          # If no specific model found, get the first iPhone simulator
+          if [ -z "$SIMULATOR_NAME" ]; then
+            echo "No specific iPhone model found, searching for any iPhone simulator..."
+            SIMULATOR_NAME=$(xcrun simctl list devices available | grep iPhone | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+            if [ -z "$SIMULATOR_NAME" ]; then
+              echo "ERROR: No iPhone simulators found!"
+              exit 1
+            fi
+          fi
+          
+          echo "Using simulator: $SIMULATOR_NAME"
+          
+          # Boot the simulator
+          echo "Booting $SIMULATOR_NAME..."
+          xcrun simctl boot "$SIMULATOR_NAME" || true
+          
+          # Wait a moment for boot to complete
+          sleep 5
+          
+          # Verify simulator is booted
+          echo "Verifying simulator status..."
+          xcrun simctl list devices | grep "$SIMULATOR_NAME" | grep "Booted" || echo "Warning: Simulator may not be fully booted"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_OUTPUT
+          
+      - name: Check for available simulators
+        id: check_simulators
+        run: |
+          echo "Checking for available iOS simulators..."
+          AVAILABLE_SIMULATORS=$(xcrun simctl list devices available | grep iPhone | wc -l)
+          echo "Found $AVAILABLE_SIMULATORS iPhone simulators"
+          echo "simulators_available=$AVAILABLE_SIMULATORS" >> $GITHUB_OUTPUT
+          
+      - name: Run Unit Tests
+        if: steps.check_simulators.outputs.simulators_available > 0
+        run: |
+          echo "Looking for available iOS 26.0 simulators for unit tests..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit tests"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping unit tests"
+            exit 0
+          fi
+          
+          echo "Running unit tests with destination: $DESTINATION"
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "$DESTINATION" \
+            "-only-testing:${{ env.SCHEME_NAME }}Tests" \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
+            
+      - name: Skip Unit Tests - No Simulators Available
+        if: steps.check_simulators.outputs.simulators_available == 0
+        run: |
+          echo "⚠️ No iOS simulators available - skipping unit tests"
+          echo "This is common on GitHub Actions runners without simulator support"
+            
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: TestResults.xcresult
+          retention-days: 30
+
+  test-ui:
+    name: UI Tests
+    runs-on: macos-latest
+    needs: setup
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Install XcodeGen and Generate Project
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            echo "Installing XcodeGen using artifact bundle method..."
+            
+            # Create XcodeGen directory
+            XCODEGEN_DIR="$HOME/xcodegen"
+            mkdir -p "$XCODEGEN_DIR"
+            
+            # Download and extract XcodeGen artifact bundle
+            echo "Downloading XcodeGen artifact bundle..."
+            if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
+              echo "✅ Downloaded XcodeGen artifact bundle"
+              
+              # Extract the bundle
+              if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${XCODEGEN_DIR}/"; then
+                echo "✅ Extracted XcodeGen artifact bundle"
+                
+                # Find the bin directory in the extracted bundle
+                BIN_DIR=$(find "$XCODEGEN_DIR" -name "bin" -type d | head -1)
+                if [ -n "$BIN_DIR" ] && [ -f "$BIN_DIR/xcodegen" ]; then
+                  echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
+                  
+                  # Add to PATH for this session
+                  export PATH="$BIN_DIR:$PATH"
+                  echo "✅ Added XcodeGen to PATH"
+                  
+                  # Verify installation
+                  if command -v xcodegen &> /dev/null; then
+                    echo "✅ XcodeGen installation verified"
+                    xcodegen --version
+                  else
+                    echo "❌ XcodeGen not found in PATH after installation"
+                    exit 1
+                  fi
+                else
+                  echo "❌ XcodeGen binary not found in extracted bundle"
+                  exit 1
+                fi
+              else
+                echo "❌ Failed to extract XcodeGen artifact bundle"
+                exit 1
+              fi
+            else
+              echo "❌ Failed to download XcodeGen artifact bundle"
+              exit 1
+            fi
+          else
+            echo "✅ XcodeGen already available"
+            xcodegen --version
+          fi
+          
+          # Generate project in the same step
+          echo "Generating Xcode project with XcodeGen..."
+          xcodegen generate
+          
+      - name: List available simulators
+        run: |
+          echo "=== Available iOS Simulators ==="
+          xcrun simctl list devices available | grep iPhone || echo "No iPhone simulators found"
+          echo ""
+          echo "=== All Available Devices ==="
+          xcrun simctl list devices available
+          
+      - name: Setup simulator
+        run: |
+          # Find the first available iPhone simulator
+          echo "Searching for available iPhone simulators..."
+          
+          # Try different iPhone models in order of preference (most advanced first)
+          for model in "iPhone 15 Pro" "iPhone 15" "iPhone 14 Pro" "iPhone 14" "iPhone 13 Pro" "iPhone 13" "iPhone 12 Pro" "iPhone 12" "iPhone 11 Pro" "iPhone 11"; do
+            echo "Checking for $model..."
+            if xcrun simctl list devices available | grep -q "$model"; then
+              echo "Found $model simulator"
+              SIMULATOR_NAME="$model"
+              break
+            fi
+          done
+          
+          # If no specific model found, get the first iPhone simulator
+          if [ -z "$SIMULATOR_NAME" ]; then
+            echo "No specific iPhone model found, searching for any iPhone simulator..."
+            SIMULATOR_NAME=$(xcrun simctl list devices available | grep iPhone | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+            if [ -z "$SIMULATOR_NAME" ]; then
+              echo "ERROR: No iPhone simulators found!"
+              exit 1
+            fi
+          fi
+          
+          echo "Using simulator: $SIMULATOR_NAME"
+          
+          # Boot the simulator
+          echo "Booting $SIMULATOR_NAME..."
+          xcrun simctl boot "$SIMULATOR_NAME" || true
+          
+          # Wait a moment for boot to complete
+          sleep 5
+          
+          # Verify simulator is booted
+          echo "Verifying simulator status..."
+          xcrun simctl list devices | grep "$SIMULATOR_NAME" | grep "Booted" || echo "Warning: Simulator may not be fully booted"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_OUTPUT
+          
+      - name: Check for available simulators
+        id: check_simulators_ui
+        run: |
+          echo "Checking for available iOS simulators..."
+          AVAILABLE_SIMULATORS=$(xcrun simctl list devices available | grep iPhone | wc -l)
+          echo "Found $AVAILABLE_SIMULATORS iPhone simulators"
+          echo "simulators_available=$AVAILABLE_SIMULATORS" >> $GITHUB_OUTPUT
+          
+      - name: Run UI Tests
+        if: steps.check_simulators_ui.outputs.simulators_available > 0
+        run: |
+          echo "Looking for available iOS 26.0 simulators for UI tests..."
+          
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
+            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for UI tests"
+          # Fallback to any iPhone with iOS 26.0
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+            # Get first available iPhone with iOS 26.0
+            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
+            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for UI tests"
+          else
+            echo "❌ No iOS 26.0 simulators found, skipping UI tests"
+            exit 0
+          fi
+          
+          echo "Running UI tests with destination: $DESTINATION"
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "$DESTINATION" \
+            "-only-testing:${{ env.SCHEME_NAME }}UITests" \
+            -resultBundlePath UITestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0
+            
+      - name: Skip UI Tests - No Simulators Available
+        if: steps.check_simulators_ui.outputs.simulators_available == 0
+        run: |
+          echo "⚠️ No iOS simulators available - skipping UI tests"
+          echo "This is common on GitHub Actions runners without simulator support"
+            
+      - name: Upload UI test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ui-test-results
+          path: UITestResults.xcresult
+          retention-days: 30
+
+  # Deploy stage - Create release artifacts (only on main branch)
+  deploy:
+    name: Deploy
+    runs-on: macos-latest
+    needs: [lint, build, test-unit, test-ui]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          
+      - name: Install XcodeGen and Generate Project
+        run: |
+          if ! command -v xcodegen &> /dev/null; then
+            echo "Installing XcodeGen using artifact bundle method..."
+            
+            # Create XcodeGen directory
+            XCODEGEN_DIR="$HOME/xcodegen"
+            mkdir -p "$XCODEGEN_DIR"
+            
+            # Download and extract XcodeGen artifact bundle
+            echo "Downloading XcodeGen artifact bundle..."
+            if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
+              echo "✅ Downloaded XcodeGen artifact bundle"
+              
+              # Extract the bundle
+              if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${XCODEGEN_DIR}/"; then
+                echo "✅ Extracted XcodeGen artifact bundle"
+                
+                # Find the bin directory in the extracted bundle
+                BIN_DIR=$(find "$XCODEGEN_DIR" -name "bin" -type d | head -1)
+                if [ -n "$BIN_DIR" ] && [ -f "$BIN_DIR/xcodegen" ]; then
+                  echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
+                  
+                  # Add to PATH for this session
+                  export PATH="$BIN_DIR:$PATH"
+                  echo "✅ Added XcodeGen to PATH"
+                  
+                  # Verify installation
+                  if command -v xcodegen &> /dev/null; then
+                    echo "✅ XcodeGen installation verified"
+                    xcodegen --version
+                  else
+                    echo "❌ XcodeGen not found in PATH after installation"
+                    exit 1
+                  fi
+                else
+                  echo "❌ XcodeGen binary not found in extracted bundle"
+                  exit 1
+                fi
+              else
+                echo "❌ Failed to extract XcodeGen artifact bundle"
+                exit 1
+              fi
+            else
+              echo "❌ Failed to download XcodeGen artifact bundle"
+              exit 1
+            fi
+          else
+            echo "✅ XcodeGen already available"
+            xcodegen --version
+          fi
+          
+          # Generate project in the same step
+          echo "Generating Xcode project with XcodeGen..."
+          xcodegen generate
+          
+      - name: Build Release Archive
+        run: |
+          echo "Building Release Archive for iOS devices..."
+          echo "Using generic iOS destination for archive build"
+          xcodebuild archive \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO

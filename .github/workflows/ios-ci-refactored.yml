@@ -1,4 +1,4 @@
-name: iOS CI
+name: iOS CI (Refactored)
 
 on:
   push:
@@ -27,13 +27,12 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: 'unit-${{ hashFiles("Package.resolved") }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
-            latest
-          cache-suffix: 'unit-tests'
+            unit-${{ hashFiles("Package.swift") }}
+            unit-latest
 
-      - name: Run Unit Tests (only)
+      - name: Run Unit Tests
         run: |
           # Find the best available iOS 26.0 simulator for unit tests
           echo "Looking for available iOS 26.0 simulators for unit tests..."
@@ -83,11 +82,10 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: '${{ hashFiles("**/Package.resolved") }}'
+          cache-key: 'ui-${{ hashFiles("Package.resolved") }}'
           restore-keys: |
-            ${{ hashFiles("**/Package.swift") }}
-            latest
-          cache-suffix: 'ui-tests'
+            ui-${{ hashFiles("Package.swift") }}
+            ui-latest
 
       - name: Run UI Tests with retries and no parallelization
         run: |
@@ -120,5 +118,3 @@ jobs:
                      -parallel-testing-enabled NO \
                      -maximum-concurrent-test-simulator-destinations 1 \
                      test | xcpretty
-
-

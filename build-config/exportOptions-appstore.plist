@@ -3,18 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>method</key>
-	<string>development</string>
+	<string>app-store</string>
 	<key>teamID</key>
-	<string>ABC123DEFG</string>
-	<key>compileBitcode</key>
-	<false/>
-	<key>stripSwiftSymbols</key>
-	<true/>
-	<key>thinning</key>
-	<string>&lt;none&gt;</string>
+	<string>G7Z5DDPMSL</string>
 	<key>uploadBitcode</key>
 	<false/>
+	<key>compileBitcode</key>
+	<false/>
 	<key>uploadSymbols</key>
+	<true/>
+	<key>stripSwiftSymbols</key>
 	<true/>
 	<key>signingStyle</key>
 	<string>automatic</string>
@@ -23,7 +21,11 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.crownandbarrel.app</key>
-		<string>com.crownandbarrel.app Development</string>
+		<string>Crown & Barrel App Store Distribution</string>
 	</dict>
+	<key>manageAppVersionAndBuildNumber</key>
+	<false/>
+	<key>generateAppStoreInformation</key>
+	<false/>
 </dict>
 </plist>

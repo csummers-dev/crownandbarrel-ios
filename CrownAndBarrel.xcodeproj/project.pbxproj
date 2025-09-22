@@ -568,6 +568,10 @@
 					987D17CE5F9F0AFE3E550D69 = {
 						TestTargetID = E056A72CFFDD3F0821000C36;
 					};
+					E056A72CFFDD3F0821000C36 = {
+						DevelopmentTeam = G7Z5DDPMSL;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = E9F754142B4EBF8B14585F4C /* Build configuration list for PBXProject "CrownAndBarrel" */;
@@ -732,6 +736,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -805,6 +811,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = G7Z5DDPMSL;
 				INFOPLIST_FILE = AppResources/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
