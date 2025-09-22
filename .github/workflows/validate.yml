@@ -495,11 +495,11 @@ jobs:
           echo "Looking for available iOS 26.0 simulators..."
           
           # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone 16 Pro.*26.0"; then
+          if xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target"
           # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone.*26.0"; then
+          elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
             # Get first available iPhone with iOS 26.0
             # Use iPhone 16 as reliable fallback
             DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
