@@ -218,9 +218,11 @@ jobs:
           fi
           
           # Store metrics for reporting
-          echo "BUILD_DURATION=${BUILD_DURATION}" >> $GITHUB_ENV
-          echo "CLEAN_DURATION=${CLEAN_DURATION}" >> $GITHUB_ENV
-          echo "TOTAL_DURATION=${TOTAL_DURATION}" >> $GITHUB_ENV
+          {
+            echo "BUILD_DURATION=${BUILD_DURATION}"
+            echo "CLEAN_DURATION=${CLEAN_DURATION}"
+            echo "TOTAL_DURATION=${TOTAL_DURATION}"
+          } >> "$GITHUB_ENV"
 
   # Test performance monitoring
   test-performance:
@@ -442,9 +444,11 @@ jobs:
           fi
           
           # Store metrics for reporting
-          echo "UNIT_TEST_DURATION=${UNIT_TEST_DURATION}" >> $GITHUB_ENV
-          echo "UI_TEST_DURATION=${UI_TEST_DURATION}" >> $GITHUB_ENV
-          echo "TOTAL_TEST_DURATION=${TOTAL_TEST_DURATION}" >> $GITHUB_ENV
+          {
+            echo "UNIT_TEST_DURATION=${UNIT_TEST_DURATION}"
+            echo "UI_TEST_DURATION=${UI_TEST_DURATION}"
+            echo "TOTAL_TEST_DURATION=${TOTAL_TEST_DURATION}"
+          } >> "$GITHUB_ENV"
 
   # Resource usage monitoring
   resource-monitor:
@@ -493,7 +497,7 @@ jobs:
           # Network monitoring
           echo "## Network Monitoring"
           echo "===================="
-          echo "🌐 **Network Interfaces**: $(ifconfig | grep "inet " | wc -l) active interfaces"
+          echo "🌐 **Network Interfaces**: $(ifconfig | grep -c "inet ") active interfaces"
           echo "📡 **Network Status**: $(ping -c 1 8.8.8.8 > /dev/null 2>&1 && echo "Connected" || echo "Disconnected")"
           echo ""
           

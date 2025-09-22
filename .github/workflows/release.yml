@@ -168,7 +168,7 @@ jobs:
         run: |
           echo "✅ Validating TestFlight IPA..."
           if [[ -f "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" ]]; then
-            IPA_SIZE=$(ls -lh "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" | awk '{print $5}')
+            IPA_SIZE=$(find "./TestFlight-Export" -name "${{ env.PROJECT_NAME }}.ipa" -exec ls -lh {} \; | awk '{print $5}')
             echo "✅ IPA created successfully: $IPA_SIZE"
             
             # Basic IPA validation
@@ -425,12 +425,12 @@ jobs:
         
       - name: Get tag name
         id: tag
-        run: echo "name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: echo "name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
         
       - name: Generate release notes
         id: release-notes
         run: |
-          echo "notes=## Crown & Barrel iOS App Release ${GITHUB_REF#refs/tags/}
+          echo "notes=## Crown & Barrel iOS App Release ${GITHUB_REF#refs/tags/}"
 
           ### Changes
           - Automated build and deployment
@@ -444,7 +444,7 @@ jobs:
           ### Technical Details
           - Built with Xcode ${{ env.XCODE_VERSION }}
           - iOS 17.0+ compatibility
-          - Universal app for iPhone and iPad" >> $GITHUB_OUTPUT
+          - Universal app for iPhone and iPad" >> "$GITHUB_OUTPUT"
           
       - name: Create GitHub Release
         uses: actions/create-release@v1
