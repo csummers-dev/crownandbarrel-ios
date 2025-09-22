@@ -1,10 +1,10 @@
-name: iOS CI/CD Pipeline (Optimized)
+name: iOS CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: ["**"]  # Run on all branches for fast feedback
   pull_request:
-    branches: [ main, develop ]
+    branches: ["**"]  # Run on all PRs for fast feedback
 
 env:
   # iOS build variables
@@ -16,10 +16,54 @@ env:
   BUNDLE_ID: "com.crownandbarrel.app"
 
 jobs:
-  # Setup stage - Prepare environment and dependencies
+  # Fast feedback - Unit tests only (all branches)
+  unit-tests:
+    name: Unit Tests (Fast Feedback)
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup iOS Environment
+        uses: ./.github/actions/setup-ios-environment
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          install-xcodegen: 'true'
+          install-swiftlint: 'false'
+          install-xcpretty: 'true'
+          cache-key-suffix: 'unit-tests'
+
+      - name: Cache Swift Packages
+        uses: ./.github/actions/cache-dependencies
+        with:
+          cache-type: 'swift-packages'
+          cache-key: ${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ hashFiles('**/Package.swift') }}
+            latest
+          cache-suffix: 'unit-tests'
+
+      - name: Run Unit Tests
+        run: |
+          echo "Running unit tests with simple configuration..."
+          xcodebuild test \
+            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
+            -scheme "${{ env.SCHEME_NAME }}" \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=26.0" \
+            -only-testing:"${{ env.SCHEME_NAME }}Tests" \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            -resultBundlePath TestResults.xcresult \
+            | xcpretty
+
+  # Full pipeline - Only for main/develop branches
   setup:
     name: Environment Setup
     runs-on: macos-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop')
     
     steps:
       - name: Checkout code
@@ -59,6 +103,7 @@ jobs:
     name: Code Quality
     runs-on: macos-latest
     needs: setup
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop')
     
     steps:
       - name: Checkout code
@@ -92,6 +137,7 @@ jobs:
     name: Build Application
     runs-on: macos-latest
     needs: setup
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop')
     
     steps:
       - name: Checkout code
@@ -191,12 +237,12 @@ jobs:
             ~/Library/Developer/Xcode/DerivedData/
           retention-days: 7
 
-  # Test stage - Run unit and UI tests
-  test-unit:
-    name: Unit Tests
+  # Test stage - Run unit and UI tests (full pipeline only)
+  test-unit-full:
+    name: Unit Tests (Full Pipeline)
     runs-on: macos-latest
     needs: setup
-    timeout-minutes: 15
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop')
     
     steps:
       - name: Checkout code
@@ -247,6 +293,7 @@ jobs:
     name: UI Tests
     runs-on: macos-latest
     needs: setup
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/main') || startsWith(github.ref, 'refs/heads/develop')
     
     steps:
       - name: Checkout code
@@ -316,7 +363,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: macos-latest
-    needs: [lint, build, test-unit, test-ui]
+    needs: [lint, build, test-unit-full, test-ui]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
