@@ -28,7 +28,7 @@ on:
 
 env:
   PROJECT_NAME: "CrownAndBarrel"
-  XCODE_VERSION: "15.4"
+  XCODE_VERSION: "26.0.0"
 
 jobs:
   # Comprehensive security audit

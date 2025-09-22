@@ -8,7 +8,7 @@ on:
 
 env:
   # iOS build variables
-  XCODE_VERSION: "15.4"
+  XCODE_VERSION: "26.0.0"
   
   # Project variables
   PROJECT_NAME: "CrownAndBarrel"

@@ -6,7 +6,7 @@ inputs:
   xcode-version:
     description: 'Xcode version to use'
     required: false
-    default: '15.4'
+    default: '26.0.0'
   install-xcodegen:
     description: 'Whether to install XcodeGen'
     required: false
