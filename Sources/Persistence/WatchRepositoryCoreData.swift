@@ -9,7 +9,6 @@ import CoreData
 /// - What: Persists and queries watches and wear entries using Core Data.
 /// - Why: Provides robust local storage with sorting/filtering and derived field updates.
 /// - How: Uses a shared `CoreDataStack`, mapping helpers, and calendar normalization.
-@unchecked Sendable
 public final class WatchRepositoryCoreData: WatchRepository {
     private let stack: CoreDataStack
     private let calendar: Calendar

@@ -6,7 +6,6 @@ import ZIPFoundation
 /// - What: Exports JSON + images to a `.crownandbarrel` zip; imports by replacing the store; deletes all data on request.
 /// - Why: Keeps backups portable and explicit, and avoids partial merges that can corrupt referential integrity.
 /// - How: Serializes domain objects, zips them with images, validates schema on import, and replaces the store.
-@unchecked Sendable
 public final class BackupRepositoryFile: BackupRepository {
     private let stack: CoreDataStack
     private let fileManager: FileManager

@@ -60,6 +60,7 @@ struct RootView: View {
     /// - Why: Forces SwiftUI to re-render views that depend on theme tokens without rebuilding navigation stacks.
     /// - How: Applied as an `.id(themeToken)` on containers and sheet roots so headers and bodies update in sync.
     @Environment(\.themeToken) private var themeToken
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - Body
     
@@ -125,7 +126,7 @@ struct RootView: View {
             if ProcessInfo.processInfo.arguments.contains("--uiTestExposeThemeInfo") {
                 let forcedArg = ProcessInfo.processInfo.arguments.first { $0.hasPrefix("--uiTestForceSystemStyle=") }
                 let forcedValue = forcedArg?.split(separator: "=").last.map(String.init)
-                let detectedStyle: String = {
+                let detectedStyle = {
                     if let v = forcedValue?.lowercased(), v == "dark" { return "dark" }
                     if let v = forcedValue?.lowercased(), v == "light" { return "light" }
                     // Use environment value instead of deprecated UIScreen.main

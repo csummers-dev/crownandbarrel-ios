@@ -5,7 +5,6 @@ import CoreData
 /// - What: Owns the `NSPersistentContainer`, view context, save semantics, and model description.
 /// - Why: Programmatic model avoids .xcdatamodeld and simplifies in-memory testing and CI.
 /// - How: Builds entities and relationships in code, sets a merge policy to prefer incoming changes.
-@unchecked Sendable
 public final class CoreDataStack {
     public static let shared = CoreDataStack()
 
