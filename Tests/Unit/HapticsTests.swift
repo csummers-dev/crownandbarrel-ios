@@ -731,49 +731,49 @@ final class HapticsTests: XCTestCase {
 
 // MARK: - Supporting Extensions for Testing
 
-extension WearTrackingType: CaseIterable {
+extension WearTrackingType: @retroactive CaseIterable {
     public static var allCases: [WearTrackingType] {
         return [.markAsWorn, .alreadyWorn, .deleteEntry, .bulkOperation]
     }
 }
 
-extension SettingsType: CaseIterable {
+extension SettingsType: @retroactive CaseIterable {
     public static var allCases: [SettingsType] {
         return [.themeChange, .toggleSwitch, .dataExport, .dataImport, .resetOperation]
     }
 }
 
-extension SearchType: CaseIterable {
+extension SearchType: @retroactive CaseIterable {
     public static var allCases: [SearchType] {
         return [.searchActivation, .filterChange, .resultsFound, .noResults, .clearSearch]
     }
 }
 
-extension AccessibilityInteractionType: CaseIterable {
+extension AccessibilityInteractionType: @retroactive CaseIterable {
     public static var allCases: [AccessibilityInteractionType] {
         return [.elementSelected, .actionCompleted, .errorOccurred, .warningShown]
     }
 }
 
-extension CalendarInteractionType: CaseIterable {
+extension CalendarInteractionType: @retroactive CaseIterable {
     public static var allCases: [CalendarInteractionType] {
         return [.dateSelection, .monthNavigation, .wearEntryAdded, .wearEntryDeleted, .refreshCompleted]
     }
 }
 
-extension DetailViewInteractionType: CaseIterable {
+extension DetailViewInteractionType: @retroactive CaseIterable {
     public static var allCases: [DetailViewInteractionType] {
         return [.imageTap, .editInitiated, .wearMarked, .refreshCompleted, .statusChanged]
     }
 }
 
-extension StatsInteractionType: CaseIterable {
+extension StatsInteractionType: @retroactive CaseIterable {
     public static var allCases: [StatsInteractionType] {
         return [.dataPointTapped, .chartTapped, .listHeaderTapped, .watchListItemTapped, .refreshCompleted]
     }
 }
 
-extension DataInteractionType: CaseIterable {
+extension DataInteractionType: @retroactive CaseIterable {
     public static var allCases: [DataInteractionType] {
         return [.exportInitiated, .importInitiated, .deleteInitiated, .seedDataInitiated, .operationCompleted, .operationFailed]
     }
