@@ -194,7 +194,21 @@ struct CrownAndBarrelApp: App {
         // based on the current system appearance (light → Daytime, dark → Nighttime).
         let key = "selectedThemeId"
         if UserDefaults.standard.object(forKey: key) == nil {
+            #if DEBUG
+            // UI Test Support: Force specific system style if requested
+            var detected = UIScreen.main.traitCollection.userInterfaceStyle
+            if let forcedArg = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--uiTestForceSystemStyle=") }) {
+                let forcedValue = String(forcedArg.dropFirst("--uiTestForceSystemStyle=".count))
+                if forcedValue.lowercased() == "dark" {
+                    detected = .dark
+                } else if forcedValue.lowercased() == "light" {
+                    detected = .light
+                }
+            }
+            #else
             let detected = UIScreen.main.traitCollection.userInterfaceStyle
+            #endif
+            
             let defaultId = ThemeManager.defaultThemeId(for: detected)
             UserDefaults.standard.set(defaultId, forKey: key)
         }
