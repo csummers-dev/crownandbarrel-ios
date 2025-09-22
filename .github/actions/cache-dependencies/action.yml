@@ -1,0 +1,239 @@
+name: 'Cache Dependencies'
+description: 'Centralized caching strategy for all types of dependencies with intelligent cache management'
+author: 'Crown & Barrel Development Team'
+
+inputs:
+  cache-type:
+    description: 'Type of cache (xcodegen|swiftlint|pip|npm|gem|swift-packages|derived-data|homebrew|custom)'
+    required: true
+  cache-key:
+    description: 'Primary cache key (will be prefixed with runner.os and cache-type)'
+    required: false
+    default: 'default'
+  restore-keys:
+    description: 'Fallback cache keys (newline separated, will be prefixed)'
+    required: false
+    default: ''
+  custom-paths:
+    description: 'Custom paths to cache (newline separated, only for cache-type: custom)'
+    required: false
+    default: ''
+  cache-suffix:
+    description: 'Additional suffix for cache key isolation'
+    required: false
+    default: ''
+
+outputs:
+  cache-hit:
+    description: 'Whether the cache was restored (true/false)'
+    value: ${{ steps.cache.outputs.cache-hit }}
+  cache-key:
+    description: 'The actual cache key used'
+    value: ${{ steps.prepare.outputs.final-key }}
+  cache-size:
+    description: 'Approximate cache size information'
+    value: ${{ steps.info.outputs.size }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Prepare cache configuration
+      id: prepare
+      shell: bash
+      run: |
+        echo "🔧 Preparing cache configuration for type: ${{ inputs.cache-type }}"
+        
+        # Build final cache key
+        BASE_KEY="${{ runner.os }}-${{ inputs.cache-type }}"
+        if [[ -n "${{ inputs.cache-suffix }}" ]]; then
+          FINAL_KEY="$BASE_KEY-${{ inputs.cache-key }}-${{ inputs.cache-suffix }}"
+        else
+          FINAL_KEY="$BASE_KEY-${{ inputs.cache-key }}"
+        fi
+        
+        echo "final-key=$FINAL_KEY" >> $GITHUB_OUTPUT
+        echo "🔑 Final cache key: $FINAL_KEY"
+        
+        # Prepare restore keys
+        RESTORE_KEYS=""
+        if [[ -n "${{ inputs.restore-keys }}" ]]; then
+          while IFS= read -r key; do
+            [[ -n "$key" ]] && RESTORE_KEYS="$RESTORE_KEYS$BASE_KEY-$key"$'\n'
+          done <<< "${{ inputs.restore-keys }}"
+        fi
+        
+        # Add default fallback keys
+        RESTORE_KEYS="$RESTORE_KEYS$BASE_KEY-${{ inputs.cache-key }}"$'\n'
+        RESTORE_KEYS="$RESTORE_KEYS$BASE_KEY-"
+        
+        # Clean up trailing newlines
+        RESTORE_KEYS=$(echo "$RESTORE_KEYS" | sed '/^$/d')
+        
+        echo "restore-keys<<EOF" >> $GITHUB_OUTPUT
+        echo "$RESTORE_KEYS" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        echo "🔄 Restore keys:"
+        echo "$RESTORE_KEYS" | while IFS= read -r key; do
+          [[ -n "$key" ]] && echo "  - $key"
+        done
+
+    - name: Determine cache paths
+      id: paths
+      shell: bash
+      run: |
+        echo "📁 Determining cache paths for type: ${{ inputs.cache-type }}"
+        
+        case "${{ inputs.cache-type }}" in
+          "xcodegen")
+            PATHS=$(cat << 'EOF'
+        ~/.local/bin/xcodegen
+        ~/xcodegen/
+        /opt/homebrew/bin/xcodegen
+        /usr/local/bin/xcodegen
+        EOF
+            )
+            ;;
+          "swiftlint")
+            PATHS=$(cat << 'EOF'
+        ~/.local/bin/swiftlint
+        /opt/homebrew/bin/swiftlint
+        /usr/local/bin/swiftlint
+        EOF
+            )
+            ;;
+          "pip")
+            PATHS=$(cat << 'EOF'
+        ~/.cache/pip
+        ~/.local/lib/python*/site-packages
+        EOF
+            )
+            ;;
+          "npm")
+            PATHS=$(cat << 'EOF'
+        ~/.npm
+        node_modules
+        EOF
+            )
+            ;;
+          "gem")
+            PATHS=$(cat << 'EOF'
+        ~/.gem
+        vendor/bundle
+        EOF
+            )
+            ;;
+          "swift-packages")
+            PATHS=$(cat << 'EOF'
+        .build
+        ~/Library/Developer/Xcode/DerivedData/*/SourcePackages
+        ~/Library/Caches/org.swift.swiftpm
+        EOF
+            )
+            ;;
+          "derived-data")
+            PATHS=$(cat << 'EOF'
+        ~/Library/Developer/Xcode/DerivedData
+        EOF
+            )
+            ;;
+          "homebrew")
+            PATHS=$(cat << 'EOF'
+        /opt/homebrew/var/cache
+        /usr/local/var/cache
+        ~/Library/Caches/Homebrew
+        EOF
+            )
+            ;;
+          "custom")
+            if [[ -n "${{ inputs.custom-paths }}" ]]; then
+              PATHS="${{ inputs.custom-paths }}"
+            else
+              echo "❌ Custom cache type requires custom-paths input"
+              exit 1
+            fi
+            ;;
+          *)
+            echo "❌ Unsupported cache type: ${{ inputs.cache-type }}"
+            echo "Supported types: xcodegen, swiftlint, pip, npm, gem, swift-packages, derived-data, homebrew, custom"
+            exit 1
+            ;;
+        esac
+        
+        echo "paths<<EOF" >> $GITHUB_OUTPUT
+        echo "$PATHS" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+        echo "📂 Cache paths:"
+        echo "$PATHS" | while IFS= read -r path; do
+          [[ -n "$path" ]] && echo "  - $path"
+        done
+
+    - name: Restore cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.paths.outputs.paths }}
+        key: ${{ steps.prepare.outputs.final-key }}
+        restore-keys: ${{ steps.prepare.outputs.restore-keys }}
+
+    - name: Cache information
+      id: info
+      shell: bash
+      run: |
+        echo "📊 Cache information:"
+        echo "🔑 **Cache Key**: ${{ steps.prepare.outputs.final-key }}"
+        echo "💾 **Cache Hit**: ${{ steps.cache.outputs.cache-hit }}"
+        
+        # Estimate cache size if paths exist
+        TOTAL_SIZE=0
+        SIZE_INFO=""
+        
+        while IFS= read -r path; do
+          if [[ -n "$path" ]] && [[ -e "$path" ]]; then
+            if [[ -d "$path" ]]; then
+              SIZE=$(du -sh "$path" 2>/dev/null | cut -f1 || echo "unknown")
+              SIZE_INFO="$SIZE_INFO$path: $SIZE"$'\n'
+              echo "  📁 $path: $SIZE"
+            elif [[ -f "$path" ]]; then
+              SIZE=$(ls -lh "$path" 2>/dev/null | awk '{print $5}' || echo "unknown")
+              SIZE_INFO="$SIZE_INFO$path: $SIZE"$'\n'
+              echo "  📄 $path: $SIZE"
+            fi
+          fi
+        done <<< "${{ steps.paths.outputs.paths }}"
+        
+        if [[ -n "$SIZE_INFO" ]]; then
+          echo "size=$SIZE_INFO" >> $GITHUB_OUTPUT
+        else
+          echo "size=No cached items found" >> $GITHUB_OUTPUT
+        fi
+        
+        # Cache hit analysis
+        if [[ "${{ steps.cache.outputs.cache-hit }}" == "true" ]]; then
+          echo "✅ Cache restored successfully!"
+          echo "⚡ This should significantly speed up the build process."
+        else
+          echo "🔄 No cache hit - will create new cache entry."
+          echo "📝 Next run will benefit from caching."
+        fi
+
+    - name: Cache summary
+      shell: bash
+      run: |
+        echo "## 💾 Cache Summary"
+        echo "=================="
+        echo "🏷️  **Type**: ${{ inputs.cache-type }}"
+        echo "🔑 **Key**: ${{ steps.prepare.outputs.final-key }}"
+        echo "💾 **Hit**: ${{ steps.cache.outputs.cache-hit }}"
+        echo "📊 **Size**: Available in outputs"
+        echo ""
+        if [[ "${{ steps.cache.outputs.cache-hit }}" == "true" ]]; then
+          echo "⚡ **Performance**: Cache restored - faster execution expected!"
+        else
+          echo "🔄 **Performance**: Building cache - next run will be faster!"
+        fi
+
+branding:
+  icon: 'database'
+  color: 'green'

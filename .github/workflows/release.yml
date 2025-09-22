@@ -137,51 +137,108 @@ jobs:
           fi
           fastlane --version
           
-      - name: Setup Apple Developer Account
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-        run: |
-          echo "Setting up Apple Developer Account..."
-          echo "Apple ID: $APPLE_ID"
-          echo "Team ID: $TEAM_ID"
+      - name: Setup iOS Environment
+        uses: ./.github/actions/setup-ios-environment
+        with:
+          xcode-version: ${{ env.XCODE_VERSION }}
+          install-xcodegen: 'true'
+          install-swiftlint: 'false'
+          install-xcpretty: 'false'
+          cache-key-suffix: 'testflight'
           
       - name: Create Archive for TestFlight
         run: |
+          echo "📦 Creating signed archive for TestFlight with automatic signing..."
           xcodebuild archive \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
             -configuration "${{ env.ARCHIVE_CONFIGURATION }}" \
             -destination "generic/platform=iOS" \
-            -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
-            CODE_SIGNING_ALLOWED=YES \
-            DEVELOPMENT_TEAM="${{ secrets.TEAM_ID }}" \
-            CODE_SIGN_IDENTITY="iPhone Distribution"
+            -archivePath "${{ env.PROJECT_NAME }}.xcarchive"
             
       - name: Export IPA for TestFlight
         run: |
+          echo "📤 Exporting IPA for TestFlight distribution..."
           xcodebuild -exportArchive \
             -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
-            -exportPath "./export" \
-            -exportOptionsPlist exportOptions.plist \
-            -allowProvisioningUpdates
+            -exportPath "./TestFlight-Export" \
+            -exportOptionsPlist exportOptions-automatic.plist
             
-      - name: Deploy to TestFlight
+      - name: Validate IPA
+        run: |
+          echo "✅ Validating TestFlight IPA..."
+          if [[ -f "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" ]]; then
+            IPA_SIZE=$(ls -lh "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" | awk '{print $5}')
+            echo "✅ IPA created successfully: $IPA_SIZE"
+            
+            # Basic IPA validation
+            unzip -l "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" | head -10
+            echo "✅ IPA structure validation complete"
+          else
+            echo "❌ IPA file not found after export"
+            exit 1
+          fi
+            
+      - name: Upload to TestFlight (Optional Automation)
+        if: false  # Disabled by default - enable when ready for automation
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-          FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
-          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-          FASTLANE_SESSION: ${{ secrets.FASTLANE_SESSION }}
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
-          echo "Deploying to TestFlight..."
-          # Note: This would require proper Fastlane configuration
-          # For now, we'll just prepare the archive
-          echo "Archive created successfully for TestFlight deployment"
-          echo "Manual deployment required with proper Fastlane setup"
+          echo "🚀 Uploading to TestFlight via altool..."
+          xcrun altool --upload-app \
+            --file "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" \
+            --type ios \
+            --username "$APPLE_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD"
+            
+      - name: Manual Upload Instructions
+        if: true  # Always show manual upload instructions
+        run: |
+          echo "📋 Manual TestFlight Upload Instructions"
+          echo "======================================="
+          echo ""
+          echo "Your signed IPA is ready for TestFlight upload!"
+          echo ""
+          echo "📁 IPA Location: ./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa"
+          echo ""
+          echo "Upload Methods:"
+          echo "1. 🍎 Xcode Organizer (Recommended):"
+          echo "   • Open Xcode → Window → Organizer"
+          echo "   • Select Archives → Crown & Barrel"
+          echo "   • Click 'Distribute App' → 'App Store Connect'"
+          echo ""
+          echo "2. 📦 Transporter App:"
+          echo "   • Download Transporter from Mac App Store"
+          echo "   • Drag and drop the IPA file"
+          echo ""
+          echo "3. 💻 Command Line:"
+          echo "   xcrun altool --upload-app --file [IPA_PATH] --username [APPLE_ID] --password [APP_PASSWORD]"
+          echo ""
+          echo "✅ Build is ready for TestFlight submission!"
+          
+      - name: Archive Summary
+        run: |
+          echo "🎉 TestFlight Build Summary"
+          echo "=========================="
+          echo ""
+          if [[ -f "./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa" ]]; then
+            echo "✅ Archive: SUCCESS"
+            echo "✅ IPA Export: SUCCESS" 
+            echo "📁 IPA Location: ./TestFlight-Export/${{ env.PROJECT_NAME }}.ipa"
+            echo "📊 Team ID: ${{ secrets.APPLE_TEAM_ID }}"
+            echo "🔐 Signing: Automatic (Xcode managed)"
+            echo ""
+            echo "🚀 Ready for TestFlight upload!"
+            echo ""
+            echo "Next steps:"
+            echo "1. Download the IPA from GitHub Actions artifacts"
+            echo "2. Upload to App Store Connect via Xcode Organizer or Transporter"
+            echo "3. Submit for TestFlight beta review"
+          else
+            echo "❌ Build failed - check logs above"
+            exit 1
+          fi
           
       - name: Upload TestFlight artifacts
         uses: actions/upload-artifact@v4

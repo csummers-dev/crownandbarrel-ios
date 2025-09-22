@@ -43,4 +43,15 @@ export/
 *.zip
 *.goodwatch
 
+# Security - Never commit these!
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
+**/Provisioning Profiles/
+.team-id-temp
+*-Test.xcarchive
+*-Export/
+*-Export-Test/
+
 

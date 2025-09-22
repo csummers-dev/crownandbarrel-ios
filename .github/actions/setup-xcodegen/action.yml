@@ -1,0 +1,334 @@
+name: 'Setup XcodeGen'
+description: 'Install and configure XcodeGen with intelligent caching and multiple installation strategies'
+author: 'Crown & Barrel Development Team'
+
+inputs:
+  version:
+    description: 'XcodeGen version to install'
+    required: false
+    default: 'latest'
+  cache-key-suffix:
+    description: 'Custom suffix for cache key (useful for parallel jobs)'
+    required: false
+    default: ''
+  generate-project:
+    description: 'Whether to run xcodegen generate after installation'
+    required: false
+    default: 'true'
+  installation-timeout:
+    description: 'Timeout for installation in minutes'
+    required: false
+    default: '10'
+
+outputs:
+  xcodegen-version:
+    description: 'The installed XcodeGen version'
+    value: ${{ steps.get-version.outputs.version }}
+  installation-method:
+    description: 'Method used for installation (cache/direct-download/homebrew-arm64/homebrew-standard)'
+    value: ${{ steps.install.outputs.method }}
+  cache-hit:
+    description: 'Whether the installation was restored from cache'
+    value: ${{ steps.cache.outputs.cache-hit }}
+  xcodegen-path:
+    description: 'Path to the XcodeGen binary'
+    value: ${{ steps.get-path.outputs.path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect system architecture
+      id: arch
+      shell: bash
+      run: |
+        ARCH=$(uname -m)
+        echo "detected=$ARCH" >> $GITHUB_OUTPUT
+        
+        # Enhanced ARM64 detection
+        IS_ARM64=false
+        if [[ "$ARCH" == "arm64" ]] || [[ -d "/opt/homebrew" ]]; then
+          IS_ARM64=true
+          echo "🏗️  Detected ARM64 architecture"
+        else
+          echo "🏗️  Detected $ARCH architecture"
+        fi
+        echo "is-arm64=$IS_ARM64" >> $GITHUB_OUTPUT
+        
+        # Set potential installation paths
+        if [[ "$IS_ARM64" == "true" ]]; then
+          echo "homebrew-path=/opt/homebrew/bin" >> $GITHUB_OUTPUT
+        else
+          echo "homebrew-path=/usr/local/bin" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Setup cache key
+      id: cache-key
+      shell: bash
+      run: |
+        VERSION="${{ inputs.version }}"
+        if [[ "$VERSION" == "latest" ]]; then
+          # For latest, we'll use a date-based cache that refreshes weekly
+          WEEK=$(date +%Y-W%U)
+          VERSION="latest-$WEEK"
+        fi
+        
+        SUFFIX="${{ inputs.cache-key-suffix }}"
+        if [[ -n "$SUFFIX" ]]; then
+          CACHE_KEY="${{ runner.os }}-xcodegen-$VERSION-${{ steps.arch.outputs.detected }}-$SUFFIX"
+        else
+          CACHE_KEY="${{ runner.os }}-xcodegen-$VERSION-${{ steps.arch.outputs.detected }}"
+        fi
+        
+        echo "primary=$CACHE_KEY" >> $GITHUB_OUTPUT
+        echo "restore-keys=${{ runner.os }}-xcodegen-$VERSION-${{ steps.arch.outputs.detected }}" >> $GITHUB_OUTPUT
+        echo "🔑 Cache key: $CACHE_KEY"
+
+    - name: Cache XcodeGen installation
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.local/bin/xcodegen
+          ~/xcodegen/
+          ${{ steps.arch.outputs.homebrew-path }}/xcodegen
+        key: ${{ steps.cache-key.outputs.primary }}
+        restore-keys: |
+          ${{ steps.cache-key.outputs.restore-keys }}
+          ${{ runner.os }}-xcodegen-latest-${{ steps.arch.outputs.detected }}
+          ${{ runner.os }}-xcodegen-
+
+    - name: Install XcodeGen
+      id: install
+      shell: bash
+      timeout-minutes: ${{ inputs.installation-timeout }}
+      run: |
+        set -euo pipefail
+        
+        echo "🚀 Starting XcodeGen installation process..."
+        
+        # Check if XcodeGen is already available
+        if command -v xcodegen &> /dev/null; then
+          EXISTING_VERSION=$(xcodegen --version 2>/dev/null || echo "unknown")
+          echo "✅ XcodeGen already available: $EXISTING_VERSION"
+          echo "method=pre-installed" >> $GITHUB_OUTPUT
+          exit 0
+        fi
+        
+        # Check cache restoration
+        if [[ "${{ steps.cache.outputs.cache-hit }}" == "true" ]]; then
+          echo "📦 Checking cached XcodeGen installation..."
+          
+          # Check various cached locations
+          CACHED_PATHS=(
+            "$HOME/.local/bin/xcodegen"
+            "$HOME/xcodegen/bin/xcodegen"
+            "${{ steps.arch.outputs.homebrew-path }}/xcodegen"
+          )
+          
+          for path in "${CACHED_PATHS[@]}"; do
+            if [[ -f "$path" ]] && [[ -x "$path" ]]; then
+              echo "✅ Found cached XcodeGen at: $path"
+              
+              # Add to PATH if not already there
+              PATH_DIR=$(dirname "$path")
+              if [[ ":$PATH:" != *":$PATH_DIR:"* ]]; then
+                export PATH="$PATH_DIR:$PATH"
+                echo "$PATH_DIR" >> $GITHUB_PATH
+              fi
+              
+              # Verify it works
+              if command -v xcodegen &> /dev/null; then
+                CACHED_VERSION=$(xcodegen --version 2>/dev/null || echo "unknown")
+                echo "✅ Cached XcodeGen verified: $CACHED_VERSION"
+                echo "method=cache" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+          done
+          
+          echo "⚠️  Cache hit but no working XcodeGen found, proceeding with installation..."
+        fi
+        
+        echo "📥 Installing XcodeGen using multiple strategies..."
+        
+        # Strategy 1: Direct Download (Fastest and most reliable)
+        echo "🔄 Strategy 1: Direct download from GitHub releases..."
+        if curl -L -f https://github.com/yonaskolb/XcodeGen/releases/latest/download/xcodegen.artifactbundle.zip -o "${HOME}/xcodegen.artifactbundle.zip"; then
+          echo "✅ Downloaded XcodeGen artifact bundle"
+          
+          # Create installation directory
+          mkdir -p "${HOME}/xcodegen"
+          
+          # Extract the bundle
+          if unzip -o "${HOME}/xcodegen.artifactbundle.zip" -d "${HOME}/xcodegen/"; then
+            echo "✅ Extracted XcodeGen artifact bundle"
+            
+            # Find the bin directory in the extracted bundle
+            BIN_DIR=$(find "${HOME}/xcodegen" -name "bin" -type d | head -1)
+            if [[ -n "$BIN_DIR" ]] && [[ -f "$BIN_DIR/xcodegen" ]]; then
+              echo "✅ Found XcodeGen binary at: $BIN_DIR/xcodegen"
+              
+              # Make executable
+              chmod +x "$BIN_DIR/xcodegen"
+              
+              # Add to PATH
+              export PATH="$BIN_DIR:$PATH"
+              echo "$BIN_DIR" >> $GITHUB_PATH
+              
+              # Create symlink for caching
+              mkdir -p "$HOME/.local/bin"
+              ln -sf "$BIN_DIR/xcodegen" "$HOME/.local/bin/xcodegen"
+              
+              # Verify installation
+              if command -v xcodegen &> /dev/null; then
+                INSTALLED_VERSION=$(xcodegen --version 2>/dev/null || echo "unknown")
+                echo "✅ XcodeGen installation verified: $INSTALLED_VERSION"
+                echo "method=direct-download" >> $GITHUB_OUTPUT
+                
+                # Cleanup
+                rm -f "${HOME}/xcodegen.artifactbundle.zip"
+                exit 0
+              else
+                echo "❌ XcodeGen binary not working after installation"
+              fi
+            else
+              echo "❌ XcodeGen binary not found in extracted bundle"
+            fi
+          else
+            echo "❌ Failed to extract XcodeGen artifact bundle"
+          fi
+          
+          # Cleanup failed attempt
+          rm -f "${HOME}/xcodegen.artifactbundle.zip"
+          rm -rf "${HOME}/xcodegen"
+        else
+          echo "❌ Failed to download XcodeGen artifact bundle"
+        fi
+        
+        # Strategy 2: Homebrew with ARM64 forcing (for Apple Silicon)
+        if [[ "${{ steps.arch.outputs.is-arm64 }}" == "true" ]]; then
+          echo "🔄 Strategy 2: ARM64 Homebrew installation..."
+          
+          HOMEBREW_PATHS=(
+            "/opt/homebrew/bin/brew"
+            "/usr/local/bin/brew"
+            "brew"
+          )
+          
+          for brew_path in "${HOMEBREW_PATHS[@]}"; do
+            echo "Trying: arch -arm64 $brew_path install xcodegen"
+            if arch -arm64 $brew_path install xcodegen 2>/dev/null; then
+              echo "✅ XcodeGen installed via ARM64 Homebrew ($brew_path)"
+              
+              # Verify installation
+              if command -v xcodegen &> /dev/null; then
+                INSTALLED_VERSION=$(xcodegen --version 2>/dev/null || echo "unknown")
+                echo "✅ XcodeGen installation verified: $INSTALLED_VERSION"
+                echo "method=homebrew-arm64" >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            fi
+          done
+          
+          echo "❌ ARM64 Homebrew installation failed"
+        fi
+        
+        # Strategy 3: Standard Homebrew (fallback)
+        echo "🔄 Strategy 3: Standard Homebrew installation..."
+        if command -v brew &> /dev/null; then
+          if brew install xcodegen; then
+            echo "✅ XcodeGen installed via standard Homebrew"
+            
+            # Verify installation
+            if command -v xcodegen &> /dev/null; then
+              INSTALLED_VERSION=$(xcodegen --version 2>/dev/null || echo "unknown")
+              echo "✅ XcodeGen installation verified: $INSTALLED_VERSION"
+              echo "method=homebrew-standard" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          fi
+        else
+          echo "❌ Homebrew not available for standard installation"
+        fi
+        
+        # If we reach here, all strategies failed
+        echo "❌ All XcodeGen installation strategies failed"
+        echo "🔍 System information:"
+        echo "  - Architecture: ${{ steps.arch.outputs.detected }}"
+        echo "  - ARM64: ${{ steps.arch.outputs.is-arm64 }}"
+        echo "  - PATH: $PATH"
+        echo "  - Available tools:"
+        command -v curl && echo "    ✅ curl available" || echo "    ❌ curl not available"
+        command -v unzip && echo "    ✅ unzip available" || echo "    ❌ unzip not available"
+        command -v brew && echo "    ✅ brew available" || echo "    ❌ brew not available"
+        
+        echo "method=failed" >> $GITHUB_OUTPUT
+        exit 1
+
+    - name: Get XcodeGen version
+      id: get-version
+      shell: bash
+      run: |
+        if command -v xcodegen &> /dev/null; then
+          VERSION=$(xcodegen --version 2>/dev/null || echo "unknown")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📋 XcodeGen version: $VERSION"
+        else
+          echo "version=not-installed" >> $GITHUB_OUTPUT
+          echo "❌ XcodeGen not available for version check"
+          exit 1
+        fi
+
+    - name: Get XcodeGen path
+      id: get-path
+      shell: bash
+      run: |
+        if command -v xcodegen &> /dev/null; then
+          XCODEGEN_PATH=$(which xcodegen)
+          echo "path=$XCODEGEN_PATH" >> $GITHUB_OUTPUT
+          echo "📍 XcodeGen path: $XCODEGEN_PATH"
+        else
+          echo "path=not-found" >> $GITHUB_OUTPUT
+          echo "❌ XcodeGen path not found"
+          exit 1
+        fi
+
+    - name: Generate Xcode project
+      if: inputs.generate-project == 'true'
+      shell: bash
+      run: |
+        echo "🏗️  Generating Xcode project with XcodeGen..."
+        
+        # Verify project.yml exists
+        if [[ ! -f "project.yml" ]]; then
+          echo "❌ project.yml not found in current directory"
+          echo "📁 Current directory contents:"
+          ls -la
+          exit 1
+        fi
+        
+        # Generate project
+        if xcodegen generate; then
+          echo "✅ Xcode project generated successfully"
+        else
+          echo "❌ Failed to generate Xcode project"
+          exit 1
+        fi
+
+    - name: Installation summary
+      shell: bash
+      run: |
+        echo "## 🎉 XcodeGen Setup Complete"
+        echo "================================="
+        echo "📋 **Version**: ${{ steps.get-version.outputs.version }}"
+        echo "📍 **Path**: ${{ steps.get-path.outputs.path }}"
+        echo "🔧 **Method**: ${{ steps.install.outputs.method }}"
+        echo "💾 **Cache Hit**: ${{ steps.cache.outputs.cache-hit }}"
+        echo "🏗️  **Project Generated**: ${{ inputs.generate-project }}"
+        echo "⏱️  **Architecture**: ${{ steps.arch.outputs.detected }}"
+        echo ""
+        echo "✅ XcodeGen is ready for use in subsequent workflow steps!"
+
+branding:
+  icon: 'tool'
+  color: 'blue'
