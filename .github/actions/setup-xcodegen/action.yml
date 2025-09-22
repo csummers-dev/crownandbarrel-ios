@@ -15,10 +15,6 @@ inputs:
     description: 'Whether to run xcodegen generate after installation'
     required: false
     default: 'true'
-  installation-timeout:
-    description: 'Timeout for installation in minutes'
-    required: false
-    default: '10'
 
 outputs:
   xcodegen-version:
@@ -100,7 +96,6 @@ runs:
     - name: Install XcodeGen
       id: install
       shell: bash
-      timeout-minutes: ${{ inputs.installation-timeout }}
       run: |
         set -euo pipefail
         
