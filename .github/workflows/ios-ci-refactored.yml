@@ -27,7 +27,7 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: 'unit-${{ hashFiles('Package.resolved') }}'
+          cache-key: unit-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             unit-${{ hashFiles('Package.swift') }}
             unit-latest
@@ -82,7 +82,7 @@ jobs:
         uses: ./.github/actions/cache-dependencies
         with:
           cache-type: 'swift-packages'
-          cache-key: 'ui-${{ hashFiles('Package.resolved') }}'
+          cache-key: ui-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ui-${{ hashFiles('Package.swift') }}
             ui-latest
