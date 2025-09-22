@@ -46,8 +46,26 @@ jobs:
           cache-key-suffix: 'security'
           
       - name: Build for CodeQL Analysis
-        # Use autobuild for better Swift analysis
-        uses: github/codeql-action/autobuild@v3
+        run: |
+          echo "Building project for CodeQL analysis..."
+          
+          # Generate Xcode project
+          xcodegen generate --spec project.yml
+          
+          # Build the project for CodeQL analysis
+          xcodebuild build \
+            -project CrownAndBarrel.xcodeproj \
+            -scheme CrownAndBarrel \
+            -destination "generic/platform=iOS" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            ENABLE_BITCODE=NO \
+            -quiet
+          
+          echo "Build completed successfully for CodeQL analysis"
           
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
