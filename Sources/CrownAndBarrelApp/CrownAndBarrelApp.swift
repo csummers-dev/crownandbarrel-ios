@@ -183,6 +183,13 @@ struct CrownAndBarrelApp: App {
     @State private var showSplash: Bool = true
 
     init() {
+        // UI Test Support: Reset theme if requested
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("--uiTestResetTheme") {
+            UserDefaults.standard.removeObject(forKey: "selectedThemeId")
+        }
+        #endif
+        
         // On first launch, if no saved theme preference exists, choose a default
         // based on the current system appearance (light → Daytime, dark → Nighttime).
         let key = "selectedThemeId"
