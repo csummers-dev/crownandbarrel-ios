@@ -196,6 +196,7 @@ jobs:
     name: Unit Tests
     runs-on: macos-latest
     needs: setup
+    timeout-minutes: 15
     
     steps:
       - name: Checkout code
@@ -222,36 +223,17 @@ jobs:
           
       - name: Run Unit Tests
         run: |
-          echo "Looking for available iOS 26.0 simulators for unit tests..."
-          
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
-          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            # Use iPhone 16 as reliable fallback
-            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
-            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for unit tests"
-          else
-            echo "❌ No iOS 26.0 simulators found, skipping unit tests"
-            exit 0
-          fi
-          
-          echo "Running unit tests with destination: $DESTINATION"
+          echo "Running unit tests with simple configuration..."
           xcodebuild test \
             -project "${{ env.PROJECT_NAME }}.xcodeproj" \
             -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "$DESTINATION" \
-            "-only-testing:${{ env.SCHEME_NAME }}Tests" \
-            -resultBundlePath TestResults.xcresult \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=26.0" \
+            -only-testing:"${{ env.SCHEME_NAME }}Tests" \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=YES \
             VALID_ARCHS="arm64" \
             ARCHS="arm64" \
-            ENABLE_BITCODE=NO \
-            IPHONEOS_DEPLOYMENT_TARGET=26.0
+            -resultBundlePath TestResults.xcresult
             
       - name: Upload test results
         uses: actions/upload-artifact@v4

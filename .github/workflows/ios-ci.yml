@@ -12,6 +12,7 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: macos-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,31 +38,18 @@ jobs:
 
       - name: Run Unit Tests (only)
         run: |
-          # Find the best available iOS 26.0 simulator for unit tests
-          echo "Looking for available iOS 26.0 simulators for unit tests..."
-          
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
-          # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep "26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit tests"
-          else
-            echo "❌ No iOS 26.0 simulators found, skipping unit tests"
-            exit 0
-          fi
-          
-          echo "Running unit tests with destination: $DESTINATION"
-          xcodebuild -project CrownAndBarrel.xcodeproj \
-                     -scheme CrownAndBarrel \
-                     -destination "$DESTINATION" \
-                     -only-testing:CrownAndBarrelTests \
-                     test | xcpretty
+          echo "Running unit tests with simple configuration..."
+          xcodebuild test \
+            -project CrownAndBarrel.xcodeproj \
+            -scheme CrownAndBarrel \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=26.0" \
+            -only-testing:CrownAndBarrelTests \
+            CODE_SIGNING_ALLOWED=NO \
+            ONLY_ACTIVE_ARCH=YES \
+            VALID_ARCHS="arm64" \
+            ARCHS="arm64" \
+            -resultBundlePath TestResults.xcresult \
+            | xcpretty
 
 # Fast feedback pipeline - unit tests only for quick validation
 # Full UI tests run in main CI pipeline (ci.yml) for main/develop branches
