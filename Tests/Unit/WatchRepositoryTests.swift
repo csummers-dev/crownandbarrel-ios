@@ -61,7 +61,7 @@ final class WatchRepositoryTests: XCTestCase {
 
     func testWearEntriesUpToExcludesFutureAndSorts() async throws {
         let repo = makeRepo()
-        var watch = Watch(manufacturer: "Dates")
+        let watch = Watch(manufacturer: "Dates")
         try await repo.upsert(watch)
         let cal = Calendar.current
         let today = Date()

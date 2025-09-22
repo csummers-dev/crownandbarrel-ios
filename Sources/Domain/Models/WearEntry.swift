@@ -1,7 +1,7 @@
 import Foundation
 
 /// Domain model representing a single wear entry for a watch on a specific date.
-public struct WearEntry: Identifiable, Hashable, Codable {
+public struct WearEntry: Identifiable, Hashable, Codable, Sendable {
     public let id: UUID
     public let watchId: UUID
     public let date: Date

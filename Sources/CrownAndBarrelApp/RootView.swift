@@ -128,7 +128,8 @@ struct RootView: View {
                 let detectedStyle: String = {
                     if let v = forcedValue?.lowercased(), v == "dark" { return "dark" }
                     if let v = forcedValue?.lowercased(), v == "light" { return "light" }
-                    return UIScreen.main.traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+                    // Use environment value instead of deprecated UIScreen.main
+                    return colorScheme == .dark ? "dark" : "light"
                 }()
                 let themeId = UserDefaults.standard.string(forKey: "selectedThemeId") ?? ""
                 Text("system:\(detectedStyle);theme:\(themeId)")

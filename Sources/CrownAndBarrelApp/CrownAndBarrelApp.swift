@@ -196,7 +196,11 @@ struct CrownAndBarrelApp: App {
         if UserDefaults.standard.object(forKey: key) == nil {
             #if DEBUG
             // UI Test Support: Force specific system style if requested
-            var detected = UIScreen.main.traitCollection.userInterfaceStyle
+            var detected: UIUserInterfaceStyle = .unspecified
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first {
+                detected = window.traitCollection.userInterfaceStyle
+            }
             if let forcedArg = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--uiTestForceSystemStyle=") }) {
                 let forcedValue = String(forcedArg.dropFirst("--uiTestForceSystemStyle=".count))
                 if forcedValue.lowercased() == "dark" {
