@@ -121,12 +121,12 @@ jobs:
           # Find the best available iOS 26.0 simulator for Debug build
           echo "Looking for available iOS 26.0 simulators for Debug build..."
           
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone 16 Pro.*26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Debug build"
-          # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone.*26.0"; then
             # Use iPhone 16 as reliable fallback
             DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
             echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for Debug build"
@@ -153,12 +153,12 @@ jobs:
           # Find the best available iOS 26.0 simulator for Release build
           echo "Looking for available iOS 26.0 simulators for Release build..."
           
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone 16 Pro.*26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Release build"
-          # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone.*26.0"; then
             # Get first available iPhone with iOS 26.0
             # Use iPhone 16 as reliable fallback
             DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
@@ -222,12 +222,12 @@ jobs:
         run: |
           echo "Looking for available iOS 26.0 simulators for unit tests..."
           
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone 16 Pro.*26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
-          # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone.*26.0"; then
             # Get first available iPhone with iOS 26.0
             # Use iPhone 16 as reliable fallback
             DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
@@ -291,12 +291,12 @@ jobs:
         run: |
           echo "Looking for available iOS 26.0 simulators for UI tests..."
           
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone 16 Pro.*26.0"; then
+          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
+          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone 16 Pro.*26.0"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
             echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for UI tests"
-          # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
+          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
+          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep -q "iPhone.*26.0"; then
             # Get first available iPhone with iOS 26.0
             # Use iPhone 16 as reliable fallback
             DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
