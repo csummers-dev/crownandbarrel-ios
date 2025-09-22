@@ -159,10 +159,9 @@ jobs:
           # Fallback to any iPhone with iOS 26.0
           elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
             # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for performance monitoring"
+            # Use iPhone 16 as reliable fallback
+            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
+            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for performance monitoring"
           else
             echo "❌ No iOS 26.0 simulators found, skipping performance monitoring"
             exit 0
@@ -347,10 +346,9 @@ jobs:
           # Fallback to any iPhone with iOS 26.0
           elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep -q "iPhone.*26.0"; then
             # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "iPhone.*26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit test performance monitoring"
+            # Use iPhone 16 as reliable fallback
+            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
+            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for unit test performance monitoring"
           else
             echo "❌ No iOS 26.0 simulators found, skipping unit test performance monitoring"
             exit 0
