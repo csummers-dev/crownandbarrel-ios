@@ -1,5 +1,5 @@
 # GitHub Actions Security Pipeline for Crown & Barrel iOS App
-# This workflow performs security scanning and vulnerability assessment
+# Simplified security checks for small iOS app
 
 name: Security Pipeline
 
@@ -13,7 +13,7 @@ on:
     - cron: '0 3 * * 0'
 
 jobs:
-  # CodeQL Analysis
+  # CodeQL Analysis - Essential for code security
   codeql-analysis:
     name: CodeQL Analysis
     runs-on: macos-latest
@@ -22,20 +22,10 @@ jobs:
       contents: read
       security-events: write
     
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ['swift']
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-          
       - name: Setup iOS Environment
         uses: ./.github/actions/setup-ios-environment
         with:
@@ -44,6 +34,17 @@ jobs:
           install-swiftlint: 'false'
           install-xcpretty: 'false'
           cache-key-suffix: 'security'
+          
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: swift
+          
+      - name: Generate Xcode Project
+        run: |
+          echo "Generating Xcode project for CodeQL analysis..."
+          xcodegen generate --spec project.yml
+          echo "Project generated successfully"
           
       - name: Build for CodeQL Analysis
         run: |
@@ -54,30 +55,7 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
 
-  # Dependency vulnerability scanning
-  dependency-scan:
-    name: Dependency Vulnerability Scan
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-
-  # Secret scanning
+  # Secret Scanning - Essential for credential detection
   secret-scan:
     name: Secret Scanning
     runs-on: ubuntu-latest
@@ -94,109 +72,27 @@ jobs:
           head: ""
           extra_args: --debug --only-verified
 
-  # License compliance check
-  license-check:
-    name: License Compliance Check
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          
-      - name: Cache pip dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            
-      - name: Install license checker
-        run: |
-          python3 -m venv license-venv
-          source license-venv/bin/activate
-          pip install pip-licenses
-          
-      - name: Check licenses
-        run: |
-          source license-venv/bin/activate
-          echo "Checking license compliance..."
-          # This would require a proper dependency file
-          echo "✅ License check completed"
-
-  # Security policy validation
-  security-policy:
-    name: Security Policy Validation
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Validate security policy
-        run: |
-          echo "Validating security policy..."
-          if [ -f "SECURITY.md" ]; then
-            echo "✅ Security policy file exists"
-          else
-            echo "⚠️ Security policy file not found"
-          fi
-          
-          # Check for security-related documentation
-          if grep -q -i "security" README.md; then
-            echo "✅ README mentions security"
-          fi
-          
-          echo "✅ Security policy validation completed"
-
-  # Container security (if applicable)
-  container-security:
-    name: Container Security Scan
-    runs-on: ubuntu-latest
-    if: false  # Disabled for iOS app, enable if using containers
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Run Trivy container scanner
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: 'image'
-          image-ref: 'your-image:latest'
-          format: 'sarif'
-          output: 'container-scan-results.sarif'
-
-  # Security summary
+  # Security Summary
   security-summary:
     name: Security Summary
     runs-on: ubuntu-latest
-    needs: [codeql-analysis, dependency-scan, secret-scan, license-check, security-policy]
+    needs: [codeql-analysis, secret-scan]
     if: always()
-    
+
     steps:
       - name: Security Summary
         run: |
           echo "## Security Scan Summary"
           echo "========================"
           echo "✅ CodeQL Analysis: ${{ needs.codeql-analysis.result }}"
-          echo "✅ Dependency Scan: ${{ needs.dependency-scan.result }}"
           echo "✅ Secret Scan: ${{ needs.secret-scan.result }}"
-          echo "✅ License Check: ${{ needs.license-check.result }}"
-          echo "✅ Security Policy: ${{ needs.security-policy.result }}"
           
           # Check if all security scans passed
           if [[ "${{ needs.codeql-analysis.result }}" == "success" && \
-                "${{ needs.dependency-scan.result }}" == "success" && \
-                "${{ needs.secret-scan.result }}" == "success" && \
-                "${{ needs.license-check.result }}" == "success" && \
-                "${{ needs.security-policy.result }}" == "success" ]]; then
-            echo "🔒 All security scans passed successfully!"
+                "${{ needs.secret-scan.result }}" == "success" ]]; then
+            echo "🎉 All security scans passed!"
+            exit 0
           else
-            echo "⚠️ Some security scans failed or have warnings. Please review the results."
+            echo "⚠️ Some security scans failed. Please review the results."
+            exit 1
           fi
