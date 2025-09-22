@@ -70,7 +70,7 @@ jobs:
           output: 'trivy-results.sarif'
           
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -88,8 +88,8 @@ jobs:
         uses: trufflesecurity/trufflehog@v3.90.8
         with:
           path: ./
-          base: main
-          head: HEAD
+          base: ""
+          head: ""
           extra_args: --debug --only-verified
 
   # License compliance check
@@ -116,10 +116,13 @@ jobs:
             
       - name: Install license checker
         run: |
+          python3 -m venv license-venv
+          source license-venv/bin/activate
           pip install pip-licenses
           
       - name: Check licenses
         run: |
+          source license-venv/bin/activate
           echo "Checking license compliance..."
           # This would require a proper dependency file
           echo "✅ License check completed"

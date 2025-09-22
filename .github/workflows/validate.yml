@@ -40,10 +40,14 @@ jobs:
             ${{ runner.os }}-pip-
             
       - name: Install PyYAML
-        run: pip install pyyaml
+        run: |
+          python3 -m venv yaml-venv
+          source yaml-venv/bin/activate
+          pip install pyyaml
         
       - name: Validate GitHub Actions workflows
         run: |
+          source yaml-venv/bin/activate
           echo "Validating GitHub Actions workflows..."
           for file in .github/workflows/*.yml; do
             echo "Validating $file..."
@@ -298,7 +302,7 @@ jobs:
           output: 'trivy-results.sarif'
           
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
