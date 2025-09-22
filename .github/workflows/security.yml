@@ -45,20 +45,11 @@ jobs:
           install-xcpretty: 'false'
           cache-key-suffix: 'security'
           
-      - name: Generate Xcode Project
-        run: |
-          echo "Generating Xcode project for CodeQL analysis..."
-          xcodegen generate --spec project.yml
-          echo "Project generated successfully"
-          
       - name: Build for CodeQL Analysis
-        # Use autobuild with proper environment setup
-        uses: github/codeql-action/autobuild@v3
-        env:
-          # Set environment variables to help autobuild find the project
-          PROJECT_NAME: CrownAndBarrel
-          XCODE_PROJECT: CrownAndBarrel.xcodeproj
-          XCODE_SCHEME: CrownAndBarrel
+        run: |
+          echo "Building project for CodeQL analysis..."
+          xcodegen generate --spec project.yml
+          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel -destination "generic/platform=iOS" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
           
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
