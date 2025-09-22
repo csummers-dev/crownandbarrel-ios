@@ -57,12 +57,14 @@ jobs:
           
       - name: Validate project configuration
         run: |
+          source yaml-venv/bin/activate
           echo "Validating project configuration files..."
           python -c "import yaml; yaml.safe_load(open('project.yml'))"
           echo "✅ project.yml is valid"
           
       - name: Validate SwiftLint configuration
         run: |
+          source yaml-venv/bin/activate
           echo "Validating SwiftLint configuration..."
           python -c "import yaml; yaml.safe_load(open('.swiftlint.yml'))"
           echo "✅ .swiftlint.yml is valid"
