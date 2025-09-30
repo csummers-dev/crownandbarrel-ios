@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import GRDB
 
 /// Calendar screen showing wear entries by day.
 /// - What: Renders a native iOS calendar and a list of entries for the selected date, with an action to add worn entries.
