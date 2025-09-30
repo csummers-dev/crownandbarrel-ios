@@ -377,18 +377,37 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
     
     public func incrementWear(for watchId: UUID, on date: Date) async throws {
         try await dbQueue.write { db in
+            print("🔍 incrementWear called for watchId: \(watchId.uuidString)")
+            
+            // Verify watch exists
+            let watchExists = try Bool.fetchOne(db, sql: "SELECT COUNT(*) > 0 FROM watches WHERE id = ?", arguments: [watchId.uuidString]) ?? false
+            print("🔍 Watch exists in DB: \(watchExists)")
+            
+            if !watchExists {
+                print("❌ Watch does not exist in database!")
+                throw AppError.repository("Watch not found in database")
+            }
+            
             let calendar = Calendar.current
             let startOfDay = calendar.startOfDay(for: date)
+            
+            print("🔍 Checking for existing entry on: \(startOfDay)")
             
             // Check if entry already exists for this watch on this date
             let existingEntry = try WearEntry
                 .filter(Column("watchId") == watchId && Column("date") >= startOfDay && Column("date") < calendar.date(byAdding: .day, value: 1, to: startOfDay)!)
                 .fetchOne(db)
             
+            print("🔍 Existing entry: \(existingEntry != nil)")
+            
             if existingEntry == nil {
                 // Create new wear entry
                 let entry = WearEntry(watchId: watchId, date: startOfDay)
+                print("🔍 Attempting to insert wear entry: id=\(entry.id.uuidString), watchId=\(entry.watchId.uuidString), date=\(entry.date)")
                 try entry.insert(db)
+                print("✅ Wear entry inserted successfully")
+            } else {
+                print("ℹ️ Wear entry already exists, skipping insert")
             }
         }
     }
