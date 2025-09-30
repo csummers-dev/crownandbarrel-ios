@@ -9,15 +9,15 @@ public struct WatchV2FormView: View {
     @State private var selectedItem: PhotosPickerItem?
     @State private var showPhotosDeniedAlert: Bool = false
     @State private var errorMessage: String? = nil
+    @State private var isNewWatch: Bool
     @Environment(\.dismiss) private var dismiss
     
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
-    private let isNewWatch: Bool
 
     public init(watch: WatchV2) {
         _viewModel = StateObject(wrappedValue: WatchV2FormViewModel(watch: watch))
         // Check if this is a new watch (empty manufacturer means new)
-        self.isNewWatch = watch.manufacturer.isEmpty
+        _isNewWatch = State(initialValue: watch.manufacturer.isEmpty)
     }
 
     public var body: some View {
@@ -120,8 +120,23 @@ public struct WatchV2FormView: View {
         .onChange(of: selectedItem) { _, item in
             guard let item else { return }
             Task { @MainActor in
+                // Save watch first if it's new (photos need a persisted watch)
+                if isNewWatch && !viewModel.watch.manufacturer.isEmpty && !viewModel.watch.modelName.isEmpty {
+                    do {
+                        try repository.create(viewModel.watch)
+                        isNewWatch = false // Mark as saved to prevent duplicate creates
+                    } catch {
+                        // If error is duplicate, it's already saved (ignore)
+                        // Otherwise show error
+                        if !error.localizedDescription.contains("UNIQUE constraint") {
+                            errorMessage = "Failed to save watch: \(error.localizedDescription)"
+                            return
+                        }
+                        isNewWatch = false
+                    }
+                }
+                
                 if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
-                    // Attempt native edit elsewhere if available; fallback crops here
                     viewModel.addPhoto(from: image)
                 }
             }
@@ -245,7 +260,18 @@ public struct WatchV2FormView: View {
             
             // Save to repository
             if isNewWatch {
-                try repository.create(viewModel.watch)
+                do {
+                    try repository.create(viewModel.watch)
+                    isNewWatch = false // Mark as saved
+                } catch {
+                    // If already exists (from photo upload), just update
+                    if error.localizedDescription.contains("UNIQUE constraint") {
+                        try repository.update(viewModel.watch)
+                        isNewWatch = false
+                    } else {
+                        throw error
+                    }
+                }
             } else {
                 try repository.update(viewModel.watch)
             }
