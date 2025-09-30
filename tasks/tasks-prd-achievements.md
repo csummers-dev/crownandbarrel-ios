@@ -18,9 +18,9 @@
 - `Sources/PersistenceV2/AchievementDefinitions.swift` - Hardcoded 50 achievement definitions ✅ Created
 
 #### Business Logic
-- `Sources/Domain/Services/AchievementEvaluator.swift` - Core achievement evaluation engine
-- `Sources/Domain/Services/AchievementProgressTracker.swift` - Progress calculation and tracking logic
-- `Sources/Domain/Services/StreakCalculator.swift` - Streak calculation logic for consistency achievements
+- `Sources/Domain/Services/AchievementEvaluator.swift` - Core achievement evaluation engine ✅ Created
+- `Sources/Domain/Services/StreakCalculator.swift` - Streak calculation logic for consistency achievements ✅ Created
+- Note: AchievementProgressTracker functionality integrated into AchievementEvaluator
 
 #### UI Components
 - `Sources/Common/Components/AchievementCard.swift` - Reusable achievement card component (locked/unlocked states)
@@ -86,24 +86,24 @@
   - [x] 2.14 Add methods to `WatchRepositoryV2` protocol for achievement-related queries: totalWatchCount(), totalWearCount(), currentStreak(), uniqueBrandsCount(), wearCountForWatch(watchId:), etc.
   - [x] 2.15 Implement these new repository methods in `WatchRepositoryGRDB`
 
-- [ ] 3.0 **Build Achievement Evaluation Engine**
-  - [ ] 3.1 Create `AchievementEvaluator.swift` service class with dependency injection for repositories
-  - [ ] 3.2 Implement `evaluateAll()` method that checks all locked achievements against current user data
-  - [ ] 3.3 Implement `evaluateAchievement(_:)` method for checking a single achievement's criteria
-  - [ ] 3.4 Implement criteria evaluation logic for collection size achievements (check watch count against target)
-  - [ ] 3.5 Implement criteria evaluation logic for wearing frequency achievements (check total wear count against target)
-  - [ ] 3.6 Create `StreakCalculator.swift` service with method `calculateCurrentStreak(wearEntries:)` implementing PRD streak logic
-  - [ ] 3.7 Implement criteria evaluation logic for consistency/streak achievements using StreakCalculator
-  - [ ] 3.8 Implement criteria evaluation logic for diversity achievements (unique brands, watch rotation patterns)
-  - [ ] 3.9 Implement criteria evaluation logic for special occasion achievements (first watch, first wear, tracking milestones)
-  - [ ] 3.10 Create `AchievementProgressTracker.swift` service with methods to calculate current progress for each achievement type
-  - [ ] 3.11 Implement `updateProgress(for:)` method that updates achievement state with current progress
-  - [ ] 3.12 Implement `unlockAchievement(_:)` method that sets isUnlocked=true, unlockedAt=Date(), and persists to database
-  - [ ] 3.13 Add method `evaluateOnWatchAdded()` triggered when a watch is added to collection
-  - [ ] 3.14 Add method `evaluateOnWearLogged(watchId:date:)` triggered when a wear entry is logged
-  - [ ] 3.15 Add method `evaluateOnDataDeleted()` to recalculate progress when data is removed (achievements stay unlocked but progress recalculates)
-  - [ ] 3.16 Add migration helper `evaluateExistingUserData()` for auto-unlocking achievements on first launch or after app updates with new achievements
-  - [ ] 3.17 Implement watch-specific achievement tracking (e.g., "This watch worn 50 times") with watchId association
+- [x] 3.0 **Build Achievement Evaluation Engine**
+  - [x] 3.1 Create `AchievementEvaluator.swift` service class with dependency injection for repositories
+  - [x] 3.2 Implement `evaluateAll()` method that checks all locked achievements against current user data
+  - [x] 3.3 Implement `evaluateAchievement(_:)` method for checking a single achievement's criteria
+  - [x] 3.4 Implement criteria evaluation logic for collection size achievements (check watch count against target)
+  - [x] 3.5 Implement criteria evaluation logic for wearing frequency achievements (check total wear count against target)
+  - [x] 3.6 Create `StreakCalculator.swift` service with method `calculateCurrentStreak(wearEntries:)` implementing PRD streak logic
+  - [x] 3.7 Implement criteria evaluation logic for consistency/streak achievements using StreakCalculator
+  - [x] 3.8 Implement criteria evaluation logic for diversity achievements (unique brands, watch rotation patterns)
+  - [x] 3.9 Implement criteria evaluation logic for special occasion achievements (first watch, first wear, tracking milestones)
+  - [x] 3.10 Create `AchievementProgressTracker.swift` service with methods to calculate current progress for each achievement type (integrated into AchievementEvaluator)
+  - [x] 3.11 Implement `updateProgress(for:)` method that updates achievement state with current progress
+  - [x] 3.12 Implement `unlockAchievement(_:)` method that sets isUnlocked=true, unlockedAt=Date(), and persists to database
+  - [x] 3.13 Add method `evaluateOnWatchAdded()` triggered when a watch is added to collection
+  - [x] 3.14 Add method `evaluateOnWearLogged(watchId:date:)` triggered when a wear entry is logged
+  - [x] 3.15 Add method `evaluateOnDataDeleted()` to recalculate progress when data is removed (achievements stay unlocked but progress recalculates)
+  - [x] 3.16 Add migration helper `evaluateExistingUserData()` for auto-unlocking achievements on first launch or after app updates with new achievements
+  - [x] 3.17 Implement watch-specific achievement tracking (e.g., "This watch worn 50 times") with watchId association
 
 - [ ] 4.0 **Create UI Components for Achievement Display**
   - [ ] 4.1 Create `AchievementCard.swift` SwiftUI view accepting Achievement and AchievementState as parameters
