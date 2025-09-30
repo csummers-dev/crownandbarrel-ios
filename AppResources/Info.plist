@@ -22,5 +22,9 @@
 	<string>1</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Crown &amp; Barrel uses your photo library to let you add images of your watches to your personal collection. All photos stay on your device and are never shared or uploaded.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Crown &amp; Barrel would like to save images to your photo library. All data remains private on your device.</string>
 </dict>
 </plist>
