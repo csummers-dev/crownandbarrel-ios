@@ -111,6 +111,11 @@ public struct WatchV2FormView: View {
         } message: {
             Text(errorMessage ?? "")
         }
+        .alert("Photo Error", isPresented: .constant(viewModel.photoError != nil)) {
+            Button("OK") { viewModel.photoError = nil }
+        } message: {
+            Text(viewModel.photoError ?? "")
+        }
         .photosPicker(isPresented: $showPhotoPicker, selection: $selectedItem, matching: .images)
         .onChange(of: selectedItem) { _, item in
             guard let item else { return }
