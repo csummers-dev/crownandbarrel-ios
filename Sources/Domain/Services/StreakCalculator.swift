@@ -161,7 +161,7 @@ public enum StreakCalculator {
         var weekendDates: [Date] = []
         
         // Find the Saturday of this week
-        var currentDate = calendar.startOfDay(for: date)
+        let currentDate = calendar.startOfDay(for: date)
         let weekday = calendar.component(.weekday, from: currentDate)
         
         // Move to Saturday

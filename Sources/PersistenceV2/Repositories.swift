@@ -2,7 +2,7 @@ import Foundation
 import GRDB
 import ZIPFoundation
 
-public protocol WatchRepositoryV2 {
+public protocol WatchRepositoryV2: Sendable {
     func create(_ watch: WatchV2) throws
     func update(_ watch: WatchV2) throws
     func delete(id: UUID) throws
