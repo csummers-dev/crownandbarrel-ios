@@ -407,7 +407,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
     
     public func totalWearCount() async throws -> Int {
         return try await dbQueue.read { db in
-            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM wearEntries") ?? 0
+            try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM wearentry") ?? 0
         }
     }
     
@@ -415,7 +415,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         return try await dbQueue.read { db in
             try Int.fetchOne(
                 db,
-                sql: "SELECT COUNT(*) FROM wearEntries WHERE watchId = ?",
+                sql: "SELECT COUNT(*) FROM wearentry WHERE watchId = ?",
                 arguments: [watchId.uuidString]
             ) ?? 0
         }
@@ -476,7 +476,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         return try await dbQueue.read { db in
             // Count distinct calendar days (ignoring time component)
             try Int.fetchOne(db, sql: """
-                SELECT COUNT(DISTINCT DATE(date)) FROM wearEntries
+                SELECT COUNT(DISTINCT DATE(date)) FROM wearentry
             """) ?? 0
         }
     }
@@ -485,7 +485,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         return try await dbQueue.read { db in
             guard let dateString = try String.fetchOne(
                 db,
-                sql: "SELECT MIN(date) FROM wearEntries"
+                sql: "SELECT MIN(date) FROM wearentry"
             ) else {
                 return nil
             }

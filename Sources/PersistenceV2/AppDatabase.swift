@@ -137,23 +137,24 @@ public final class AppDatabase {
 
         // v3: add wear entries table for tracking when watches are worn
         migrator.registerMigration("v3_create_wear_entries") { db in
-            // Check if table already exists
+            // Check if table already exists (GRDB defaults to lowercase table names)
             let tableExists = try Bool.fetchOne(db, sql: """
                 SELECT COUNT(*) > 0 FROM sqlite_master 
-                WHERE type='table' AND name='wearEntries'
+                WHERE type='table' AND name='wearentry'
             """) ?? false
             
             if !tableExists {
-                try db.create(table: "wearEntries") { t in
+                // Use lowercase to match GRDB's default naming convention for WearEntry
+                try db.create(table: "wearentry") { t in
                     t.column("id", .text).primaryKey() // UUID string
                     t.column("watchId", .text).notNull().indexed().references("watches", onDelete: .cascade)
                     t.column("date", .text).notNull()
                 }
                 
                 // Index for efficient date-range queries
-                try db.create(index: "idx_wear_entries_date", on: "wearEntries", columns: ["date"])
+                try db.create(index: "idx_wear_entries_date", on: "wearentry", columns: ["date"])
                 // Composite index for watch-specific queries
-                try db.create(index: "idx_wear_entries_watch_date", on: "wearEntries", columns: ["watchId", "date"])
+                try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watchId", "date"])
             }
         }
 
