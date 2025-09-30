@@ -243,7 +243,7 @@ private struct UICalendarRepresentable: UIViewRepresentable {
 }
 
 // MARK: - Watch picker for adding worn entries
-private struct WatchPicker: View {
+struct WatchPicker: View {
     @Environment(\.dismiss) private var dismiss
     let date: Date
     var onComplete: (() -> Void)? = nil
@@ -254,10 +254,13 @@ private struct WatchPicker: View {
     
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
-    private lazy var evaluator: AchievementEvaluator = AchievementEvaluator(
-        achievementRepository: achievementRepository,
-        watchRepository: repository
-    )
+    
+    private var evaluator: AchievementEvaluator {
+        AchievementEvaluator(
+            achievementRepository: achievementRepository,
+            watchRepository: repository
+        )
+    }
 
     var body: some View {
         NavigationStack {
