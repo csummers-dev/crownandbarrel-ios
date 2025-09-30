@@ -145,13 +145,13 @@ public struct WatchV2ListView: View {
             .sheet(isPresented: $showFilters) {
                 FilterSheet(viewModel: viewModel)
             }
-            .sheet(isPresented: $showAddWatch) {
+            .sheet(isPresented: $showAddWatch, onDismiss: {
+                // Reload watches after form is dismissed (watch may have been added)
+                viewModel.load()
+            }) {
                 NavigationView {
                     WatchV2FormView(watch: WatchV2(manufacturer: "", modelName: ""))
                 }
-            } onDismiss: {
-                // Reload watches after form is dismissed (watch may have been added)
-                viewModel.load()
             }
             
             // Floating Add Button

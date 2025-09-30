@@ -49,14 +49,14 @@ public struct WatchV2DetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showEditForm) {
-            NavigationView {
-                WatchV2FormView(watch: watch)
-            }
-        } onDismiss: {
+        .sheet(isPresented: $showEditForm, onDismiss: {
             // Reload achievements after edit (watch data may have changed)
             Task {
                 await loadAchievements()
+            }
+        }) {
+            NavigationView {
+                WatchV2FormView(watch: watch)
             }
         }
         .task {
