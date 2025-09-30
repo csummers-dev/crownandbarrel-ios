@@ -58,7 +58,10 @@ public struct AchievementState: Identifiable, Hashable, Codable, Sendable, Fetch
         self.updatedAt = updatedAt
     }
     
-    // MARK: - GRDB Column Mapping
+    // MARK: - GRDB Table and Column Mapping
+    
+    /// Specifies the exact database table name (snake_case)
+    public static let databaseTableName = "user_achievement_state"
     
     /// Explicit CodingKeys to map Swift properties to snake_case database columns
     public enum CodingKeys: String, CodingKey, ColumnExpression {
