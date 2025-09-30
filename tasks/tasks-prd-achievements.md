@@ -61,7 +61,7 @@
 
 ## Tasks
 
-- [ ] 1.0 **Create Domain Models and Protocols**
+- [x] 1.0 **Create Domain Models and Protocols**
   - [x] 1.1 Create `Achievement.swift` domain model with properties: id (UUID), name, description, imageAssetName, category (enum), unlockCriteria (encoded as JSON or enum), targetValue (Int/Double for progress tracking)
   - [x] 1.2 Create `AchievementState.swift` model with properties: achievementId (UUID), isUnlocked (Bool), unlockedAt (Date?), currentProgress (Int/Double), progressTarget (Int/Double)
   - [x] 1.3 Create `AchievementCategory.swift` enum with cases: collectionSize, wearingFrequency, consistency, diversity, specialOccasions
