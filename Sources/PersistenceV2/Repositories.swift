@@ -398,7 +398,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             
             // Check if entry already exists for this watch on this date
             let existingEntry = try WearEntry
-                .filter(Column("watchId") == watchId && Column("date") >= startOfDay && Column("date") < calendar.date(byAdding: .day, value: 1, to: startOfDay)!)
+                .filter(Column("watch_id") == watchId && Column("date") >= startOfDay && Column("date") < calendar.date(byAdding: .day, value: 1, to: startOfDay)!)
                 .fetchOne(db)
             
             logger.info("🔍 Existing entry: \(existingEntry != nil)")
@@ -443,7 +443,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         return try await dbQueue.read { db in
             try Int.fetchOne(
                 db,
-                sql: "SELECT COUNT(*) FROM wearentry WHERE watchId = ?",
+                sql: "SELECT COUNT(*) FROM wearentry WHERE watch_id = ?",
                 arguments: [watchId.uuidString]
             ) ?? 0
         }
@@ -494,7 +494,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
     public func wearEntriesForWatch(watchId: UUID) async throws -> [WearEntry] {
         return try await dbQueue.read { db in
             try WearEntry
-                .filter(Column("watchId") == watchId)
+                .filter(Column("watch_id") == watchId)
                 .order(Column("date").desc)
                 .fetchAll(db)
         }

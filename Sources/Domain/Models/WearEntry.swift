@@ -15,11 +15,11 @@ public struct WearEntry: Identifiable, Hashable, Codable, FetchableRecord, Persi
     
     // MARK: - GRDB Column Mapping
     
-    /// Explicit CodingKeys to match database column names exactly
-    /// Database uses camelCase 'watchId' instead of GRDB's default lowercase
+    /// Explicit CodingKeys to map Swift properties to snake_case database columns
+    /// Database uses snake_case consistent with all other tables
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
-        case watchId  // Matches database column "watchId" exactly (camelCase)
+        case watchId = "watch_id"  // Swift: watchId, Database: watch_id
         case date
     }
 }

@@ -144,17 +144,17 @@ public final class AppDatabase {
             """) ?? false
             
             if !tableExists {
-                // Use lowercase to match GRDB's default naming convention for WearEntry
+                // Use snake_case to match all other tables in the schema
                 try db.create(table: "wearentry") { t in
                     t.column("id", .text).primaryKey() // UUID string
-                    t.column("watchId", .text).notNull().indexed().references("watches", onDelete: .cascade)
+                    t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
                     t.column("date", .text).notNull()
                 }
                 
                 // Index for efficient date-range queries
                 try db.create(index: "idx_wear_entries_date", on: "wearentry", columns: ["date"])
                 // Composite index for watch-specific queries
-                try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watchId", "date"])
+                try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watch_id", "date"])
             }
         }
 
