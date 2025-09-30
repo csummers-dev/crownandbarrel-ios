@@ -251,6 +251,8 @@ struct WatchPicker: View {
     @State private var errorMessage: String? = nil
     @State private var unlockedAchievement: Achievement? = nil
     @State private var showUnlockNotification: Bool = false
+    @State private var debugMessage: String? = nil
+    @State private var showDebugAlert: Bool = false
     
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
@@ -275,7 +277,16 @@ struct WatchPicker: View {
             .navigationTitle("Add worn")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
             .task { await load() }
-            .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
+            .alert("Error", isPresented: .constant(errorMessage != nil)) { 
+                Button("OK") { errorMessage = nil } 
+            } message: { 
+                Text(errorMessage ?? "") 
+            }
+            .alert("Debug Info", isPresented: $showDebugAlert) {
+                Button("OK") { showDebugAlert = false }
+            } message: {
+                Text(debugMessage ?? "")
+            }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
             .achievementUnlockNotification(achievement: unlockedAchievement, isPresented: $showUnlockNotification)
@@ -291,26 +302,35 @@ struct WatchPicker: View {
     }
     private func mark(watch: WatchV2) async {
         do {
-            print("📅 Attempting to mark watch as worn: \(watch.id)")
-            print("📅 Watch: \(watch.manufacturer) \(watch.modelName)")
-            print("📅 Date: \(date)")
+            // DEBUG: Show we're starting
+            debugMessage = "Step 1: Checking if watch exists in database..."
+            showDebugAlert = true
+            try await Task.sleep(nanoseconds: 500_000_000) // 0.5 second
             
-            // Verify watch exists in database
+            // Step 1: Verify watch exists
             let fetchedWatch = try repository.fetch(id: watch.id)
-            if fetchedWatch == nil {
-                print("❌ Watch not found in database!")
-                errorMessage = "Watch not found. Please save the watch first."
+            guard fetchedWatch != nil else {
+                errorMessage = "Watch not found in database!\n\nThis shouldn't happen. The watch appeared in the list but isn't in the database.\n\nWatch ID: \(watch.id.uuidString)"
                 return
             }
             
-            print("📅 Watch exists, incrementing wear")
-            try await repository.incrementWear(for: watch.id, on: date)
-            print("📅 Wear incremented successfully")
+            // DEBUG: Watch found
+            debugMessage = "Step 2: Watch found! Now adding wear entry..."
+            showDebugAlert = true
+            try await Task.sleep(nanoseconds: 500_000_000)
             
-            // Evaluate achievements after logging wear
+            // Step 2: Increment wear
+            try await repository.incrementWear(for: watch.id, on: date)
+            
+            // DEBUG: Success
+            debugMessage = "Step 3: Wear added successfully! Evaluating achievements..."
+            showDebugAlert = true
+            try await Task.sleep(nanoseconds: 500_000_000)
+            
+            // Step 3: Evaluate achievements
             let newlyUnlockedIds = try await evaluator.evaluateOnWearLogged(watchId: watch.id, date: date)
             
-            // Show notification for first unlocked achievement
+            // Step 4: Show notification if achievement unlocked
             if let firstUnlockedId = newlyUnlockedIds.first,
                let achievement = try await achievementRepository.fetchDefinition(id: firstUnlockedId) {
                 unlockedAchievement = achievement
@@ -321,8 +341,8 @@ struct WatchPicker: View {
             onComplete?()
         }
         catch { 
-            print("❌ Error marking watch as worn: \(error)")
-            errorMessage = error.localizedDescription 
+            // Show detailed error message
+            errorMessage = "ERROR at Step 2 or 3:\n\n\(error.localizedDescription)\n\nWatch: \(watch.manufacturer) \(watch.modelName)\nWatch ID: \(watch.id.uuidString)\nDate: \(date)"
         }
     }
 }
