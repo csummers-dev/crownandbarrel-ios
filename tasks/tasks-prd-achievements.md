@@ -46,8 +46,8 @@
 
 - `Sources/PersistenceV2/AppDatabase.swift` - Add achievement tables to database migration ✅ Modified
 - `Sources/PersistenceV2/Repositories.swift` - Add wear entry aggregation methods for achievement evaluation ✅ Modified
-- `Sources/Features/Stats/StatsView.swift` - Add achievements section to stats page
-- `Sources/Features/WatchV2Detail/WatchV2DetailView.swift` - Add achievements section to watch detail page
+- `Sources/Features/Stats/StatsView.swift` - Add achievements section to stats page ✅ Modified
+- `Sources/Features/WatchV2Detail/WatchV2DetailView.swift` - Add achievements section to watch detail page ✅ Modified
 - `Sources/Common/Utilities/Haptics.swift` - Add achievement unlock haptic feedback (if needed)
 - `ARCHITECTURE.md` - Document achievements system architecture
 
@@ -120,15 +120,15 @@
   - [x] 4.12 Apply theme tokens (AppColors, AppSpacing, etc.) to all achievement components for consistency
 
 - [ ] 5.0 **Integrate Achievements into Existing Views**
-  - [ ] 5.1 In `StatsView.swift`, add new section titled "Achievements" after existing stats cards
-  - [ ] 5.2 Add @AppStorage property for toggling locked achievements visibility (key: "showLockedAchievements", default: true)
-  - [ ] 5.3 Add Toggle control in StatsView achievements section for showing/hiding locked achievements
-  - [ ] 5.4 Load all achievements and user states in StatsView using AchievementRepository
-  - [ ] 5.5 Filter achievements based on toggle state and display using AchievementGridView
-  - [ ] 5.6 Add navigation link or sheet for AchievementDetailView when achievement is tapped
-  - [ ] 5.7 In `WatchV2DetailView.swift`, add new section titled "Achievements" showing watch-specific achievements
-  - [ ] 5.8 Load achievements related to this specific watch (e.g., "10th watch added", "worn 50 times")
-  - [ ] 5.9 Display watch-specific achievements using AchievementCard components in vertical list
+  - [x] 5.1 In `StatsView.swift`, add new section titled "Achievements" after existing stats cards
+  - [x] 5.2 Add @AppStorage property for toggling locked achievements visibility (key: "showLockedAchievements", default: true)
+  - [x] 5.3 Add Toggle control in StatsView achievements section for showing/hiding locked achievements
+  - [x] 5.4 Load all achievements and user states in StatsView using AchievementRepository
+  - [x] 5.5 Filter achievements based on toggle state and display using AchievementGridView (horizontal scroll)
+  - [x] 5.6 Add navigation link or sheet for AchievementDetailView when achievement is tapped (using card tap)
+  - [x] 5.7 In `WatchV2DetailView.swift`, add new section titled "Achievements" showing watch-specific achievements
+  - [x] 5.8 Load achievements related to this specific watch (e.g., "10th watch added", "worn 50 times")
+  - [x] 5.9 Display watch-specific achievements using AchievementCard components in vertical list
   - [ ] 5.10 Create `@StateObject` or `@ObservedObject` wrapper for AchievementEvaluator to trigger real-time evaluation
   - [ ] 5.11 Add achievement evaluation call to watch creation flow (WatchV2FormView save action)
   - [ ] 5.12 Add achievement evaluation call to wear logging flow (CalendarView when incrementWear is called)
