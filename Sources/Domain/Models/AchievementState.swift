@@ -57,6 +57,20 @@ public struct AchievementState: Identifiable, Hashable, Codable, Sendable, Fetch
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
+    
+    // MARK: - GRDB Column Mapping
+    
+    /// Explicit CodingKeys to map Swift properties to snake_case database columns
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
+        case id
+        case achievementId = "achievement_id"
+        case isUnlocked = "is_unlocked"
+        case unlockedAt = "unlocked_at"
+        case currentProgress = "current_progress"
+        case progressTarget = "progress_target"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
 }
 
 // MARK: - Display Helpers
