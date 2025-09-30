@@ -1,0 +1,501 @@
+import XCTest
+@testable import CrownAndBarrel
+
+/// Unit tests for StreakCalculator service.
+/// Tests cover all streak types and edge cases defined in the PRD.
+final class StreakCalculatorTests: XCTestCase {
+    
+    let calendar = Calendar.current
+    
+    // MARK: - Current Streak Tests
+    
+    func testCalculateCurrentStreakEmpty() {
+        let entries: [WearEntry] = []
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 0)
+    }
+    
+    func testCalculateCurrentStreakSingleDay() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: today)
+        ]
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 1)
+    }
+    
+    func testCalculateCurrentStreakConsecutiveDays() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        for i in 0..<7 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 7)
+    }
+    
+    func testCalculateCurrentStreakMultipleWatchesSameDay() {
+        // PRD Rule: Multiple watches worn on the same day count as one day toward the streak
+        let watch1 = UUID()
+        let watch2 = UUID()
+        let watch3 = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // Day 1: Three watches worn
+        entries.append(WearEntry(watchId: watch1, date: today))
+        entries.append(WearEntry(watchId: watch2, date: today))
+        entries.append(WearEntry(watchId: watch3, date: today))
+        
+        // Day 2: Two watches worn
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+        entries.append(WearEntry(watchId: watch1, date: yesterday))
+        entries.append(WearEntry(watchId: watch2, date: yesterday))
+        
+        // Day 3: One watch worn
+        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: today)!
+        entries.append(WearEntry(watchId: watch1, date: twoDaysAgo))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 3, "Multiple watches on same day should count as one day")
+    }
+    
+    func testCalculateCurrentStreakWithGap() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // Today and yesterday
+        entries.append(WearEntry(watchId: watchId, date: today))
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -1, to: today)!))
+        
+        // Gap (skip 2 days ago)
+        
+        // 3 days ago (should not count toward current streak)
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -3, to: today)!))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 2, "Streak should break at gap")
+    }
+    
+    func testCalculateCurrentStreakDoesNotStartToday() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // No entry today, but entries for past 7 days starting yesterday
+        for i in 1...7 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 0, "Current streak requires entry today or continuing from today")
+    }
+    
+    func testCalculateCurrentStreakLongStreak() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        for i in 0..<365 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 365)
+    }
+    
+    // MARK: - Consecutive Weekends Tests
+    
+    func testCalculateConsecutiveWeekendsEmpty() {
+        let entries: [WearEntry] = []
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertEqual(streak, 0)
+    }
+    
+    func testCalculateConsecutiveWeekendsSingleWeekend() {
+        let watchId = UUID()
+        
+        // Find most recent Saturday
+        var date = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: date) != 7 { // Saturday
+            date = calendar.date(byAdding: .day, value: -1, to: date)!
+        }
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: date)
+        ]
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 1, "Should count at least one weekend")
+    }
+    
+    func testCalculateConsecutiveWeekendsMultipleWeekends() {
+        let watchId = UUID()
+        
+        // Find most recent Saturday
+        var saturday = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: saturday) != 7 {
+            saturday = calendar.date(byAdding: .day, value: -1, to: saturday)!
+        }
+        
+        var entries: [WearEntry] = []
+        
+        // Add entries for 3 consecutive Saturdays
+        for i in 0..<3 {
+            let weekendDate = calendar.date(byAdding: .weekOfYear, value: -i, to: saturday)!
+            entries.append(WearEntry(watchId: watchId, date: weekendDate))
+        }
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 3, "Should count 3 consecutive weekends")
+    }
+    
+    // MARK: - Consecutive Weekdays Tests
+    
+    func testCalculateConsecutiveWeekdaysEmpty() {
+        let entries: [WearEntry] = []
+        let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
+        XCTAssertEqual(streak, 0)
+    }
+    
+    func testCalculateConsecutiveWeekdaysSingleDay() {
+        let watchId = UUID()
+        
+        // Find most recent weekday (Monday-Friday)
+        var date = calendar.startOfDay(for: Date())
+        let weekday = calendar.component(.weekday, from: date)
+        while weekday == 1 || weekday == 7 { // Skip Sunday and Saturday
+            date = calendar.date(byAdding: .day, value: -1, to: date)!
+        }
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: date)
+        ]
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 1, "Should count at least one weekday")
+    }
+    
+    func testCalculateConsecutiveWeekdaysWithWeekendGap() {
+        let watchId = UUID()
+        
+        // Find most recent Monday
+        var monday = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: monday) != 2 { // Monday
+            monday = calendar.date(byAdding: .day, value: -1, to: monday)!
+        }
+        
+        var entries: [WearEntry] = []
+        
+        // Monday through Friday of one week
+        for i in 0..<5 {
+            let date = calendar.date(byAdding: .day, value: i, to: monday)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        // Skip weekend (Saturday, Sunday)
+        
+        // Monday through Wednesday of next week
+        let nextMonday = calendar.date(byAdding: .weekOfYear, value: 1, to: monday)!
+        for i in 0..<3 {
+            let date = calendar.date(byAdding: .day, value: i, to: nextMonday)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 3, "Weekday streak should continue across weekends")
+    }
+    
+    // MARK: - Edge Case Tests
+    
+    func testStreakWithEntriesInFuture() {
+        // Entries with future dates should not break the calculation
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // Current streak: today and yesterday
+        entries.append(WearEntry(watchId: watchId, date: today))
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -1, to: today)!))
+        
+        // Future entry (shouldn't affect current streak)
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: 1, to: today)!))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 2, "Future entries should not extend current streak")
+    }
+    
+    func testStreakWithDuplicateSameDayEntries() {
+        // Multiple entries on exact same timestamp should still count as one day
+        let watchId1 = UUID()
+        let watchId2 = UUID()
+        let today = calendar.startOfDay(for: Date())
+        let exactTime = Date()
+        
+        var entries: [WearEntry] = []
+        
+        // Same exact time, different watches
+        entries.append(WearEntry(watchId: watchId1, date: exactTime))
+        entries.append(WearEntry(watchId: watchId2, date: exactTime))
+        
+        // Yesterday
+        entries.append(WearEntry(watchId: watchId1, date: calendar.date(byAdding: .day, value: -1, to: today)!))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 2, "Duplicate same-day entries should count as one day")
+    }
+    
+    func testStreakWithUnorderedEntries() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        // Create entries in random order
+        var entries: [WearEntry] = []
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -2, to: today)!))
+        entries.append(WearEntry(watchId: watchId, date: today))
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -1, to: today)!))
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -5, to: today)!))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 3, "Should handle unordered entries correctly")
+    }
+    
+    func testStreakBreaksWithOneDay Gap() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // Today
+        entries.append(WearEntry(watchId: watchId, date: today))
+        
+        // Skip yesterday (gap)
+        
+        // 2 days ago
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -2, to: today)!))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 1, "One day gap should break streak")
+    }
+    
+    func testCurrentStreakIgnoresPastStreaks() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // Current streak: today and yesterday (2 days)
+        entries.append(WearEntry(watchId: watchId, date: today))
+        entries.append(WearEntry(watchId: watchId, date: calendar.date(byAdding: .day, value: -1, to: today)!))
+        
+        // Gap
+        
+        // Past streak: 10 days in a row, 3-12 days ago
+        for i in 3...12 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 2, "Should only count current streak, not past streaks")
+    }
+    
+    // MARK: - Multiple Watches Per Day Tests (PRD Edge Case)
+    
+    func testMultipleWatchesSameDayCountsAsOneDay() {
+        let watch1 = UUID()
+        let watch2 = UUID()
+        let watch3 = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        
+        // Day 1: Three watches worn (should count as 1 day)
+        entries.append(WearEntry(watchId: watch1, date: today))
+        entries.append(WearEntry(watchId: watch2, date: today))
+        entries.append(WearEntry(watchId: watch3, date: today))
+        
+        // Day 2: One watch worn (should count as 1 day)
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+        entries.append(WearEntry(watchId: watch1, date: yesterday))
+        
+        // Day 3: Two watches worn (should count as 1 day)
+        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: today)!
+        entries.append(WearEntry(watchId: watch2, date: twoDaysAgo))
+        entries.append(WearEntry(watchId: watch3, date: twoDaysAgo))
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 3, "Three days with multiple watches should count as 3-day streak")
+    }
+    
+    func testSameDayEntriesAtDifferentTimes() {
+        let watchId1 = UUID()
+        let watchId2 = UUID()
+        
+        // Same calendar day but different times
+        let morning = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: Date())!
+        let evening = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: Date())!
+        
+        let entries = [
+            WearEntry(watchId: watchId1, date: morning),
+            WearEntry(watchId: watchId2, date: evening)
+        ]
+        
+        let streak = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        XCTAssertEqual(streak, 1, "Entries at different times on same day should count as one day")
+    }
+    
+    // MARK: - Consecutive Weekends Tests
+    
+    func testCalculateConsecutiveWeekendsEmpty() {
+        let entries: [WearEntry] = []
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertEqual(streak, 0)
+    }
+    
+    func testCalculateConsecutiveWeekendsSaturday() {
+        let watchId = UUID()
+        
+        // Find most recent Saturday
+        var saturday = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: saturday) != 7 {
+            saturday = calendar.date(byAdding: .day, value: -1, to: saturday)!
+        }
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: saturday)
+        ]
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 1)
+    }
+    
+    func testCalculateConsecutiveWeekendsSunday() {
+        let watchId = UUID()
+        
+        // Find most recent Sunday
+        var sunday = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: sunday) != 1 {
+            sunday = calendar.date(byAdding: .day, value: -1, to: sunday)!
+        }
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: sunday)
+        ]
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 1)
+    }
+    
+    func testCalculateConsecutiveWeekendsBothDays() {
+        let watchId = UUID()
+        
+        // Find most recent Saturday
+        var saturday = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: saturday) != 7 {
+            saturday = calendar.date(byAdding: .day, value: -1, to: saturday)!
+        }
+        
+        let sunday = calendar.date(byAdding: .day, value: 1, to: saturday)!
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: saturday),
+            WearEntry(watchId: watchId, date: sunday)
+        ]
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 1, "Both weekend days should count as one weekend")
+    }
+    
+    // MARK: - Consecutive Weekdays Tests
+    
+    func testCalculateConsecutiveWeekdaysEmpty() {
+        let entries: [WearEntry] = []
+        let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
+        XCTAssertEqual(streak, 0)
+    }
+    
+    func testCalculateConsecutiveWeekdaysSingleDay() {
+        let watchId = UUID()
+        
+        // Find most recent weekday
+        var weekday = calendar.startOfDay(for: Date())
+        let day = calendar.component(.weekday, from: weekday)
+        while day == 1 || day == 7 { // Skip weekend
+            weekday = calendar.date(byAdding: .day, value: -1, to: weekday)!
+        }
+        
+        let entries = [
+            WearEntry(watchId: watchId, date: weekday)
+        ]
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 1)
+    }
+    
+    func testCalculateConsecutiveWeekdaysSkipsWeekends() {
+        let watchId = UUID()
+        
+        // Find a Monday
+        var monday = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: monday) != 2 {
+            monday = calendar.date(byAdding: .day, value: -1, to: monday)!
+        }
+        
+        var entries: [WearEntry] = []
+        
+        // Monday, Tuesday, Wednesday, Thursday, Friday of one week
+        for i in 0..<5 {
+            let date = calendar.date(byAdding: .day, value: i, to: monday)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        // Skip weekend
+        
+        // Monday, Tuesday of next week
+        let nextMonday = calendar.date(byAdding: .weekOfYear, value: 1, to: monday)!
+        for i in 0..<2 {
+            let date = calendar.date(byAdding: .day, value: i, to: nextMonday)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
+        XCTAssertGreaterThanOrEqual(streak, 7, "Weekday streak should skip weekends")
+    }
+    
+    // MARK: - Integration Tests
+    
+    func testStreakCalculatorConsistencyAcrossMultipleCalls() {
+        let watchId = UUID()
+        let today = calendar.startOfDay(for: Date())
+        
+        var entries: [WearEntry] = []
+        for i in 0..<7 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today)!
+            entries.append(WearEntry(watchId: watchId, date: date))
+        }
+        
+        // Call multiple times - should get same result
+        let streak1 = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        let streak2 = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        let streak3 = StreakCalculator.calculateCurrentStreak(wearEntries: entries)
+        
+        XCTAssertEqual(streak1, streak2)
+        XCTAssertEqual(streak2, streak3)
+        XCTAssertEqual(streak1, 7)
+    }
+}
