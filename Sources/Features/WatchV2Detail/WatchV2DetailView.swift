@@ -53,6 +53,11 @@ public struct WatchV2DetailView: View {
             NavigationView {
                 WatchV2FormView(watch: watch)
             }
+        } onDismiss: {
+            // Reload achievements after edit (watch data may have changed)
+            Task {
+                await loadAchievements()
+            }
         }
         .task {
             await loadAchievements()
