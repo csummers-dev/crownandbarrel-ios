@@ -39,14 +39,14 @@ public final class AchievementRepositoryGRDB: AchievementRepository {
             ) else {
                 return nil
             }
-            return try inflateState(from: row)
+            return try self.inflateState(from: row)
         }
     }
     
     public func fetchAllUserStates() async throws -> [AchievementState] {
         return try await dbQueue.read { db in
             let rows = try Row.fetchAll(db, sql: "SELECT * FROM user_achievement_state")
-            return try rows.map { try inflateState(from: $0) }
+            return try rows.map { try self.inflateState(from: $0) }
         }
     }
     
@@ -172,7 +172,7 @@ public final class AchievementRepositoryGRDB: AchievementRepository {
                 db,
                 sql: "SELECT * FROM user_achievement_state WHERE is_unlocked = 1 ORDER BY unlocked_at DESC"
             )
-            return try rows.map { try inflateState(from: $0) }
+            return try rows.map { try self.inflateState(from: $0) }
         }
     }
     
@@ -182,7 +182,7 @@ public final class AchievementRepositoryGRDB: AchievementRepository {
                 db,
                 sql: "SELECT * FROM user_achievement_state WHERE is_unlocked = 0 ORDER BY current_progress DESC"
             )
-            return try rows.map { try inflateState(from: $0) }
+            return try rows.map { try self.inflateState(from: $0) }
         }
     }
     
