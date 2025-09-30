@@ -572,10 +572,14 @@ public final class BackupRepositoryGRDB: BackupRepository {
     
     public func deleteAll() async throws {
         try await dbQueue.write { db in
-            try db.execute(sql: "DELETE FROM watches")
-            try db.execute(sql: "DELETE FROM straps")
+            // Delete all data in correct order (children before parents due to FK constraints)
+            try db.execute(sql: "DELETE FROM user_achievement_state")
+            try db.execute(sql: "DELETE FROM wearentry")
+            try db.execute(sql: "DELETE FROM watch_photos")
             try db.execute(sql: "DELETE FROM service_history")
             try db.execute(sql: "DELETE FROM valuations")
+            try db.execute(sql: "DELETE FROM straps_inventory")
+            try db.execute(sql: "DELETE FROM watches")
         }
     }
 }
