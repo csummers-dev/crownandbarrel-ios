@@ -512,6 +512,291 @@ The project uses GitHub Actions for continuous integration and deployment with t
 - ✅ No hardcoded sensitive values
 - ✅ Proper permissions configuration
 
+## **Achievements System Architecture**
+
+### **System Overview**
+
+The achievements system is a comprehensive gamification feature that recognizes and celebrates user milestones in their watch collecting and wearing journey. The system provides real-time achievement unlocking, progress tracking, and visual feedback across the app.
+
+**Core Components**:
+- **Domain Models**: Achievement definitions and user state tracking
+- **Persistence Layer**: GRDB-based storage with efficient indexing
+- **Evaluation Engine**: Real-time criteria evaluation and progress calculation
+- **UI Components**: Reusable SwiftUI components for display and interaction
+- **Integration Points**: Embedded in StatsView, WatchV2DetailView, and CalendarView
+
+**Design Principles**:
+- **Real-Time Evaluation**: Achievements unlock immediately when criteria are met
+- **Local-First**: All data stored locally with no cloud sync
+- **Permanent Unlocks**: Achievements remain unlocked even if contributing data is deleted
+- **Extensible**: Easy to add new achievements in future updates
+- **Performance Optimized**: Efficient queries and batch processing
+
+### **Domain Model Architecture**
+
+#### **Achievement Model**
+- **Purpose**: Defines a single achievement with its criteria and metadata
+- **Properties**: id, name, description, imageAssetName, category, unlockCriteria, targetValue
+- **Immutability**: Achievement definitions are constant (hardcoded in AchievementDefinitions)
+- **Categories**: Five categories with 10 achievements each (total: 50)
+  - Collection Size: Milestones for collection growth
+  - Wearing Frequency: Recognition for logging wears
+  - Consistency: Rewards for maintaining streaks
+  - Diversity: Celebrate variety in collection and rotation
+  - Special Occasions: Commemorate firsts and milestones
+
+#### **AchievementState Model**
+- **Purpose**: Tracks user's progress and unlock status for each achievement
+- **Properties**: id, achievementId, isUnlocked, unlockedAt, currentProgress, progressTarget, createdAt, updatedAt
+- **Mutability**: State updates as user interacts with the app
+- **GRDB Integration**: Conforms to FetchableRecord and PersistableRecord
+- **Progress Tracking**: Stores current progress separately from unlock status
+
+#### **AchievementCriteria Enum**
+- **Purpose**: Type-safe definition of achievement unlock conditions
+- **18 Criteria Types**: Covers all achievement evaluation scenarios
+- **Associated Values**: Parameterized criteria (e.g., watchCountReached(count: 10))
+- **Codable**: Custom Codable implementation for database persistence
+- **Display Helpers**: Human-readable descriptions and target value extraction
+
+### **Data Persistence Architecture**
+
+#### **Database Schema**
+
+**achievements Table** (Optional - definitions are hardcoded):
+- Columns: id, name, description, image_asset_name, category, criteria_json, target_value, created_at
+- Purpose: Could store definitions, but currently definitions come from AchievementDefinitions.swift
+
+**user_achievement_state Table**:
+- Columns: id, achievement_id (FK), is_unlocked, unlocked_at, current_progress, progress_target, created_at, updated_at
+- Indexes: is_unlocked, achievement_id, composite (is_unlocked, unlocked_at)
+- Purpose: Tracks user progress for all 50 achievements
+
+**wearEntries Table** (Added for achievements):
+- Columns: id, watchId (FK), date
+- Indexes: date, composite (watchId, date)
+- Purpose: Tracks when watches are worn for frequency and streak achievements
+
+#### **Repository Pattern**
+
+**AchievementRepository Protocol**:
+- Definition queries: fetchAllDefinitions(), fetchByCategory(), fetchDefinition(id:)
+- State management: fetchUserState(), updateUserState(), updateUserStates() (batch)
+- Filtered queries: fetchUnlocked(), fetchLocked()
+- Combined queries: fetchAchievementsWithStates(), fetchUnlockedWithDefinitions()
+- Utilities: initializeUserStates(), deleteAllUserStates()
+
+**WatchRepositoryV2 Extensions**:
+- Achievement-related queries added for evaluation:
+  - totalWatchCount(), totalWearCount(), wearCountForWatch(watchId:)
+  - uniqueBrandsCount(), currentStreak(), allWearEntries()
+  - uniqueDaysWithEntries(), firstWearDate(), firstWatchDate()
+
+### **Evaluation Engine Architecture**
+
+#### **AchievementEvaluator Service**
+
+**Core Responsibilities**:
+- Evaluate achievement criteria against current user data
+- Update achievement state with progress and unlock status
+- Trigger evaluations based on user actions
+
+**Evaluation Methods**:
+- `evaluateAll()`: Checks all locked achievements (batch processing)
+- `evaluateAchievement(_:)`: Evaluates single achievement
+- `evaluateCriteria(_:)`: Private method dispatching to specific criteria evaluators
+
+**Event-Triggered Evaluation**:
+- `evaluateOnWatchAdded()`: Triggered when watch is added (collection, diversity achievements)
+- `evaluateOnWearLogged(watchId:date:)`: Triggered when wear is logged (frequency, consistency achievements)
+- `evaluateOnDataDeleted()`: Recalculates progress when data removed (unlocked achievements stay unlocked)
+- `evaluateExistingUserData()`: Migration helper for first launch and app updates
+
+**Criteria Evaluation**:
+- Collection Size: Compares watch count to target
+- Wearing Frequency: Compares total or single-watch wear counts
+- Consistency: Uses StreakCalculator for consecutive day/weekend/weekday streaks
+- Diversity: Evaluates unique brands, rotation patterns, balanced distribution
+- Special Occasions: Checks first-time events and tracking milestones
+
+#### **StreakCalculator Service**
+
+**Purpose**: Calculates various types of wearing streaks
+
+**Streak Logic (Per PRD)**:
+- Multiple watches worn on the same day count as ONE day toward the streak
+- Streak counts consecutive days from today backwards
+- Weekend/weekday streaks skip non-relevant days
+
+**Methods**:
+- `calculateCurrentStreak(wearEntries:)`: Consecutive days from today
+- `calculateConsecutiveWeekends(from:)`: Consecutive weekends with at least one entry
+- `calculateConsecutiveWeekdays(from:)`: Consecutive weekdays (skips weekends)
+
+### **UI Component Architecture**
+
+#### **AchievementCard Component**
+- **Purpose**: Displays individual achievement with lock/unlock state
+- **States**: Locked (grayed 40% opacity, progress bar) vs Unlocked (full color, unlock date)
+- **Size**: 80x80 circular image, card layout with padding
+- **Accessibility**: Full VoiceOver support with descriptive labels
+- **Theme**: Respects themeToken for automatic updates
+
+#### **AchievementProgressView Component**
+- **Purpose**: Shows progress toward unlocking
+- **Modes**: Compact (4px bar for cards) vs Full (labeled bar with percentage)
+- **Animation**: Smooth 0.3s ease-in-out on progress changes
+- **Display**: Progress bar + fractional text (e.g., "8/10")
+
+#### **AchievementGridView Component**
+- **Purpose**: Grid layout for multiple achievements
+- **Layout**: LazyVGrid with adaptive columns (150-200px)
+- **Filtering**: Category chips + show only unlocked toggle
+- **Sorting**: Unlocked first, then by progress, then alphabetically
+- **Empty State**: Helpful message when no achievements match filters
+
+#### **AchievementUnlockNotification Component**
+- **Purpose**: Celebrates achievement unlocks
+- **Animation**: Slide in from top with spring physics
+- **Haptics**: Success haptic (UINotificationFeedbackGenerator .success)
+- **Auto-Dismiss**: 3 seconds or swipe/tap to dismiss
+- **Z-Index**: 999 to ensure visibility over other content
+
+### **Integration Architecture**
+
+#### **StatsView Integration**
+- Achievements section after stats cards
+- Horizontal scroll of achievement cards
+- Toggle for showing/hiding locked achievements (@AppStorage persisted)
+- Loads all achievements with states on view appear
+- Initializes achievement states on first launch
+
+#### **WatchV2DetailView Integration**
+- Collapsible Achievements section
+- Shows watch-specific unlocked achievements
+- Filters for single-watch wear count achievements
+- Loads asynchronously with Task
+
+#### **CalendarView Integration**
+- Evaluator in WatchPicker sheet
+- Calls `evaluateOnWearLogged()` after incrementWear
+- Displays unlock notification for newly unlocked achievements
+- Haptic feedback via notification component
+
+#### **App Launch Integration**
+- Achievement evaluation in CrownAndBarrelApp.init()
+- Calls `evaluateExistingUserData()` on every launch
+- Auto-unlocks achievements for existing user data
+- Handles new achievements in app updates
+
+### **Data Flow Architecture**
+
+#### **Achievement Unlock Flow**
+1. **User Action** → Add watch or log wear entry
+2. **Repository** → Persists watch or wear entry to database
+3. **Evaluator Trigger** → `evaluateOnWatchAdded()` or `evaluateOnWearLogged()`
+4. **Criteria Evaluation** → Query current user data and compare to criteria
+5. **State Update** → Update currentProgress, unlock if criteria met
+6. **Persistence** → Save updated state to database
+7. **UI Notification** → Display unlock notification with haptic feedback
+8. **View Refresh** → Stats/Detail views update on next load
+
+#### **Progress Tracking Flow**
+1. **User Data Changes** → Watches added, wears logged, data deleted
+2. **Evaluator** → Recalculates progress for relevant achievements
+3. **Repository** → Updates achievement state progress values
+4. **UI Display** → Progress bars update in achievement cards
+5. **Unlock Check** → If progress >= target, unlock achievement
+
+#### **First Launch Flow**
+1. **App Launch** → CrownAndBarrelApp.init() runs
+2. **Initialization** → `evaluateExistingUserData()` called
+3. **State Creation** → `initializeUserStates()` creates states for all 50 achievements
+4. **Batch Evaluation** → `evaluateAll()` checks all achievements
+5. **Auto-Unlock** → Unlocks achievements user already qualifies for
+6. **Silent Completion** → No UI interruption, achievements available in StatsView
+
+### **Performance Characteristics**
+
+**Evaluation Performance**:
+- Achievement evaluation completes in <100ms for 95% of actions (per PRD)
+- Batch processing for efficient state updates
+- Indexed queries for fast filtering
+- Category-based evaluation to reduce unnecessary checks
+
+**Database Performance**:
+- Composite indexes for efficient locked/unlocked filtering
+- Foreign key constraints with cascade delete
+- WAL mode for concurrent access
+- Minimal joins (progress_target duplicated in state table)
+
+**Memory Efficiency**:
+- Achievement definitions loaded from constants (no database reads)
+- User states loaded on-demand
+- UI components use lazy loading (LazyVGrid)
+- Batch updates to minimize database transactions
+
+### **Extension Points**
+
+#### **Adding New Achievements**
+1. Add achievement definition to AchievementDefinitions.swift
+2. Add new criteria case to AchievementCriteria enum if needed
+3. Implement evaluation logic in AchievementEvaluator
+4. Add achievement image asset
+5. On app launch, `evaluateExistingUserData()` auto-unlocks for qualifying users
+
+#### **New Achievement Categories**
+1. Add case to AchievementCategory enum
+2. Update display helpers (displayName, iconName, categoryDescription)
+3. Create achievement definitions in new category
+4. Add category to filtering UI
+
+#### **Custom Criteria Types**
+1. Add case to AchievementCriteria enum with associated values
+2. Implement Codable encoding/decoding
+3. Add evaluation method to AchievementEvaluator
+4. Add unit tests for new criteria type
+
+### **Testing Strategy**
+
+**Unit Tests** (86 test methods):
+- Model validation and Codable support
+- Evaluation engine with in-memory database
+- Streak calculation with PRD edge cases
+- Repository persistence and filtering
+- Data integrity validation
+
+**UI Tests** (11 test methods):
+- Achievement display in StatsView
+- Toggle behavior and persistence
+- Watch detail page integration
+- Accessibility verification
+- Theme integration
+
+**Manual Testing Checklist**:
+- Add watches → verify collection achievements unlock
+- Log wears → verify wearing frequency achievements unlock
+- Log consecutive days → verify streak achievements unlock
+- Toggle locked achievements → verify filtering works
+- View watch detail → verify watch-specific achievements appear
+- Achievement unlock → verify notification and haptic feedback
+
+### **Known Limitations and Future Enhancements**
+
+**Current Limitations**:
+- Watch-specific achievement association not fully implemented (fetchAchievementsForWatch returns empty)
+- No "recently unlocked" section (per PRD non-goals)
+- No social features or achievement sharing
+- No time-limited or seasonal achievements
+- Achievement images use placeholder fallback (SF Symbol "trophy.fill")
+
+**Future Enhancements**:
+- Enhanced watch-specific achievement tracking with database association
+- Achievement analytics (most common, rarest achievements)
+- Achievement progress notifications (e.g., "50% to next achievement")
+- Enhanced unlock celebrations with animations
+- Achievement categories in separate views
+
 ---
 
 *This architecture guide is maintained by the Crown & Barrel development team. For questions or suggestions about the architecture, please create an issue or contact the development team.*
