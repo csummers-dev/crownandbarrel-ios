@@ -291,7 +291,21 @@ struct WatchPicker: View {
     }
     private func mark(watch: WatchV2) async {
         do {
+            print("📅 Attempting to mark watch as worn: \(watch.id)")
+            print("📅 Watch: \(watch.manufacturer) \(watch.modelName)")
+            print("📅 Date: \(date)")
+            
+            // Verify watch exists in database
+            let fetchedWatch = try repository.fetch(id: watch.id)
+            if fetchedWatch == nil {
+                print("❌ Watch not found in database!")
+                errorMessage = "Watch not found. Please save the watch first."
+                return
+            }
+            
+            print("📅 Watch exists, incrementing wear")
             try await repository.incrementWear(for: watch.id, on: date)
+            print("📅 Wear incremented successfully")
             
             // Evaluate achievements after logging wear
             let newlyUnlockedIds = try await evaluator.evaluateOnWearLogged(watchId: watch.id, date: date)
@@ -306,7 +320,10 @@ struct WatchPicker: View {
             dismiss()
             onComplete?()
         }
-        catch { errorMessage = error.localizedDescription }
+        catch { 
+            print("❌ Error marking watch as worn: \(error)")
+            errorMessage = error.localizedDescription 
+        }
     }
 }
 
