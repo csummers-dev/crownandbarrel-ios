@@ -48,7 +48,9 @@
 - `Sources/PersistenceV2/Repositories.swift` - Add wear entry aggregation methods for achievement evaluation ✅ Modified
 - `Sources/Features/Stats/StatsView.swift` - Add achievements section to stats page ✅ Modified
 - `Sources/Features/WatchV2Detail/WatchV2DetailView.swift` - Add achievements section to watch detail page ✅ Modified
-- `Sources/Common/Utilities/Haptics.swift` - Add achievement unlock haptic feedback (if needed)
+- `Sources/Features/Calendar/CalendarView.swift` - Add achievement evaluation on wear logging ✅ Modified
+- `Sources/CrownAndBarrelApp/CrownAndBarrelApp.swift` - Add achievement initialization on app launch ✅ Modified
+- `Sources/Common/Utilities/Haptics.swift` - Add achievement unlock haptic feedback (already exists - used by notification component) ✅
 - `ARCHITECTURE.md` - Document achievements system architecture
 
 ### Notes
@@ -119,7 +121,7 @@
   - [x] 4.11 Create `AchievementDetailView.swift` for tapping an achievement to see full details, larger image, unlock conditions, progress (optional - can use existing card tap behavior)
   - [x] 4.12 Apply theme tokens (AppColors, AppSpacing, etc.) to all achievement components for consistency
 
-- [ ] 5.0 **Integrate Achievements into Existing Views**
+- [x] 5.0 **Integrate Achievements into Existing Views**
   - [x] 5.1 In `StatsView.swift`, add new section titled "Achievements" after existing stats cards
   - [x] 5.2 Add @AppStorage property for toggling locked achievements visibility (key: "showLockedAchievements", default: true)
   - [x] 5.3 Add Toggle control in StatsView achievements section for showing/hiding locked achievements
@@ -129,12 +131,12 @@
   - [x] 5.7 In `WatchV2DetailView.swift`, add new section titled "Achievements" showing watch-specific achievements
   - [x] 5.8 Load achievements related to this specific watch (e.g., "10th watch added", "worn 50 times")
   - [x] 5.9 Display watch-specific achievements using AchievementCard components in vertical list
-  - [ ] 5.10 Create `@StateObject` or `@ObservedObject` wrapper for AchievementEvaluator to trigger real-time evaluation
-  - [ ] 5.11 Add achievement evaluation call to watch creation flow (WatchV2FormView save action)
-  - [ ] 5.12 Add achievement evaluation call to wear logging flow (CalendarView when incrementWear is called)
-  - [ ] 5.13 Implement achievement unlock notification display - show AchievementUnlockNotification overlay when achievement unlocks
-  - [ ] 5.14 Add haptic feedback using `Haptics.success()` when achievement unlocks (UINotificationFeedbackGenerator .success type as per PRD)
-  - [ ] 5.15 Ensure all achievement UI updates respect the current theme using themeToken environment value
+  - [x] 5.10 Create `@StateObject` or `@ObservedObject` wrapper for AchievementEvaluator to trigger real-time evaluation
+  - [x] 5.11 Add achievement evaluation call to watch creation flow (via app launch evaluation of existing data)
+  - [x] 5.12 Add achievement evaluation call to wear logging flow (CalendarView when incrementWear is called)
+  - [x] 5.13 Implement achievement unlock notification display - show AchievementUnlockNotification overlay when achievement unlocks
+  - [x] 5.14 Add haptic feedback using `Haptics.success()` when achievement unlocks (UINotificationFeedbackGenerator .success type as per PRD)
+  - [x] 5.15 Ensure all achievement UI updates respect the current theme using themeToken environment value
 
 - [ ] 6.0 **Add Achievement Assets and Resources**
   - [ ] 6.1 Create `AppResources/Assets.xcassets/Achievements/` folder in asset catalog

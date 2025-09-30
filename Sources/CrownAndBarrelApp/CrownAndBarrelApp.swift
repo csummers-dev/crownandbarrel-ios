@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import GRDB
 
 /// Centralized UIAppearance configuration for themed UI.
 /// - What: Applies tab bar, navigation bar, list/collection backgrounds, and common tints.
@@ -196,7 +197,7 @@ struct CrownAndBarrelApp: App {
         if UserDefaults.standard.object(forKey: key) == nil {
             #if DEBUG
             // UI Test Support: Force specific system style if requested
-            var detected = UIScreen.main.traitCollection.userInterfaceStyle
+            var detected = UITraitCollection.current.userInterfaceStyle
             if let forcedArg = ProcessInfo.processInfo.arguments.first(where: { $0.hasPrefix("--uiTestForceSystemStyle=") }) {
                 let forcedValue = String(forcedArg.dropFirst("--uiTestForceSystemStyle=".count))
                 if forcedValue.lowercased() == "dark" {
@@ -206,7 +207,7 @@ struct CrownAndBarrelApp: App {
                 }
             }
             #else
-            let detected = UIScreen.main.traitCollection.userInterfaceStyle
+            let detected = UITraitCollection.current.userInterfaceStyle
             #endif
             
             let defaultId = ThemeManager.defaultThemeId(for: detected)
@@ -215,6 +216,32 @@ struct CrownAndBarrelApp: App {
         
         // Apply initial theme setup
         Appearance.applyAllAppearances()
+
+        // Initialize database eagerly
+        _ = AppDatabase.shared
+        // Run media cleanup in background
+        MediaCleanupV2.run()
+        
+        // Initialize and evaluate achievements on app launch
+        Task {
+            let achievementRepo = AchievementRepositoryGRDB()
+            let watchRepo = WatchRepositoryGRDB()
+            let evaluator = AchievementEvaluator(
+                achievementRepository: achievementRepo,
+                watchRepository: watchRepo
+            )
+            
+            do {
+                // Initialize user states and evaluate existing data
+                _ = try await evaluator.evaluateExistingUserData()
+            } catch {
+                print("Failed to initialize achievements: \(error)")
+            }
+        }
+        
+        #if DEBUG
+        DevSeedV2.seedIfEmpty()
+        #endif
     }
 
     var body: some Scene {
@@ -226,7 +253,7 @@ struct CrownAndBarrelApp: App {
                 .onAppear {
                     handleAppLaunch()
                 }
-                .onChange(of: selectedThemeId) { _, _ in
+                .onChange(of: selectedThemeId) {
                     handleThemeChange()
                 }
                 .overlay {

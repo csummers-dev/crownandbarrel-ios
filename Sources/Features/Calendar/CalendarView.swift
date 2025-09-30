@@ -15,8 +15,8 @@ struct CalendarView: View {
     /// Top padding between the calendar's bottom divider and the entries section.
     /// Using 4pt (xs) maintains visible separation without overlapping the last calendar week.
     @State private var contentTopPadding: CGFloat = AppSpacing.xs
-    @State private var watchesById: [UUID: Watch] = [:]
-    private let repository: WatchRepository = WatchRepositoryCoreData()
+    @State private var watchesById: [UUID: WatchV2] = [:]
+    private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -76,98 +76,106 @@ struct CalendarView: View {
     ///   - Paint the outer container with `AppColors.background` so no system color bleeds through
     ///     when empty or populated.
     private var entriesSection: some View {
-        Group {
+        VStack(spacing: 0) {
             if entries.isEmpty {
-                VStack(spacing: AppSpacing.sm) {
-                    Button(action: { isPresentingPicker = true }) {
-                        Text("No watches worn this day. Add one?")
-                            .font(.headline)
-                    }
-                    .buttonStyle(.bordered)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                .padding()
+                emptyStateView
             } else {
-                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    HStack {
-                        Spacer()
-                        Button("Add worn") { 
-                            Haptics.calendarInteraction(.wearEntryAdded)
-                            isPresentingPicker = true 
-                        }
-                            .accessibilityIdentifier("Add worn")
-                            .buttonStyle(.bordered)
-                    }
-                    // Compact rows: thumbnail + "Manufacturer - Model". Manufacturer bolded per spec.
-                    ZStack(alignment: .top) {
-                        // Full-bleed themed background behind the List to prevent system black
-                        AppColors.background.ignoresSafeArea()
-                        List(entries) { entry in
-                            if let w = watchesById[entry.watchId] {
-                            HStack(spacing: 8) {
-                                WatchImageView(imageAssetId: w.imageAssetId)
-                                    .frame(width: 18, height: 18)
-                                    .clipShape(RoundedRectangle(cornerRadius: 3))
-                                HStack(spacing: 4) {
-                                    Text(w.manufacturer).fontWeight(.semibold).foregroundStyle(AppColors.textPrimary)
-                                    if let model = w.model, !model.isEmpty {
-                                        Text("- \(model)").foregroundStyle(AppColors.textSecondary)
-                                    }
-                                }
-                            }
-                            .accessibilityLabel("\(w.manufacturer) \(w.model ?? "")")
-                            .accessibilityIdentifier("CalendarEntryCard")
-                            .padding(.horizontal, AppSpacing.sm)
-                            .padding(.vertical, AppSpacing.xxs)
-                            .listRowBackground(
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: AppRadius.large)
-                                        .fill(AppColors.secondaryBackground)
-                                }
-                                .padding(.vertical, AppSpacing.xxs)
-                            )
-                            // Extra defensive: hide any residual UIKit separators at the row level
-                            .listRowSeparator(.hidden, edges: .all)
-                            // Keep rows tight; vertical spacing handled by list insets
-                        } else {
-                            Text("Unknown watch").foregroundStyle(AppColors.textPrimary)
-                                .padding(.horizontal, AppSpacing.sm)
-                                .padding(.vertical, AppSpacing.xxs)
-                                .listRowBackground(
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: AppRadius.large)
-                                            .fill(AppColors.secondaryBackground)
-                                    }
-                                    .padding(.vertical, AppSpacing.xxs)
-                                )
-                                // Extra defensive: hide any residual UIKit separators at the row level
-                                .listRowSeparator(.hidden, edges: .all)
-                                .accessibilityIdentifier("CalendarEntryCard")
-                        }
-                        }
-                        .listStyle(.plain)
-                        // What: Prevent UIKit's table background from showing through.
-                        // Why: Keeps the surface strictly on the theme primary background.
-                        // How: Hide the table's scroll background so our ZStack and container paint it.
-                        .scrollContentBackground(.hidden)
-                        // Per-row backgrounds define rounded secondary cards
-                        // Equal horizontal insets so cards "float" within the primary container
-                        .listRowInsets(EdgeInsets(top: AppSpacing.xxs, leading: AppSpacing.md, bottom: AppSpacing.xxs, trailing: AppSpacing.md))
-                        // Hide separators for clean card list
-                        .listSectionSeparator(.hidden, edges: .all)
-                        .listRowSeparator(.hidden, edges: .all)
-                        // Force recreation on theme change to ensure UIKit list picks up new backgrounds
-                        .id(themeToken + "-entries-list")
-                    }
-                }
-                .padding(.horizontal)
+                populatedStateView
             }
         }
-        // Expand and paint the entire entries container with the theme primary background
-        // so no system background bleeds through in any theme.
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(AppColors.background)
         .accessibilityIdentifier("CalendarEntriesContainer")
+    }
+    
+    private var emptyStateView: some View {
+        VStack(spacing: AppSpacing.sm) {
+            Button(action: { isPresentingPicker = true }) {
+                Text("No watches worn this day. Add one?")
+                    .font(.headline)
+            }
+            .buttonStyle(.bordered)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .padding()
+    }
+    
+    private var populatedStateView: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            HStack {
+                Spacer()
+                Button("Add worn") { 
+                    Haptics.calendarInteraction(.wearEntryAdded)
+                    isPresentingPicker = true 
+                }
+                .accessibilityIdentifier("Add worn")
+                .buttonStyle(.bordered)
+            }
+            
+            ZStack(alignment: .top) {
+                AppColors.background.ignoresSafeArea()
+                List(entries) { entry in
+                    entryRow(entry: entry)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .listRowInsets(EdgeInsets(top: AppSpacing.xxs, leading: AppSpacing.md, bottom: AppSpacing.xxs, trailing: AppSpacing.md))
+                .listSectionSeparator(.hidden, edges: .all)
+                .listRowSeparator(.hidden, edges: .all)
+                .id(themeToken + "-entries-list")
+            }
+        }
+        .padding(.horizontal)
+    }
+    
+    private func entryRow(entry: WearEntry) -> some View {
+        Group {
+            if let watch = watchesById[entry.watchId] {
+                HStack(spacing: 8) {
+                    // Use first photo if available, otherwise show placeholder
+                    if let firstPhoto = watch.photos.first {
+                        WatchImageView(imageAssetId: firstPhoto.id.uuidString)
+                            .frame(width: 18, height: 18)
+                            .clipShape(RoundedRectangle(cornerRadius: 3))
+                    } else {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(AppColors.secondaryBackground)
+                            .frame(width: 18, height: 18)
+                    }
+                    HStack(spacing: 4) {
+                        Text(watch.manufacturer).fontWeight(.semibold).foregroundStyle(AppColors.textPrimary)
+                        if !watch.modelName.isEmpty {
+                            Text("- \(watch.modelName)").foregroundStyle(AppColors.textSecondary)
+                        }
+                    }
+                }
+                .accessibilityLabel("\(watch.manufacturer) \(watch.modelName)")
+                .accessibilityIdentifier("CalendarEntryCard")
+                .padding(.horizontal, AppSpacing.sm)
+                .padding(.vertical, AppSpacing.xxs)
+                .listRowBackground(
+                    ZStack {
+                        RoundedRectangle(cornerRadius: AppRadius.large)
+                            .fill(AppColors.secondaryBackground)
+                    }
+                    .padding(.vertical, AppSpacing.xxs)
+                )
+                .listRowSeparator(.hidden, edges: .all)
+            } else {
+                Text("Unknown watch").foregroundStyle(AppColors.textPrimary)
+                    .padding(.horizontal, AppSpacing.sm)
+                    .padding(.vertical, AppSpacing.xxs)
+                    .listRowBackground(
+                        ZStack {
+                            RoundedRectangle(cornerRadius: AppRadius.large)
+                                .fill(AppColors.secondaryBackground)
+                        }
+                        .padding(.vertical, AppSpacing.xxs)
+                    )
+                    .listRowSeparator(.hidden, edges: .all)
+                    .accessibilityIdentifier("CalendarEntryCard")
+            }
+        }
     }
 
     private func loadEntries() async {
@@ -178,7 +186,7 @@ struct CalendarView: View {
     private func loadWatches() async {
         do {
             let all = try await repository.fetchAll()
-            var map: [UUID: Watch] = [:]
+            var map: [UUID: WatchV2] = [:]
             for w in all { map[w.id] = w }
             watchesById = map
         } catch { /* Non-fatal; entries list will show fallback text */ }
@@ -239,9 +247,17 @@ private struct WatchPicker: View {
     @Environment(\.dismiss) private var dismiss
     let date: Date
     var onComplete: (() -> Void)? = nil
-    @State private var watches: [Watch] = []
+    @State private var watches: [WatchV2] = []
     @State private var errorMessage: String? = nil
-    private let repository: WatchRepository = WatchRepositoryCoreData()
+    @State private var unlockedAchievement: Achievement? = nil
+    @State private var showUnlockNotification: Bool = false
+    
+    private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
+    private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
+    private lazy var evaluator: AchievementEvaluator = AchievementEvaluator(
+        achievementRepository: achievementRepository,
+        watchRepository: repository
+    )
 
     var body: some View {
         NavigationStack {
@@ -249,7 +265,7 @@ private struct WatchPicker: View {
                 Button(action: { Task { await mark(watch: watch) } }) {
                     HStack {
                         Text(watch.manufacturer)
-                        Text(watch.model ?? "").foregroundStyle(AppColors.textSecondary)
+                        Text(watch.modelName).foregroundStyle(AppColors.textSecondary)
                     }
                 }
             }
@@ -259,13 +275,31 @@ private struct WatchPicker: View {
             .alert("Error", isPresented: .constant(errorMessage != nil)) { Button("OK") { errorMessage = nil } } message: { Text(errorMessage ?? "") }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
+            .achievementUnlockNotification(achievement: unlockedAchievement, isPresented: $showUnlockNotification)
         }
     }
 
-    private func load() async { do { watches = try await repository.fetchAll() } catch { errorMessage = error.localizedDescription } }
-    private func mark(watch: Watch) async {
+    private func load() async { 
+        do { 
+            watches = try await repository.fetchAll() 
+        } catch { 
+            errorMessage = error.localizedDescription 
+        } 
+    }
+    private func mark(watch: WatchV2) async {
         do {
             try await repository.incrementWear(for: watch.id, on: date)
+            
+            // Evaluate achievements after logging wear
+            let newlyUnlockedIds = try await evaluator.evaluateOnWearLogged(watchId: watch.id, date: date)
+            
+            // Show notification for first unlocked achievement
+            if let firstUnlockedId = newlyUnlockedIds.first,
+               let achievement = try await achievementRepository.fetchDefinition(id: firstUnlockedId) {
+                unlockedAchievement = achievement
+                showUnlockNotification = true
+            }
+            
             dismiss()
             onComplete?()
         }
