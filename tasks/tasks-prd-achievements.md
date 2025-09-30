@@ -14,8 +14,8 @@
 - `Sources/Domain/Protocols/AchievementRepository.swift` - Repository protocol for achievement data access ✅ Created
 
 #### Persistence Layer
-- `Sources/PersistenceV2/AchievementRepositoryGRDB.swift` - GRDB implementation of achievement repository
-- `Sources/PersistenceV2/AchievementDefinitions.swift` - Hardcoded 50 achievement definitions
+- `Sources/PersistenceV2/AchievementRepositoryGRDB.swift` - GRDB implementation of achievement repository ✅ Created
+- `Sources/PersistenceV2/AchievementDefinitions.swift` - Hardcoded 50 achievement definitions ✅ Created
 
 #### Business Logic
 - `Sources/Domain/Services/AchievementEvaluator.swift` - Core achievement evaluation engine
@@ -44,8 +44,8 @@
 
 ### Files to Modify
 
-- `Sources/PersistenceV2/AppDatabase.swift` - Add achievement tables to database migration
-- `Sources/PersistenceV2/Repositories.swift` - Add wear entry aggregation methods for achievement evaluation
+- `Sources/PersistenceV2/AppDatabase.swift` - Add achievement tables to database migration ✅ Modified
+- `Sources/PersistenceV2/Repositories.swift` - Add wear entry aggregation methods for achievement evaluation ✅ Modified
 - `Sources/Features/Stats/StatsView.swift` - Add achievements section to stats page
 - `Sources/Features/WatchV2Detail/WatchV2DetailView.swift` - Add achievements section to watch detail page
 - `Sources/Common/Utilities/Haptics.swift` - Add achievement unlock haptic feedback (if needed)
@@ -69,22 +69,22 @@
   - [x] 1.5 Create `AchievementRepository.swift` protocol with methods: fetchAllDefinitions(), fetchUserState(achievementId:), updateUserState(_:), fetchUnlocked(), fetchLocked(), fetchByCategory(_:), fetchAchievementsForWatch(watchId:)
   - [x] 1.6 Make all models conform to Codable, Identifiable, Hashable, Sendable as appropriate
 
-- [ ] 2.0 **Implement Database Schema and Persistence Layer**
-  - [ ] 2.1 Add new migration to `AppDatabase.swift` creating `achievements` table (id, name, description, image_asset_name, category, criteria_json, target_value, created_at)
-  - [ ] 2.2 Add new migration creating `user_achievement_state` table (achievement_id, is_unlocked, unlocked_at, current_progress, created_at, updated_at) with foreign key to achievements table
-  - [ ] 2.3 Add index on `user_achievement_state.is_unlocked` for efficient filtering
-  - [ ] 2.4 Add index on `user_achievement_state.achievement_id` for lookups
-  - [ ] 2.5 Create `AchievementDefinitions.swift` with hardcoded array of all 50 achievement definitions (following PRD section "50 Achievement Definitions")
-  - [ ] 2.6 Implement `AchievementRepositoryGRDB` conforming to `AchievementRepository` protocol
-  - [ ] 2.7 Implement `fetchAllDefinitions()` returning hardcoded achievements from AchievementDefinitions
-  - [ ] 2.8 Implement `fetchUserState(achievementId:)` querying user_achievement_state table
-  - [ ] 2.9 Implement `updateUserState(_:)` for inserting/updating user progress and unlock status
-  - [ ] 2.10 Implement `fetchUnlocked()` and `fetchLocked()` with efficient queries
-  - [ ] 2.11 Implement `fetchByCategory(_:)` filtering by achievement category
-  - [ ] 2.12 Implement `fetchAchievementsForWatch(watchId:)` to get achievements associated with a specific watch
-  - [ ] 2.13 Add seed data logic to initialize all achievement definitions in database on first launch
-  - [ ] 2.14 Add methods to `WatchRepositoryV2` protocol for achievement-related queries: totalWatchCount(), totalWearCount(), currentStreak(), uniqueBrandsCount(), wearCountForWatch(watchId:), etc.
-  - [ ] 2.15 Implement these new repository methods in `WatchRepositoryGRDB`
+- [x] 2.0 **Implement Database Schema and Persistence Layer**
+  - [x] 2.1 Add new migration to `AppDatabase.swift` creating `achievements` table (id, name, description, image_asset_name, category, criteria_json, target_value, created_at)
+  - [x] 2.2 Add new migration creating `user_achievement_state` table (achievement_id, is_unlocked, unlocked_at, current_progress, created_at, updated_at) with foreign key to achievements table
+  - [x] 2.3 Add index on `user_achievement_state.is_unlocked` for efficient filtering
+  - [x] 2.4 Add index on `user_achievement_state.achievement_id` for lookups
+  - [x] 2.5 Create `AchievementDefinitions.swift` with hardcoded array of all 50 achievement definitions (following PRD section "50 Achievement Definitions")
+  - [x] 2.6 Implement `AchievementRepositoryGRDB` conforming to `AchievementRepository` protocol
+  - [x] 2.7 Implement `fetchAllDefinitions()` returning hardcoded achievements from AchievementDefinitions
+  - [x] 2.8 Implement `fetchUserState(achievementId:)` querying user_achievement_state table
+  - [x] 2.9 Implement `updateUserState(_:)` for inserting/updating user progress and unlock status
+  - [x] 2.10 Implement `fetchUnlocked()` and `fetchLocked()` with efficient queries
+  - [x] 2.11 Implement `fetchByCategory(_:)` filtering by achievement category
+  - [x] 2.12 Implement `fetchAchievementsForWatch(watchId:)` to get achievements associated with a specific watch
+  - [x] 2.13 Add seed data logic to initialize all achievement definitions in database on first launch
+  - [x] 2.14 Add methods to `WatchRepositoryV2` protocol for achievement-related queries: totalWatchCount(), totalWearCount(), currentStreak(), uniqueBrandsCount(), wearCountForWatch(watchId:), etc.
+  - [x] 2.15 Implement these new repository methods in `WatchRepositoryGRDB`
 
 - [ ] 3.0 **Build Achievement Evaluation Engine**
   - [ ] 3.1 Create `AchievementEvaluator.swift` service class with dependency injection for repositories
