@@ -175,7 +175,7 @@ public final class AppDatabase {
             // user_achievement_state table (user's progress for each achievement)
             try db.create(table: "user_achievement_state") { t in
                 t.column("id", .text).primaryKey() // UUID string
-                t.column("achievement_id", .text).notNull().indexed().references("achievements", onDelete: .cascade)
+                t.column("achievement_id", .text).notNull().indexed() // References hardcoded definitions, no FK
                 t.column("is_unlocked", .integer).notNull().defaults(to: 0) // Boolean as integer
                 t.column("unlocked_at", .text) // Nullable - only set when unlocked
                 t.column("current_progress", .double).notNull().defaults(to: 0.0)
