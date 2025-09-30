@@ -10,10 +10,6 @@ public final class AppDatabase {
     private init() throws {
         let url = try AppDatabase.databaseURL()
         var config = Configuration()
-        // Enable SQL tracing to help diagnose table/column mismatches at runtime
-        config.trace = { event in
-            print("🧭 SQL TRACE:", event)
-        }
         config.prepareDatabase { db in
             // Use WAL for better concurrency and crash resilience
             try db.execute(sql: "PRAGMA journal_mode=WAL;")
