@@ -16,12 +16,24 @@ public final class WatchV2FormViewModel: ObservableObject {
 
     public func addPhoto(from image: UIImage) {
         do {
-            let (_, updated) = try photoPipeline.addPhoto(watchId: watch.id, sourceImage: image, existingPhotos: watch.photos)
+            print("📸 Starting photo add for watch: \(watch.id)")
+            print("📸 Existing photos: \(watch.photos.count)")
+            print("📸 Image size: \(image.size)")
+            
+            let (newPhoto, updated) = try photoPipeline.addPhoto(watchId: watch.id, sourceImage: image, existingPhotos: watch.photos)
+            
+            print("📸 Photo added successfully: \(newPhoto.id)")
+            print("📸 Updated photos count: \(updated.count)")
+            
             watch.photos = updated
             photoError = nil
+        } catch let error as PhotoPipelineV2Error {
+            photoError = "Photo error: \(error)"
+            print("❌ Photo pipeline error: \(error)")
         } catch {
             photoError = "Failed to add photo: \(error.localizedDescription)"
-            print("Photo upload error: \(error)")
+            print("❌ Photo upload error: \(error)")
+            print("❌ Error details: \(error)")
         }
     }
 

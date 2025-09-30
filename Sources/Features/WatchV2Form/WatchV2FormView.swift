@@ -120,24 +120,49 @@ public struct WatchV2FormView: View {
         .onChange(of: selectedItem) { _, item in
             guard let item else { return }
             Task { @MainActor in
-                // Save watch first if it's new (photos need a persisted watch)
-                if isNewWatch && !viewModel.watch.manufacturer.isEmpty && !viewModel.watch.modelName.isEmpty {
-                    do {
-                        try repository.create(viewModel.watch)
-                        isNewWatch = false // Mark as saved to prevent duplicate creates
-                    } catch {
-                        // If error is duplicate, it's already saved (ignore)
-                        // Otherwise show error
-                        if !error.localizedDescription.contains("UNIQUE constraint") {
-                            errorMessage = "Failed to save watch: \(error.localizedDescription)"
-                            return
+                do {
+                    print("📸 Photo picker item selected")
+                    
+                    // Save watch first if it's new (photos need a persisted watch)
+                    if isNewWatch && !viewModel.watch.manufacturer.isEmpty && !viewModel.watch.modelName.isEmpty {
+                        print("📸 Saving new watch before photo upload")
+                        do {
+                            try repository.create(viewModel.watch)
+                            isNewWatch = false
+                            print("📸 Watch saved successfully")
+                        } catch {
+                            if error.localizedDescription.contains("UNIQUE constraint") {
+                                print("📸 Watch already exists, continuing")
+                                isNewWatch = false
+                            } else {
+                                print("❌ Failed to save watch: \(error)")
+                                errorMessage = "Failed to save watch: \(error.localizedDescription)"
+                                return
+                            }
                         }
-                        isNewWatch = false
                     }
-                }
-                
-                if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                    
+                    print("📸 Loading image data from picker")
+                    guard let data = try await item.loadTransferable(type: Data.self) else {
+                        print("❌ Failed to load image data")
+                        errorMessage = "Failed to load image data"
+                        return
+                    }
+                    
+                    print("📸 Creating UIImage from data, size: \(data.count) bytes")
+                    guard let image = UIImage(data: data) else {
+                        print("❌ Failed to create UIImage")
+                        errorMessage = "Failed to create image from data"
+                        return
+                    }
+                    
+                    print("📸 Calling addPhoto with image size: \(image.size)")
                     viewModel.addPhoto(from: image)
+                    print("📸 Photo add completed")
+                    
+                } catch {
+                    print("❌ Photo onChange error: \(error)")
+                    errorMessage = "Photo error: \(error.localizedDescription)"
                 }
             }
         }
