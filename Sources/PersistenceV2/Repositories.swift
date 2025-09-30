@@ -396,14 +396,16 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             
             logger.info("🔍 Checking for existing entry on: \(startOfDay.description)")
             
-            // Check if entry already exists for this watch on this date
-            let existingEntry = try WearEntry
-                .filter(Column("watch_id") == watchId && Column("date") >= startOfDay && Column("date") < calendar.date(byAdding: .day, value: 1, to: startOfDay)!)
-                .fetchOne(db)
+            // Check if entry already exists for this watch on this date (raw SQL for clarity)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+            let existingCount = try Int.fetchOne(
+                db,
+                sql: "SELECT COUNT(*) FROM wearentry WHERE watch_id = ? AND date >= ? AND date < ?",
+                arguments: [watchId.uuidString, ISO8601.string(from: startOfDay), ISO8601.string(from: endOfDay)]
+            ) ?? 0
+            logger.info("🔍 Existing entry count: \(existingCount)")
             
-            logger.info("🔍 Existing entry: \(existingEntry != nil)")
-            
-            if existingEntry == nil {
+            if existingCount == 0 {
                 // Create new wear entry
                 let entry = WearEntry(watchId: watchId, date: startOfDay)
                 logger.info("🔍 Attempting to insert wear entry: id=\(entry.id.uuidString), watchId=\(entry.watchId.uuidString)")
