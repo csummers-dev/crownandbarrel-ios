@@ -10,6 +10,10 @@ public final class AppDatabase {
     private init() throws {
         let url = try AppDatabase.databaseURL()
         var config = Configuration()
+        // Enable SQL tracing to help diagnose table/column mismatches at runtime
+        config.trace = { event in
+            print("🧭 SQL TRACE:", event)
+        }
         config.prepareDatabase { db in
             // Use WAL for better concurrency and crash resilience
             try db.execute(sql: "PRAGMA journal_mode=WAL;")
@@ -18,6 +22,26 @@ public final class AppDatabase {
         dbPath = url
         dbQueue = try DatabaseQueue(path: url.path, configuration: config)
         try migrator.migrate(dbQueue)
+
+        // One-time schema dump for debugging: verify tables and columns
+        try dbQueue.read { db in
+            print("📄 DB PATH:", url.path)
+            let tables = try Row.fetchAll(db, sql: "SELECT name, sql FROM sqlite_master WHERE type='table' ORDER BY name")
+            print("📦 Tables:")
+            for row in tables {
+                let name: String = row["name"] ?? ""
+                print("  •", name)
+                if name == "wearentry" || name == "watches" || name == "user_achievement_state" {
+                    let cols = try Row.fetchAll(db, sql: "PRAGMA table_info(\(name))")
+                    print("    Columns for", name, ":")
+                    for c in cols {
+                        let cname: String = c["name"] ?? ""
+                        let ctype: String = c["type"] ?? ""
+                        print("      -", cname, ctype)
+                    }
+                }
+            }
+        }
     }
 
     private static func databaseURL() throws -> URL {
