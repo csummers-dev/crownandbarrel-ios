@@ -26,6 +26,24 @@ jobs:
       - name: Install coreutils for timeout
         run: brew install coreutils
 
+      - name: Debug environment (early)
+        run: |
+          echo "=== Early Environment Debug ==="
+          echo "Xcode version:"
+          xcodebuild -version
+          echo ""
+          echo "Available SDKs:"
+          xcodebuild -showsdks
+          echo ""
+          echo "All available simulators:"
+          xcrun simctl list devices available
+          echo ""
+          echo "iPhone simulators only:"
+          xcrun simctl list devices available | grep iPhone
+          echo ""
+          echo "iPhone 16 Pro simulators specifically:"
+          xcrun simctl list devices available | grep "iPhone 16 Pro"
+
       - name: Cache Swift Package Manager
         uses: actions/cache@v4
         with:
