@@ -96,12 +96,14 @@ public struct WatchV2ListView: View {
                                     .cornerRadius(8)
                             }
                             
+                            #if DEBUG
                             Button("Generate Test Data") {
                                 DevSeedV2.generateTestData()
                                 viewModel.load()
                             }
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                            #endif
                         }
                         .padding()
                         .frame(maxWidth: .infinity, minHeight: 400) // Ensure consistent height
