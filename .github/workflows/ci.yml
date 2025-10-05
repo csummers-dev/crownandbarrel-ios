@@ -44,12 +44,15 @@ jobs:
 
       - name: Boot simulator
         run: |
-          echo "Booting iPhone 17 simulator..."
-          xcrun simctl boot "iPhone 17" || true
+          echo "Available iPhone simulators:"
+          xcrun simctl list devices available | grep iPhone
+          
+          echo "Booting iPhone 16 simulator (latest available)..."
+          xcrun simctl boot "iPhone 16" || true
           echo "Waiting for simulator to be ready..."
           sleep 10
           echo "Simulator status:"
-          xcrun simctl list devices | grep "iPhone 17"
+          xcrun simctl list devices | grep "iPhone 16"
 
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
@@ -61,10 +64,10 @@ jobs:
           xcrun simctl list devices available | grep iPhone
           
           echo "Testing simulator boot status:"
-          xcrun simctl list devices | grep "iPhone 17"
+          xcrun simctl list devices | grep "iPhone 16"
           
           echo "Running unit tests with timeout protection..."
           # Use timeout with 10 minute limit
-          timeout 600 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet
+          timeout 600 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet
           
           echo "Unit tests completed successfully!"
