@@ -66,6 +66,22 @@ jobs:
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
 
+      - name: Debug environment
+        run: |
+          echo "=== Environment Debug ==="
+          echo "Xcode version:"
+          xcodebuild -version
+          echo "Available SDKs:"
+          xcodebuild -showsdks
+          echo "Available destinations:"
+          xcodebuild -showdestinations -scheme "CrownAndBarrel" -project CrownAndBarrel.xcodeproj
+          echo "Simulator processes:"
+          ps aux | grep Simulator || echo "No Simulator processes"
+          echo "Memory usage:"
+          vm_stat
+          echo "Disk space:"
+          df -h
+
       - name: Run unit tests only
         run: |
           echo "Starting unit tests..."
@@ -81,8 +97,14 @@ jobs:
           echo "Testing simulator boot status:"
           xcrun simctl list devices | grep "$SIMULATOR"
           
-          echo "Running unit tests with timeout protection..."
-          # Use timeout with 10 minute limit
-          timeout 600 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR" -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet
+          echo "Checking project and scheme..."
+          xcodebuild -list -project CrownAndBarrel.xcodeproj
+          
+          echo "Testing basic build first..."
+          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR" -quiet
+          
+          echo "Running unit tests with verbose output and timeout..."
+          # Remove -quiet to see what's happening, add timeout
+          timeout 300 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR" -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution
           
           echo "Unit tests completed successfully!"
