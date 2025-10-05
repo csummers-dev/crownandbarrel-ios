@@ -14,7 +14,7 @@ on:
 
 env:
   PROJECT_NAME: "CrownAndBarrel"
-  XCODE_VERSION: "26.0.0"
+  XCODE_VERSION: "26.0.1"
 
 jobs:
   # Validate YAML files
