@@ -78,14 +78,28 @@ jobs:
           echo "=== Environment Debug ==="
           echo "Xcode version:"
           xcodebuild -version
+          echo ""
           echo "Available SDKs:"
           xcodebuild -showsdks
+          echo ""
           echo "Available destinations:"
           xcodebuild -showdestinations -scheme "CrownAndBarrel" -project CrownAndBarrel.xcodeproj
+          echo ""
+          echo "All available simulators:"
+          xcrun simctl list devices available
+          echo ""
+          echo "iPhone simulators only:"
+          xcrun simctl list devices available | grep iPhone
+          echo ""
+          echo "iPhone 16 Pro simulators specifically:"
+          xcrun simctl list devices available | grep "iPhone 16 Pro"
+          echo ""
           echo "Simulator processes:"
           ps aux | grep Simulator || echo "No Simulator processes"
+          echo ""
           echo "Memory usage:"
           vm_stat
+          echo ""
           echo "Disk space:"
           df -h
 
