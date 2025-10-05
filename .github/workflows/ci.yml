@@ -23,6 +23,9 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Install coreutils for timeout
+        run: brew install coreutils
+
       - name: Cache Swift Package Manager
         uses: actions/cache@v4
         with:
@@ -40,10 +43,28 @@ jobs:
             ${{ runner.os }}-deriveddata-
 
       - name: Boot simulator
-        run: xcrun simctl boot "iPhone 17" || true
+        run: |
+          echo "Booting iPhone 17 simulator..."
+          xcrun simctl boot "iPhone 17" || true
+          echo "Waiting for simulator to be ready..."
+          sleep 10
+          echo "Simulator status:"
+          xcrun simctl list devices | grep "iPhone 17"
 
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
 
       - name: Run unit tests only
-        run: xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet | xcpretty
+        run: |
+          echo "Starting unit tests..."
+          echo "Available simulators:"
+          xcrun simctl list devices available | grep iPhone
+          
+          echo "Testing simulator boot status:"
+          xcrun simctl list devices | grep "iPhone 17"
+          
+          echo "Running unit tests with timeout protection..."
+          # Use timeout with 10 minute limit
+          timeout 600 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet
+          
+          echo "Unit tests completed successfully!"
