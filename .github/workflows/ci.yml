@@ -40,10 +40,10 @@ jobs:
             ${{ runner.os }}-deriveddata-
 
       - name: Boot simulator
-        run: xcrun simctl boot "iPhone 17" || true
+        run: xcrun simctl boot "iPhone 15" || true
 
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
 
       - name: Run unit tests only
-        run: xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet | xcpretty
+        run: xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet | xcpretty
