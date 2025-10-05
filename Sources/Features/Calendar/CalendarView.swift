@@ -252,8 +252,6 @@ struct WatchPicker: View {
     @State private var errorMessage: String? = nil
     @State private var unlockedAchievement: Achievement? = nil
     @State private var showUnlockNotification: Bool = false
-    @State private var debugMessage: String? = nil
-    @State private var showDebugAlert: Bool = false
     
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
@@ -283,11 +281,6 @@ struct WatchPicker: View {
             } message: { 
                 Text(errorMessage ?? "") 
             }
-            .alert("Debug Info", isPresented: $showDebugAlert) {
-                Button("OK") { showDebugAlert = false }
-            } message: {
-                Text(debugMessage ?? "")
-            }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
             .achievementUnlockNotification(achievement: unlockedAchievement, isPresented: $showUnlockNotification)
@@ -303,36 +296,13 @@ struct WatchPicker: View {
     }
     private func mark(watch: WatchV2) async {
         do {
-            // DIAGNOSTIC: Show runtime database info
-            let dbInfo = await getDatabaseDiagnostics()
-            debugMessage = "🔍 DATABASE DIAGNOSTICS:\n\n\(dbInfo)\n\nStep 1: Checking if watch exists..."
-            showDebugAlert = true
-            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
-            
-            // Step 1: Verify watch exists
-            let fetchedWatch = try repository.fetch(id: watch.id)
-            guard fetchedWatch != nil else {
-                errorMessage = "Watch not found in database!\n\nThis shouldn't happen. The watch appeared in the list but isn't in the database.\n\nWatch ID: \(watch.id.uuidString)"
-                return
-            }
-            
-            // DEBUG: Watch found
-            debugMessage = "Step 2: Watch found! Now adding wear entry..."
-            showDebugAlert = true
-            try await Task.sleep(nanoseconds: 500_000_000)
-            
-            // Step 2: Increment wear
+            // Add wear entry
             try await repository.incrementWear(for: watch.id, on: date)
             
-            // DEBUG: Success
-            debugMessage = "Step 3: Wear added successfully! Evaluating achievements..."
-            showDebugAlert = true
-            try await Task.sleep(nanoseconds: 500_000_000)
-            
-            // Step 3: Evaluate achievements
+            // Evaluate achievements
             let newlyUnlockedIds = try await evaluator.evaluateOnWearLogged(watchId: watch.id, date: date)
             
-            // Step 4: Show notification if achievement unlocked
+            // Show notification if achievement unlocked
             if let firstUnlockedId = newlyUnlockedIds.first,
                let achievement = try await achievementRepository.fetchDefinition(id: firstUnlockedId) {
                 unlockedAchievement = achievement
@@ -341,55 +311,8 @@ struct WatchPicker: View {
             
             dismiss()
             onComplete?()
-        }
-        catch { 
-            // Show detailed error message
-            errorMessage = "ERROR at Step 2 or 3:\n\n\(error.localizedDescription)\n\nWatch: \(watch.manufacturer) \(watch.modelName)\nWatch ID: \(watch.id.uuidString)\nDate: \(date)"
-        }
-    }
-    
-    private func getDatabaseDiagnostics() async -> String {
-        do {
-            let db = AppDatabase.shared.dbQueue
-            return try await db.read { database in
-                var info = "📄 Database Path: \(AppDatabase.shared.dbPath.path)\n\n"
-                
-                // Check WearEntry table name mapping
-                info += "🔧 WearEntry.databaseTableName: \(WearEntry.databaseTableName)\n"
-                info += "🔧 WearEntry.CodingKeys.watchId: \(WearEntry.CodingKeys.watchId.rawValue)\n\n"
-                
-                // List all tables
-                let tables = try Row.fetchAll(database, sql: "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
-                info += "📦 Tables in database:\n"
-                for row in tables {
-                    let name: String = row["name"] ?? ""
-                    info += "  • \(name)\n"
-                }
-                info += "\n"
-                
-                // Check wearentry table specifically
-                let wearentryExists = try Bool.fetchOne(database, sql: "SELECT COUNT(*) > 0 FROM sqlite_master WHERE type='table' AND name='wearentry'") ?? false
-                let wearEntryExists = try Bool.fetchOne(database, sql: "SELECT COUNT(*) > 0 FROM sqlite_master WHERE type='table' AND name='wearEntry'") ?? false
-                
-                info += "🔍 Table existence check:\n"
-                info += "  • 'wearentry' (lowercase): \(wearentryExists ? "✅ EXISTS" : "❌ MISSING")\n"
-                info += "  • 'wearEntry' (camelCase): \(wearEntryExists ? "✅ EXISTS" : "❌ MISSING")\n\n"
-                
-                if wearentryExists {
-                    // Check wearentry columns
-                    let columns = try Row.fetchAll(database, sql: "PRAGMA table_info(wearentry)")
-                    info += "📋 wearentry table columns:\n"
-                    for col in columns {
-                        let name: String = col["name"] ?? ""
-                        let type: String = col["type"] ?? ""
-                        info += "  • \(name) (\(type))\n"
-                    }
-                }
-                
-                return info
-            }
-        } catch {
-            return "❌ Error getting diagnostics: \(error.localizedDescription)"
+        } catch { 
+            errorMessage = error.localizedDescription
         }
     }
 }

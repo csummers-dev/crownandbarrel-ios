@@ -14,6 +14,16 @@ public final class AppDatabase {
             // Use WAL for better concurrency and crash resilience
             try db.execute(sql: "PRAGMA journal_mode=WAL;")
             try db.execute(sql: "PRAGMA foreign_keys=ON;")
+            
+            // Verify foreign keys are enabled
+            let foreignKeysEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
+            if !foreignKeysEnabled {
+                print("⚠️ WARNING: Foreign keys were not enabled in prepareDatabase!")
+                // Force enable them again
+                try db.execute(sql: "PRAGMA foreign_keys=ON;")
+            } else {
+                print("✅ Foreign keys successfully enabled in prepareDatabase")
+            }
         }
         dbPath = url
         dbQueue = try DatabaseQueue(path: url.path, configuration: config)
@@ -35,8 +45,28 @@ public final class AppDatabase {
                         let ctype: String = c["type"] ?? ""
                         print("      -", cname, ctype)
                     }
+                    
+                    // Check foreign keys for wearentry
+                    if name == "wearentry" {
+                        let fks = try Row.fetchAll(db, sql: "PRAGMA foreign_key_list(\(name))")
+                        if !fks.isEmpty {
+                            print("    Foreign Keys:")
+                            for fk in fks {
+                                let table: String = fk["table"] ?? ""
+                                let from: String = fk["from"] ?? ""
+                                let to: String = fk["to"] ?? ""
+                                print("      - \(from) → \(table)(\(to))")
+                            }
+                        } else {
+                            print("    ⚠️ NO FOREIGN KEYS DEFINED!")
+                        }
+                    }
                 }
             }
+            
+            // Check foreign keys status
+            let fkEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
+            print("🔑 Foreign keys enabled:", fkEnabled)
         }
     }
 
@@ -157,6 +187,9 @@ public final class AppDatabase {
 
         // v3: add wear entries table for tracking when watches are worn
         migrator.registerMigration("v3_create_wear_entries") { db in
+            // CRITICAL: Enable foreign keys for this migration
+            try db.execute(sql: "PRAGMA foreign_keys=ON;")
+            
             // Check if table already exists (GRDB defaults to lowercase table names)
             let tableExists = try Bool.fetchOne(db, sql: """
                 SELECT COUNT(*) > 0 FROM sqlite_master 
@@ -177,9 +210,66 @@ public final class AppDatabase {
                 try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watch_id", "date"])
             }
         }
+        
+        // v3.1: CRITICAL FIX - Recreate wearentry table with foreign keys properly enabled
+        // This migration fixes existing databases where the table was created without FK constraints
+        migrator.registerMigration("v3.1_recreate_wear_entries_with_fk") { db in
+            // CRITICAL: Ensure foreign keys are enabled
+            try db.execute(sql: "PRAGMA foreign_keys=ON;")
+            
+            // Check if the table exists
+            let tableExists = try Bool.fetchOne(db, sql: """
+                SELECT COUNT(*) > 0 FROM sqlite_master 
+                WHERE type='table' AND name='wearentry'
+            """) ?? false
+            
+            if tableExists {
+                // Back up existing data
+                try db.execute(sql: """
+                    CREATE TABLE IF NOT EXISTS wearentry_backup AS 
+                    SELECT * FROM wearentry
+                """)
+                
+                // Drop the old table
+                try db.execute(sql: "DROP TABLE IF EXISTS wearentry")
+            }
+            
+            // Recreate the table with foreign keys properly enabled
+            try db.create(table: "wearentry") { t in
+                t.column("id", .text).primaryKey() // UUID string
+                t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
+                t.column("date", .text).notNull()
+            }
+            
+            // Restore data if backup exists
+            let backupExists = try Bool.fetchOne(db, sql: """
+                SELECT COUNT(*) > 0 FROM sqlite_master 
+                WHERE type='table' AND name='wearentry_backup'
+            """) ?? false
+            
+            if backupExists {
+                // Only restore entries where the watch_id exists in watches table
+                try db.execute(sql: """
+                    INSERT INTO wearentry (id, watch_id, date)
+                    SELECT wb.id, wb.watch_id, wb.date
+                    FROM wearentry_backup wb
+                    WHERE EXISTS (SELECT 1 FROM watches WHERE id = wb.watch_id)
+                """)
+                
+                // Drop the backup table
+                try db.execute(sql: "DROP TABLE wearentry_backup")
+            }
+            
+            // Recreate indexes
+            try db.create(index: "idx_wear_entries_date", on: "wearentry", columns: ["date"])
+            try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watch_id", "date"])
+        }
 
         // v4: add achievements system tables
         migrator.registerMigration("v4_create_achievements") { db in
+            // CRITICAL: Enable foreign keys for this migration
+            try db.execute(sql: "PRAGMA foreign_keys=ON;")
+            
             // achievements table (definitions - these are constant and defined in code)
             try db.create(table: "achievements") { t in
                 t.column("id", .text).primaryKey() // UUID string
@@ -210,6 +300,11 @@ public final class AppDatabase {
             
             // Composite index for filtering unlocked achievements
             try db.create(index: "idx_user_achievement_state_unlocked_date", on: "user_achievement_state", columns: ["is_unlocked", "unlocked_at"])
+        }
+
+        // v5: ensure foreign keys are enabled (critical for data integrity)
+        migrator.registerMigration("v5_enable_foreign_keys") { db in
+            try db.execute(sql: "PRAGMA foreign_keys=ON;")
         }
 
         return migrator

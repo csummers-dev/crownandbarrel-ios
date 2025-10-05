@@ -66,17 +66,12 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack {
-                CollectionView()
-                    .navigationTitle(Brand.appDisplayName)
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        settingsToolbar
-                        ToolbarItem(placement: .principal) {
-                            Text(Brand.appDisplayName)
-                                .font(AppTypography.titleCompact)
-                                .foregroundStyle(AppColors.accent)
-                        }
-                    }
+                WatchV2ListView()
+                .navigationTitle(Brand.appDisplayName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    settingsToolbar
+                }
             }
             .tabItem { Label("Collection", systemImage: "rectangle.grid.2x2") }
             .tag(Tab.collection)
@@ -87,9 +82,6 @@ struct RootView: View {
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         settingsToolbar
-                        ToolbarItem(placement: .principal) {
-                            Text("Stats").font(AppTypography.titleCompact).foregroundStyle(AppColors.accent)
-                        }
                     }
             }
             .tabItem { Label("Stats", systemImage: "chart.bar") }
@@ -101,9 +93,6 @@ struct RootView: View {
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         settingsToolbar
-                        ToolbarItem(placement: .principal) {
-                            Text("Calendar").font(AppTypography.titleCompact).foregroundStyle(AppColors.accent)
-                        }
                     }
             }
             .tabItem { Label("Calendar", systemImage: "calendar") }
@@ -111,7 +100,7 @@ struct RootView: View {
         }
         .id(themeToken) // Force TabView rebuild when theme changes for immediate color updates
         .background(AppColors.background.ignoresSafeArea())
-        .onChange(of: selectedTab) { _, newTab in
+        .onChange(of: selectedTab) { _, _ in
             // What: Provide haptic feedback when user switches between tabs
             // Why: Gives tactile confirmation of navigation changes for improved UX
             // How: Use debounced haptic to prevent overwhelming feedback during rapid tab switching
@@ -128,7 +117,7 @@ struct RootView: View {
                 let detectedStyle: String = {
                     if let v = forcedValue?.lowercased(), v == "dark" { return "dark" }
                     if let v = forcedValue?.lowercased(), v == "light" { return "light" }
-                    return UIScreen.main.traitCollection.userInterfaceStyle == .dark ? "dark" : "light"
+                    return UITraitCollection.current.userInterfaceStyle == .dark ? "dark" : "light"
                 }()
                 let themeId = UserDefaults.standard.string(forKey: "selectedThemeId") ?? ""
                 Text("system:\(detectedStyle);theme:\(themeId)")

@@ -56,11 +56,23 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
     public init(dbQueue: DatabaseQueue = AppDatabase.shared.dbQueue) {
         self.dbQueue = dbQueue
     }
+    
+    /// Ensures foreign keys are enabled for every database operation
+    private func ensureForeignKeysEnabled(_ db: Database) throws {
+        try db.execute(sql: "PRAGMA foreign_keys=ON;")
+        let foreignKeysEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
+        if !foreignKeysEnabled {
+            print("⚠️ CRITICAL: Foreign keys are still disabled after PRAGMA foreign_keys=ON!")
+        }
+    }
 
     // MARK: - CRUD
 
     public func create(_ watch: WatchV2) throws {
         try dbQueue.write { db in
+            // Ensure foreign keys are enabled for data integrity
+            try ensureForeignKeysEnabled(db)
+            
             try insertWatch(db: db, watch: watch)
             try upsertChildren(db: db, watchId: watch.id, watch: watch)
             try updateHasPhotosFlag(db: db, watchId: watch.id)
@@ -69,6 +81,9 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
 
     public func update(_ watch: WatchV2) throws {
         try dbQueue.write { db in
+            // Ensure foreign keys are enabled for data integrity
+            try ensureForeignKeysEnabled(db)
+            
             try updateWatch(db: db, watch: watch)
             try deleteChildren(db: db, watchId: watch.id)
             try upsertChildren(db: db, watchId: watch.id, watch: watch)
@@ -78,6 +93,9 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
 
     public func delete(id: UUID) throws {
         try dbQueue.write { db in
+            // Ensure foreign keys are enabled for data integrity
+            try ensureForeignKeysEnabled(db)
+            
             _ = try Row.fetchOne(db, sql: "DELETE FROM watches WHERE id = ?", arguments: [id.uuidString])
         }
     }
@@ -382,6 +400,14 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         try await dbQueue.write { db in
             logger.info("🔍 incrementWear called for watchId: \(watchId.uuidString)")
             
+            // CRITICAL: Always enable foreign keys at the start of every write operation
+            // This ensures data integrity regardless of the prepareDatabase block
+            try self.ensureForeignKeysEnabled(db)
+            
+            // Check foreign keys status for logging
+            let foreignKeysEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
+            logger.info("🔍 Foreign keys enabled: \(foreignKeysEnabled)")
+            
             // Verify watch exists
             let watchExists = try Bool.fetchOne(db, sql: "SELECT COUNT(*) > 0 FROM watches WHERE id = ?", arguments: [watchId.uuidString]) ?? false
             logger.info("🔍 Watch exists in DB: \(watchExists)")
@@ -411,10 +437,16 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
                 logger.info("🔍 Attempting to insert wear entry: id=\(entry.id.uuidString), watchId=\(entry.watchId.uuidString)")
                 
                 do {
+                    // Double-check foreign keys are enabled before insertion
+                    try self.ensureForeignKeysEnabled(db)
+                    
                     try entry.insert(db)
                     logger.info("✅ Wear entry inserted successfully")
                 } catch {
                     logger.error("❌ Insert failed: \(error.localizedDescription)")
+                    // Log additional debugging info
+                    let foreignKeysStatus = try? Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
+                    logger.error("❌ Foreign keys status at failure: \(foreignKeysStatus ?? false)")
                     throw error
                 }
             } else {

@@ -27,7 +27,7 @@ final class HapticIntegrationUITests: XCTestCase {
     /// Tests collection view haptic interactions don't break navigation.
     func testCollectionViewHapticIntegration() throws {
         // Wait for collection view to load
-        let collectionView = app.collectionViews.firstMatch
+        let collectionView = app.scrollViews.firstMatch
         XCTAssertTrue(collectionView.waitForExistence(timeout: 5.0))
         
         // Test watch card selection (should trigger haptic but not break navigation)
@@ -285,7 +285,7 @@ final class HapticIntegrationUITests: XCTestCase {
     /// Tests watch detail view haptic interactions don't break functionality.
     func testWatchDetailViewHaptics() throws {
         // Navigate to collection and select a watch
-        let collectionView = app.collectionViews.firstMatch
+        let collectionView = app.scrollViews.firstMatch
         XCTAssertTrue(collectionView.waitForExistence(timeout: 5.0))
         
         let watchCards = collectionView.cells

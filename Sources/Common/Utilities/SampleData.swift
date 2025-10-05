@@ -5,18 +5,18 @@ import Foundation
 /// - Why: Speeds up UI testing and manual verification without manual entry.
 /// - How: Creates a predictable sequence cycling through arrays.
 public enum SampleData {
-    public static func makeWatches(count: Int) -> [Watch] {
+    public static func makeWatches(count: Int) -> [WatchV2] {
         let manufacturers = ["Rolex", "Omega", "Seiko", "Tudor", "Casio", "Citizen"]
         let models = ["Submariner", "Speedmaster", "SKX007", "Black Bay", "G-Shock", "Promaster"]
         return (0..<count).map { idx in
-            Watch(
+            WatchV2(
                 manufacturer: manufacturers[idx % manufacturers.count],
-                model: models[idx % models.count],
-                category: .diver,
-                movement: .automatic,
-                isFavorite: idx % 5 == 0,
-                purchasePrice: Decimal(1000 + idx * 10),
-                currentValue: Decimal(1200 + idx * 10)
+                modelName: models[idx % models.count],
+                movement: MovementSpec(type: .automatic),
+                ownership: WatchOwnership(
+                    purchasePriceAmount: Decimal(1000 + idx * 10),
+                    currentEstimatedValueAmount: Decimal(1200 + idx * 10)
+                )
             )
         }
     }

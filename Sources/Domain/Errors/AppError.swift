@@ -7,6 +7,7 @@ public enum AppError: LocalizedError, Equatable {
     case repository(String)
     case backupFailed(String)
     case restoreFailed(String)
+    case backupImportFailed(String)
     case incompatibleBackup(String)
     case deleteAllRequiresConfirmation
     case unknown
@@ -22,6 +23,8 @@ public enum AppError: LocalizedError, Equatable {
         case .backupFailed(let message):
             return message
         case .restoreFailed(let message):
+            return message
+        case .backupImportFailed(let message):
             return message
         case .incompatibleBackup(let message):
             return message

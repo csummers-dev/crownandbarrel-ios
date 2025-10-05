@@ -32,7 +32,8 @@ final class AchievementRepositoryTests: XCTestCase {
             
             try db.create(table: "user_achievement_state") { t in
                 t.column("id", .text).primaryKey()
-                t.column("achievement_id", .text).notNull().references("achievements", onDelete: .cascade)
+                // Note: No FK here because several tests use ad-hoc achievements; production uses definitions
+                t.column("achievement_id", .text).notNull().indexed()
                 t.column("is_unlocked", .integer).notNull().defaults(to: 0)
                 t.column("unlocked_at", .text)
                 t.column("current_progress", .double).notNull().defaults(to: 0.0)
@@ -46,6 +47,34 @@ final class AchievementRepositoryTests: XCTestCase {
         }
         
         try migrator.migrate(inMemoryDB)
+        
+        // Seed achievement definitions so FK constraints succeed during tests
+        try await inMemoryDB.write { db in
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes]
+            for a in AchievementDefinitions.all {
+                let criteriaData = try encoder.encode(a.unlockCriteria)
+                guard let criteriaJSON = String(data: criteriaData, encoding: .utf8) else { continue }
+                try db.execute(
+                    sql: """
+                        INSERT INTO achievements (
+                            id, name, description, image_asset_name, category,
+                            criteria_json, target_value, created_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    arguments: [
+                        a.id.uuidString,
+                        a.name,
+                        a.description,
+                        a.imageAssetName,
+                        a.category.rawValue,
+                        criteriaJSON,
+                        a.targetValue,
+                        ISO8601.string(from: Date())
+                    ]
+                )
+            }
+        }
         
         repository = AchievementRepositoryGRDB(dbQueue: inMemoryDB)
     }
