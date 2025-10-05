@@ -47,12 +47,21 @@ jobs:
           echo "Available iPhone simulators:"
           xcrun simctl list devices available | grep iPhone
           
-          echo "Booting iPhone 16 simulator (latest available)..."
-          xcrun simctl boot "iPhone 16" || true
+          # Try iPhone 17 first, fallback to iPhone 16 if not available
+          if xcrun simctl list devices available | grep -q "iPhone 17"; then
+            echo "Booting iPhone 17 simulator..."
+            xcrun simctl boot "iPhone 17" || true
+            SIMULATOR="iPhone 17"
+          else
+            echo "iPhone 17 not available, using iPhone 16..."
+            xcrun simctl boot "iPhone 16" || true
+            SIMULATOR="iPhone 16"
+          fi
+          
           echo "Waiting for simulator to be ready..."
           sleep 10
           echo "Simulator status:"
-          xcrun simctl list devices | grep "iPhone 16"
+          xcrun simctl list devices | grep "$SIMULATOR"
 
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
@@ -60,14 +69,20 @@ jobs:
       - name: Run unit tests only
         run: |
           echo "Starting unit tests..."
-          echo "Available simulators:"
-          xcrun simctl list devices available | grep iPhone
           
+          # Determine which simulator to use (same logic as boot step)
+          if xcrun simctl list devices available | grep -q "iPhone 17"; then
+            SIMULATOR="iPhone 17"
+          else
+            SIMULATOR="iPhone 16"
+          fi
+          
+          echo "Using simulator: $SIMULATOR"
           echo "Testing simulator boot status:"
-          xcrun simctl list devices | grep "iPhone 16"
+          xcrun simctl list devices | grep "$SIMULATOR"
           
           echo "Running unit tests with timeout protection..."
           # Use timeout with 10 minute limit
-          timeout 600 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 16' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet
+          timeout 600 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR" -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet
           
           echo "Unit tests completed successfully!"
