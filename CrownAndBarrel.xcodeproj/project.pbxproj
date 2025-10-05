@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05D138399817C4D78E30537F /* WearEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEEA0840A5107B54A7196CE /* WearEntryTests.swift */; };
 		0C00147A27F02139FC63C9ED /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A7E14FBC7396E2C345E576 /* Enums.swift */; };
 		0C749AB1023439DFBDCA32CE /* CollectionImageRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5463C4E5B4C0FD8946C87805 /* CollectionImageRefreshUITests.swift */; };
 		0D98C4EFB084EA9DE79E6D50 /* Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45751E182AB37CBAD741AFA /* Appearance.swift */; };
@@ -159,6 +160,7 @@
 		25FA41234E4DFEDC5B3923B3 /* Spacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spacing.swift; sourceTree = "<group>"; };
 		260DE435ECF672146F8F7950 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		265215670CFA47358E97835E /* Placeholders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholders.swift; sourceTree = "<group>"; };
+		2EEEA0840A5107B54A7196CE /* WearEntryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WearEntryTests.swift; sourceTree = "<group>"; };
 		2F2B93F9791B1EC255A7DB33 /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		302E7DBBF82190EA0726F703 /* AssetsPresenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsPresenceTests.swift; sourceTree = "<group>"; };
 		33C55EC07E208EDA47A5696B /* FullScreenLaunchUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenLaunchUITests.swift; sourceTree = "<group>"; };
@@ -588,6 +590,7 @@
 				7FBD6EF55E517D2CFB1CAD1A /* ThemeSystemTests.swift */,
 				E10FC5993657650FC5F286E3 /* WatchRepositoryGRDBTests.swift */,
 				A606BFB6BC229B927028EB58 /* WatchValidationTests.swift */,
+				2EEEA0840A5107B54A7196CE /* WearEntryTests.swift */,
 			);
 			name = Unit;
 			path = Tests/Unit;
@@ -749,6 +752,7 @@
 				97BB3604804CD26CE641BCEB /* ThemeSystemTests.swift in Sources */,
 				4512CC2BD9C52B106F166A14 /* WatchRepositoryGRDBTests.swift in Sources */,
 				15C85EC98730F8B412B26639 /* WatchValidationTests.swift in Sources */,
+				05D138399817C4D78E30537F /* WearEntryTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

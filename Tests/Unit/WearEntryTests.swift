@@ -53,6 +53,58 @@ final class WearEntryTests: XCTestCase {
             }
         }
         
+        // v2: Create watch photos table (needed by repository invariants)
+        migrator.registerMigration("v2_create_watch_photos") { db in
+            try db.create(table: "watch_photos") { t in
+                t.column("id", .text).primaryKey()
+                t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
+                t.column("local_identifier", .text).notNull()
+                t.column("is_primary", .integer).notNull().defaults(to: 0)
+                t.column("position", .integer).notNull().defaults(to: 0)
+            }
+            try db.create(index: "idx_watch_photos_watch_id", on: "watch_photos", columns: ["watch_id"]) 
+        }
+
+        // v2.1: Create service history table (queried by repository detail fetch)
+        migrator.registerMigration("v2_1_create_service_history") { db in
+            try db.create(table: "service_history") { t in
+                t.column("id", .text).primaryKey()
+                t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
+                t.column("date", .text)
+                t.column("provider", .text)
+                t.column("work_description", .text)
+                t.column("cost_amount", .double)
+                t.column("cost_currency", .text)
+                t.column("warranty_until", .text)
+            }
+        }
+
+        // v2.2: Create valuations table (queried by repository detail fetch)
+        migrator.registerMigration("v2_2_create_valuations") { db in
+            try db.create(table: "valuations") { t in
+                t.column("id", .text).primaryKey()
+                t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
+                t.column("date", .text)
+                t.column("source", .text)
+                t.column("value_amount", .double)
+                t.column("value_currency", .text)
+            }
+        }
+
+        // v2.3: Create straps inventory table (queried by repository detail fetch)
+        migrator.registerMigration("v2_3_create_straps_inventory") { db in
+            try db.create(table: "straps_inventory") { t in
+                t.column("id", .text).primaryKey()
+                t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
+                t.column("type", .text)
+                t.column("material", .text)
+                t.column("color", .text)
+                t.column("width_mm", .integer)
+                t.column("clasp_type", .text)
+                t.column("quick_release", .integer).notNull().defaults(to: 0)
+            }
+        }
+        
         // v3: Create wear entries table
         migrator.registerMigration("v3_create_wear_entries") { db in
             try db.execute(sql: "PRAGMA foreign_keys=ON;")
@@ -242,7 +294,7 @@ final class WearEntryTests: XCTestCase {
         try repository.create(watch)
         
         // Verify the UUID is stored as TEXT in the watches table
-        let watchIdFromDB = try dbQueue.read { db in
+        let watchIdFromDB = try await dbQueue.read { db in
             try String.fetchOne(db, sql: "SELECT id FROM watches WHERE id = ?", arguments: [watch.id.uuidString])
         }
         XCTAssertNotNil(watchIdFromDB, "Watch ID should be stored as TEXT")
@@ -252,7 +304,7 @@ final class WearEntryTests: XCTestCase {
         try await repository.incrementWear(for: watch.id, on: Date())
         
         // Verify the UUID is stored as TEXT in the wearentry table
-        let wearWatchIdFromDB = try dbQueue.read { db in
+        let wearWatchIdFromDB = try await dbQueue.read { db in
             try String.fetchOne(db, sql: "SELECT watch_id FROM wearentry WHERE watch_id = ?", arguments: [watch.id.uuidString])
         }
         XCTAssertNotNil(wearWatchIdFromDB, "Wear entry watch_id should be stored as TEXT")
