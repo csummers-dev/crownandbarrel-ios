@@ -275,58 +275,25 @@ final class StreakCalculatorTests: XCTestCase {
         XCTAssertEqual(streak, 0)
     }
     
-    func testCalculateConsecutiveWeekendsSaturday() {
+    func testConsecutiveWeekendsVariants() {
         let watchId = UUID()
         
-        // Find most recent Saturday
-        var saturday = calendar.startOfDay(for: Date())
-        while calendar.component(.weekday, from: saturday) != 7 {
-            saturday = calendar.date(byAdding: .day, value: -1, to: saturday)!
-        }
+        struct Case { let name: String; let dates: [Date] }
         
-        let entries = [
-            WearEntry(watchId: watchId, date: saturday)
-        ]
-        
-        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
-        XCTAssertGreaterThanOrEqual(streak, 1)
-    }
-    
-    func testCalculateConsecutiveWeekendsSunday() {
-        let watchId = UUID()
-        
-        // Find most recent Sunday
-        var sunday = calendar.startOfDay(for: Date())
-        while calendar.component(.weekday, from: sunday) != 1 {
-            sunday = calendar.date(byAdding: .day, value: -1, to: sunday)!
-        }
-        
-        let entries = [
-            WearEntry(watchId: watchId, date: sunday)
-        ]
-        
-        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
-        XCTAssertGreaterThanOrEqual(streak, 1)
-    }
-    
-    func testCalculateConsecutiveWeekendsBothDays() {
-        let watchId = UUID()
-        
-        // Find most recent Saturday
-        var saturday = calendar.startOfDay(for: Date())
-        while calendar.component(.weekday, from: saturday) != 7 {
-            saturday = calendar.date(byAdding: .day, value: -1, to: saturday)!
-        }
-        
+        let saturday = mostRecent(weekday: 7)
         let sunday = calendar.date(byAdding: .day, value: 1, to: saturday)!
         
-        let entries = [
-            WearEntry(watchId: watchId, date: saturday),
-            WearEntry(watchId: watchId, date: sunday)
+        let cases: [Case] = [
+            Case(name: "Saturday only", dates: [saturday]),
+            Case(name: "Sunday only", dates: [sunday]),
+            Case(name: "Both weekend days", dates: [saturday, sunday])
         ]
         
-        let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
-        XCTAssertGreaterThanOrEqual(streak, 1, "Both weekend days should count as one weekend")
+        for testCase in cases {
+            let entries = testCase.dates.map { WearEntry(watchId: watchId, date: $0) }
+            let streak = StreakCalculator.calculateConsecutiveWeekends(from: entries)
+            XCTAssertGreaterThanOrEqual(streak, 1, testCase.name)
+        }
     }
     
     // MARK: - Consecutive Weekdays Tests
@@ -406,5 +373,14 @@ final class StreakCalculatorTests: XCTestCase {
         XCTAssertEqual(streak1, streak2)
         XCTAssertEqual(streak2, streak3)
         XCTAssertEqual(streak1, 7)
+    }
+
+    // MARK: - Helpers
+    private func mostRecent(weekday: Int) -> Date {
+        var date = calendar.startOfDay(for: Date())
+        while calendar.component(.weekday, from: date) != weekday {
+            date = calendar.date(byAdding: .day, value: -1, to: date)!
+        }
+        return date
     }
 }

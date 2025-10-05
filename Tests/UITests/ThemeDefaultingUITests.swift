@@ -3,6 +3,8 @@ import XCTest
 final class ThemeDefaultingUITests: XCTestCase {
     func testInitialThemeMatchesSystemWhenNoSavedPreference() {
         let app = XCUIApplication()
+        app.launchEnvironment["UI_TESTS_DISABLE_ANIMATIONS"] = "1"
+        app.launchEnvironment["UI_TESTS_FIXED_DATE"] = "2024-01-15T12:00:00Z"
         // Reset any persisted theme and expose system style via test hook
         app.launchArguments += ["--uiTestResetTheme", "--uiTestExposeThemeInfo"]
         app.launch()
@@ -24,6 +26,8 @@ final class ThemeDefaultingUITests: XCTestCase {
     func testInitialThemeForcedLight() {
         let suiteName = "UITestDefaults"
         let app = XCUIApplication()
+        app.launchEnvironment["UI_TESTS_DISABLE_ANIMATIONS"] = "1"
+        app.launchEnvironment["UI_TESTS_FIXED_DATE"] = "2024-01-15T12:00:00Z"
         app.launchEnvironment["UITestDefaultsSuite"] = suiteName
         app.launchArguments += ["--uiTestResetTheme", "--uiTestExposeThemeInfo", "--uiTestForceSystemStyle=light"]
         app.launch()
@@ -39,6 +43,8 @@ final class ThemeDefaultingUITests: XCTestCase {
     func testInitialThemeForcedDark() {
         let suiteName = "UITestDefaults"
         let app = XCUIApplication()
+        app.launchEnvironment["UI_TESTS_DISABLE_ANIMATIONS"] = "1"
+        app.launchEnvironment["UI_TESTS_FIXED_DATE"] = "2024-01-15T12:00:00Z"
         app.launchEnvironment["UITestDefaultsSuite"] = suiteName
         app.launchArguments += ["--uiTestResetTheme", "--uiTestExposeThemeInfo", "--uiTestForceSystemStyle=dark"]
         app.launch()

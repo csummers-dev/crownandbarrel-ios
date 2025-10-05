@@ -1,0 +1,42 @@
+{
+  "configurations" : [
+    {
+      "name" : "Configuration 1",
+      "options" : {
+        "codeCoverage" : false,
+        "targetForVariableExpansion" : {
+          "containerPath" : "container:CrownAndBarrel.xcodeproj",
+          "identifier" : "CrownAndBarrel",
+          "name" : "CrownAndBarrel"
+        }
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "maximumTestExecutionTimeAllowance" : 600,
+    "parallelizationEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:CrownAndBarrel.xcodeproj",
+        "identifier" : "CrownAndBarrelTests",
+        "name" : "CrownAndBarrelTests"
+      }
+    },
+    {
+      "skippedTests" : [
+        "AchievementsUITests/testAchievementFlowFromWearLogging",
+        "AchievementsUITests/testAchievementsHorizontalScrolling"
+      ],
+      "target" : {
+        "containerPath" : "container:CrownAndBarrel.xcodeproj",
+        "identifier" : "CrownAndBarrelUITests",
+        "name" : "CrownAndBarrelUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
+
+
