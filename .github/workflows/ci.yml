@@ -5,6 +5,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
 
 jobs:
   test:
@@ -16,8 +21,27 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.0.app
 
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved', '**/project.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('Sources/**/*.swift', 'Tests/**/*.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+
+      - name: Boot simulator
+        run: xcrun simctl boot "iPhone 17" || true
+
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
 
       - name: Run unit tests only
-        run: xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:CrownAndBarrelTests -quiet | xcpretty
+        run: xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination 'platform=iOS Simulator,name=iPhone 17' -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution -quiet | xcpretty

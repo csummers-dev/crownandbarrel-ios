@@ -2,9 +2,14 @@ name: iOS CI (Fast Feedback)
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
-    branches: ["**"]
+    branches: ["main"]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
 
 # Fast feedback pipeline for all branches - runs essential tests only
 
