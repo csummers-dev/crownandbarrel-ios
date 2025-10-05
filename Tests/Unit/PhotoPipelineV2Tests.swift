@@ -3,6 +3,25 @@ import UIKit
 @testable import CrownAndBarrel
 
 final class PhotoPipelineV2Tests: XCTestCase {
+    
+    private var testWatchIds: [UUID] = []
+    
+    override func setUpWithError() throws {
+        testWatchIds = []
+    }
+    
+    override func tearDownWithError() throws {
+        // Clean up any test files created during tests
+        for watchId in testWatchIds {
+            // Clean up photo directories for test watch IDs
+            let photoDir = try PhotoStoreV2.photosDirectory(watchId: watchId)
+            if FileManager.default.fileExists(atPath: photoDir.path) {
+                try? FileManager.default.removeItem(at: photoDir)
+            }
+        }
+        testWatchIds = []
+    }
+    
     func makeSquareImage(color: UIColor = .systemBlue, size: CGFloat = 1400) -> UIImage {
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: size, height: size))
         return renderer.image { ctx in
@@ -14,6 +33,8 @@ final class PhotoPipelineV2Tests: XCTestCase {
     func testAddAndDeletePhoto() throws {
         let pipeline = PhotoPipelineV2()
         let watchId = UUID()
+        testWatchIds.append(watchId) // Track for cleanup
+        
         let img = makeSquareImage()
         let (photo, list) = try pipeline.addPhoto(watchId: watchId, sourceImage: img, existingPhotos: [])
         XCTAssertEqual(list.count, 1)

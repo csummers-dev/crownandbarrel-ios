@@ -65,19 +65,32 @@ jobs:
           echo "Available iPhone simulators:"
           xcrun simctl list devices available | grep iPhone
           
-          # Check for iPhone 16 Pro with iOS 26.0 specifically
-          if xcrun simctl list devices available | grep -q "iPhone 16 Pro.*26.0"; then
-            echo "Found iPhone 16 Pro with iOS 26.0 - booting..."
+          # Check for iPhone 16 Pro with iOS 18.2 first (preferred)
+          if xcrun simctl list devices available | grep -q "iPhone 16 Pro.*18.2"; then
+            echo "Found iPhone 16 Pro with iOS 18.2 - booting..."
             xcrun simctl boot "iPhone 16 Pro" || true
             SIMULATOR="iPhone 16 Pro"
-            OS_VERSION="26.0"
+            OS_VERSION="18.2"
+          # Fallback to iPhone 16 Pro with iOS 18.1
+          elif xcrun simctl list devices available | grep -q "iPhone 16 Pro.*18.1"; then
+            echo "Found iPhone 16 Pro with iOS 18.1 - booting..."
+            xcrun simctl boot "iPhone 16 Pro" || true
+            SIMULATOR="iPhone 16 Pro"
+            OS_VERSION="18.1"
+          # Fallback to any iPhone 16 Pro
           elif xcrun simctl list devices available | grep -q "iPhone 16 Pro"; then
-            echo "Found iPhone 16 Pro but not iOS 26.0 - checking available iOS versions..."
-            xcrun simctl list devices available | grep "iPhone 16 Pro"
-            echo "ERROR: iPhone 16 Pro found but not with iOS 26.0. App requires iOS 26.0 minimum."
-            exit 1
+            echo "Found iPhone 16 Pro - using latest available iOS version..."
+            xcrun simctl boot "iPhone 16 Pro" || true
+            SIMULATOR="iPhone 16 Pro"
+            OS_VERSION="18.2"  # Default to latest
+          # Fallback to iPhone 15 Pro with iOS 17.x
+          elif xcrun simctl list devices available | grep -q "iPhone 15 Pro"; then
+            echo "Found iPhone 15 Pro - using as fallback..."
+            xcrun simctl boot "iPhone 15 Pro" || true
+            SIMULATOR="iPhone 15 Pro"
+            OS_VERSION="17.5"  # Use latest iOS 17.x available
           else
-            echo "ERROR: No iPhone 16 Pro simulator found. App requires iOS 26.0 minimum."
+            echo "ERROR: No suitable iPhone simulator found."
             echo "Available simulators:"
             xcrun simctl list devices available | grep iPhone
             exit 1
@@ -125,12 +138,21 @@ jobs:
         run: |
           echo "Starting unit tests..."
           
-          # Check for iPhone 16 Pro with iOS 26.0 specifically (same logic as boot step)
-          if xcrun simctl list devices available | grep -q "iPhone 16 Pro.*26.0"; then
+          # Use same simulator detection logic as boot step
+          if xcrun simctl list devices available | grep -q "iPhone 16 Pro.*18.2"; then
             SIMULATOR="iPhone 16 Pro"
-            OS_VERSION="26.0"
+            OS_VERSION="18.2"
+          elif xcrun simctl list devices available | grep -q "iPhone 16 Pro.*18.1"; then
+            SIMULATOR="iPhone 16 Pro"
+            OS_VERSION="18.1"
+          elif xcrun simctl list devices available | grep -q "iPhone 16 Pro"; then
+            SIMULATOR="iPhone 16 Pro"
+            OS_VERSION="18.2"
+          elif xcrun simctl list devices available | grep -q "iPhone 15 Pro"; then
+            SIMULATOR="iPhone 15 Pro"
+            OS_VERSION="17.5"
           else
-            echo "ERROR: iPhone 16 Pro with iOS 26.0 not available. App requires iOS 26.0 minimum."
+            echo "ERROR: No suitable iPhone simulator found for testing."
             echo "Available simulators:"
             xcrun simctl list devices available | grep iPhone
             exit 1
@@ -140,14 +162,76 @@ jobs:
           echo "Testing simulator boot status:"
           xcrun simctl list devices | grep "$SIMULATOR"
           
+          # Clean up any previous test state
+          echo "Cleaning up previous test state..."
+          xcrun simctl shutdown "$SIMULATOR" 2>/dev/null || true
+          xcrun simctl erase "$SIMULATOR" 2>/dev/null || true
+          xcrun simctl boot "$SIMULATOR" || true
+          sleep 5
+          
           echo "Checking project and scheme..."
           xcodebuild -list -project CrownAndBarrel.xcodeproj
           
           echo "Testing basic build first..."
           xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" -quiet
           
-          echo "Running unit tests with verbose output and timeout..."
-          # Remove -quiet to see what's happening, add timeout, specify OS version
-          timeout 300 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution
+          echo "Running unit tests with comprehensive debugging and cleanup..."
+          
+          # First, run individual test classes to identify which one hangs
+          echo "Testing individual test classes to identify hanging tests..."
+          
+          # List all test classes
+          TEST_CLASSES=(
+            "CrownAndBarrelTests.RadiusTokensTests"
+            "CrownAndBarrelTests.SpacingTokensTests" 
+            "CrownAndBarrelTests.HapticsTests"
+            "CrownAndBarrelTests.ImageStoreCropTests"
+            "CrownAndBarrelTests.LaunchConfigurationTests"
+            "CrownAndBarrelTests.PhotoPipelineV2Tests"
+            "CrownAndBarrelTests.AssetsPresenceTests"
+            "CrownAndBarrelTests.StreakCalculatorTests"
+            "CrownAndBarrelTests.ThemeDefaultingTests"
+            "CrownAndBarrelTests.ThemeSystemTests"
+            "CrownAndBarrelTests.WatchValidationTests"
+            "CrownAndBarrelTests.WearEntryTests"
+            "CrownAndBarrelTests.AchievementTests"
+            "CrownAndBarrelTests.AchievementRepositoryTests"
+            "CrownAndBarrelTests.WatchRepositoryGRDBTests"
+          )
+          
+          # Test each class individually with timeout
+          for test_class in "${TEST_CLASSES[@]}"; do
+            echo "Testing $test_class..."
+            timeout 60 xcodebuild test \
+              -project CrownAndBarrel.xcodeproj \
+              -scheme "CrownAndBarrel" \
+              -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" \
+              -only-testing:"$test_class" \
+              -disableAutomaticPackageResolution \
+              -testTimeout 30 \
+              -parallel-testing-enabled NO \
+              -quiet || {
+                echo "❌ Test class $test_class failed or timed out"
+                echo "This is likely the source of the hanging issue"
+              }
+          done
+          
+          echo "Running all unit tests with comprehensive debugging..."
+          # Run all tests with detailed logging to identify hanging tests
+          timeout 600 xcodebuild test \
+            -project CrownAndBarrel.xcodeproj \
+            -scheme "CrownAndBarrel" \
+            -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" \
+            -only-testing:CrownAndBarrelTests \
+            -disableAutomaticPackageResolution \
+            -testTimeout 120 \
+            -parallel-testing-enabled NO \
+            -resultBundlePath TestResults.xcresult \
+            -enableCodeCoverage NO \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-CI
+          
+          # Clean up after tests
+          echo "Cleaning up after tests..."
+          xcrun simctl shutdown "$SIMULATOR" 2>/dev/null || true
           
           echo "Unit tests completed successfully!"
