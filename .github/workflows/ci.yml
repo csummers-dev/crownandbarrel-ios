@@ -47,15 +47,22 @@ jobs:
           echo "Available iPhone simulators:"
           xcrun simctl list devices available | grep iPhone
           
-          # Try iPhone 17 first, fallback to iPhone 16 if not available
-          if xcrun simctl list devices available | grep -q "iPhone 17"; then
-            echo "Booting iPhone 17 simulator..."
+          # Check for iPhone 17 with iOS 26.0 specifically
+          if xcrun simctl list devices available | grep -q "iPhone 17.*26.0"; then
+            echo "Found iPhone 17 with iOS 26.0 - booting..."
             xcrun simctl boot "iPhone 17" || true
             SIMULATOR="iPhone 17"
+            OS_VERSION="26.0"
+          elif xcrun simctl list devices available | grep -q "iPhone 17"; then
+            echo "Found iPhone 17 but not iOS 26.0 - checking available iOS versions..."
+            xcrun simctl list devices available | grep "iPhone 17"
+            echo "ERROR: iPhone 17 found but not with iOS 26.0. App requires iOS 26.0 minimum."
+            exit 1
           else
-            echo "iPhone 17 not available, using iPhone 16..."
-            xcrun simctl boot "iPhone 16" || true
-            SIMULATOR="iPhone 16"
+            echo "ERROR: No iPhone 17 simulator found. App requires iOS 26.0 minimum."
+            echo "Available simulators:"
+            xcrun simctl list devices available | grep iPhone
+            exit 1
           fi
           
           echo "Waiting for simulator to be ready..."
@@ -86,14 +93,18 @@ jobs:
         run: |
           echo "Starting unit tests..."
           
-          # Determine which simulator to use (same logic as boot step)
-          if xcrun simctl list devices available | grep -q "iPhone 17"; then
+          # Check for iPhone 17 with iOS 26.0 specifically (same logic as boot step)
+          if xcrun simctl list devices available | grep -q "iPhone 17.*26.0"; then
             SIMULATOR="iPhone 17"
+            OS_VERSION="26.0"
           else
-            SIMULATOR="iPhone 16"
+            echo "ERROR: iPhone 17 with iOS 26.0 not available. App requires iOS 26.0 minimum."
+            echo "Available simulators:"
+            xcrun simctl list devices available | grep iPhone
+            exit 1
           fi
           
-          echo "Using simulator: $SIMULATOR"
+          echo "Using simulator: $SIMULATOR with iOS $OS_VERSION"
           echo "Testing simulator boot status:"
           xcrun simctl list devices | grep "$SIMULATOR"
           
@@ -101,10 +112,10 @@ jobs:
           xcodebuild -list -project CrownAndBarrel.xcodeproj
           
           echo "Testing basic build first..."
-          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR" -quiet
+          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" -quiet
           
           echo "Running unit tests with verbose output and timeout..."
-          # Remove -quiet to see what's happening, add timeout
-          timeout 300 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR" -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution
+          # Remove -quiet to see what's happening, add timeout, specify OS version
+          timeout 300 xcodebuild test -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" -only-testing:CrownAndBarrelTests -disableAutomaticPackageResolution
           
           echo "Unit tests completed successfully!"
