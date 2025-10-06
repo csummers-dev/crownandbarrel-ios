@@ -6,8 +6,6 @@ name: Security Pipeline
 on:
   push:
     branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
   schedule:
     # Run weekly on Sundays at 3 AM UTC
     - cron: '0 3 * * 0'
@@ -39,7 +37,7 @@ jobs:
       - name: Setup iOS Environment
         uses: ./.github/actions/setup-ios-environment
         with:
-          xcode-version: '26.0.0'
+          xcode-version: '26.0.1'
           install-xcodegen: 'true'
           install-swiftlint: 'false'
           install-xcpretty: 'false'

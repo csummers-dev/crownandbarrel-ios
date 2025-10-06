@@ -139,7 +139,7 @@ private struct SettingsHeader: View {
         ZStack(alignment: .leading) {
             AppColors.background
             Text(title)
-                .font(AppTypography.caption)
+                .font(.footnote)
                 .foregroundStyle(AppColors.textSecondary)
                 .textCase(.none)
                 .padding(.horizontal, 16)

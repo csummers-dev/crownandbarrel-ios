@@ -33,9 +33,9 @@ struct AppDataView: View {
     /// Second confirmation step for destructive delete.
     @State private var confirmDeleteStep2: Bool = false
     /// Concrete repository handling archive creation and import.
-    private let backup: BackupRepository = BackupRepositoryFile()
+    private let backup: BackupRepository = BackupRepositoryGRDB()
     /// Concrete repository for seeding sample data during debug.
-    private let repo: WatchRepository = WatchRepositoryCoreData()
+    private let repo: WatchRepositoryV2 = WatchRepositoryGRDB()
     @State private var infoMessage: String? = nil
 
     var body: some View {
@@ -155,7 +155,7 @@ struct AppDataView: View {
     /// Seeds a handful of watches in debug to speed up UI iteration and tests.
     private func seedSampleData() async {
         do {
-            for watch in SampleData.makeWatches(count: 8) { try await repo.upsert(watch) }
+            for watch in SampleData.makeWatches(count: 8) { try repo.create(watch) }
             await MainActor.run { withAnimation { infoMessage = "Sample data loaded" } }
         } catch { errorMessage = error.localizedDescription }
     }
@@ -190,7 +190,7 @@ private extension AppDataView {
     func headerRow(_ title: String) -> some View {
         HStack {
             Text(title)
-                .font(AppTypography.caption)
+                .font(.footnote)
                 .foregroundStyle(AppColors.textSecondary)
                 .textCase(.none)
             Spacer(minLength: 0)

@@ -2,9 +2,14 @@ name: iOS CI (Fast Feedback)
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main"]
   pull_request:
-    branches: ["**"]
+    branches: ["main"]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
 
 # Fast feedback pipeline for all branches - runs essential tests only
 
@@ -19,7 +24,7 @@ jobs:
       - name: Setup iOS Environment
         uses: ./.github/actions/setup-ios-environment
         with:
-          xcode-version: "26.0.0"
+          xcode-version: "26.0.1"
           install-xcodegen: 'true'
           install-swiftlint: 'false'
           install-xcpretty: 'true'

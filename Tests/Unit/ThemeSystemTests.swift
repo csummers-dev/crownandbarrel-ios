@@ -75,11 +75,11 @@ final class ThemeSystemTests: XCTestCase {
         let luxury = AppTypography.luxury
         XCTAssertNotNil(luxury, "luxury should be defined")
         
-        // Verify these are actually Font instances
-        XCTAssertTrue(titleCompact is Font, "titleCompact should be a Font")
-        XCTAssertTrue(heading is Font, "heading should be a Font")
-        XCTAssertTrue(caption is Font, "caption should be a Font")
-        XCTAssertTrue(luxury is Font, "luxury should be a Font")
+        // Verify these are actually Font instances (they are by definition)
+        XCTAssertNotNil(titleCompact)
+        XCTAssertNotNil(heading)
+        XCTAssertNotNil(caption)
+        XCTAssertNotNil(luxury)
     }
     
     /// Tests theme change notification system.
@@ -203,11 +203,11 @@ final class ThemeSystemTests: XCTestCase {
         XCTAssertNotNil(caption)
         XCTAssertNotNil(luxury)
         
-        // Verify font characteristics
-        XCTAssertTrue(titleCompact is Font, "titleCompact should be a Font")
-        XCTAssertTrue(heading is Font, "heading should be a Font")
-        XCTAssertTrue(caption is Font, "caption should be a Font")
-        XCTAssertTrue(luxury is Font, "luxury should be a Font")
+        // Verify font characteristics (they are Font instances by definition)
+        XCTAssertNotNil(titleCompact)
+        XCTAssertNotNil(heading)
+        XCTAssertNotNil(caption)
+        XCTAssertNotNil(luxury)
     }
     
     /// Tests that theme changes don't cause memory leaks or retain cycles.
@@ -219,7 +219,7 @@ final class ThemeSystemTests: XCTestCase {
         let initialMemory = ProcessInfo.processInfo.physicalMemory
         
         // Perform many theme changes to test memory stability
-        for cycle in 0..<5 {
+        for _ in 0..<5 {
             for theme in themes {
                 // Simulate theme change
                 UserDefaults.standard.set(theme.id, forKey: "selectedThemeId")

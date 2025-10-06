@@ -29,7 +29,7 @@ on:
 env:
   PROJECT_NAME: "CrownAndBarrel"
   SCHEME_NAME: "CrownAndBarrel"
-  XCODE_VERSION: "26.0.0"
+  XCODE_VERSION: "26.0.1"
   IOS_SIMULATOR_NAME: "iPhone 16 Pro"  # Updated to target iPhone 16 Pro specifically
   IOS_SIMULATOR_OS: "26.0"  # Updated to target iOS 26.0 specifically
 

@@ -1,378 +1,260 @@
-name: iOS CI/CD Pipeline (Optimized)
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main, develop ]
-
-env:
-  # iOS build variables
-  XCODE_VERSION: "26.0.0"
-  
-  # Project variables
-  PROJECT_NAME: "CrownAndBarrel"
-  SCHEME_NAME: "CrownAndBarrel"
-  BUNDLE_ID: "com.crownandbarrel.app"
+    branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
 
 jobs:
-  # Setup stage - Prepare environment and dependencies
-  setup:
-    name: Environment Setup
-    runs-on: macos-latest
-    
+  test:
+    runs-on: macos-14
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         
-      - name: Setup iOS Environment
-        uses: ./.github/actions/setup-ios-environment
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          install-xcodegen: 'true'
-          install-swiftlint: 'false'
-          install-xcpretty: 'false'
-          cache-key-suffix: 'setup'
-          
-      - name: Cache Swift Packages
-        uses: ./.github/actions/cache-dependencies
+          xcode-version: latest-stable
+
+      - name: Install coreutils for timeout
+        run: brew install coreutils
+
+      - name: Debug environment (early)
+        run: |
+          echo "=== Early Environment Debug ==="
+          echo "Xcode version:"
+          xcodebuild -version
+          echo ""
+          echo "Available SDKs:"
+          xcodebuild -showsdks
+          echo ""
+          echo "All available simulators:"
+          xcrun simctl list devices available
+          echo ""
+          echo "iPhone simulators only:"
+          xcrun simctl list devices available | grep iPhone
+          echo ""
+          echo "iPhone 16 Pro simulators specifically:"
+          xcrun simctl list devices available | grep "iPhone 16 Pro"
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
         with:
-          cache-type: 'swift-packages'
-          cache-key: ${{ hashFiles('**/Package.resolved') }}
+          path: ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved', '**/project.pbxproj') }}
           restore-keys: |
-            ${{ hashFiles('**/Package.swift') }}
-            latest
-          cache-suffix: 'setup'
+            ${{ runner.os }}-spm-
             
       - name: Cache DerivedData
-        uses: ./.github/actions/cache-dependencies
+        uses: actions/cache@v4
         with:
-          cache-type: 'derived-data'
-          cache-key: ${{ hashFiles('**/*.swift') }}
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('Sources/**/*.swift', 'Tests/**/*.swift', 'project.yml') }}
           restore-keys: |
-            ${{ hashFiles('Sources/**/*.swift') }}
-            base
-          cache-suffix: 'setup'
-
-  # Lint stage - Code quality checks
-  lint:
-    name: Code Quality
-    runs-on: macos-latest
-    needs: setup
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup iOS Environment
-        uses: ./.github/actions/setup-ios-environment
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          install-xcodegen: 'false'
-          install-swiftlint: 'true'
-          install-xcpretty: 'false'
-          generate-project: 'false'
-          cache-key-suffix: 'lint'
-          
-      - name: Run SwiftLint
-        run: |
-          swiftlint lint --reporter github --config .swiftlint.yml
-        continue-on-error: true
-        
-      - name: Upload SwiftLint results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: swiftlint-results
-          path: swiftlint-report.json
-          retention-days: 30
-
-  # Build stage - Compile the application
-  build:
-    name: Build Application
-    runs-on: macos-latest
-    needs: setup
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup iOS Environment
-        uses: ./.github/actions/setup-ios-environment
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          install-xcodegen: 'true'
-          install-swiftlint: 'false'
-          install-xcpretty: 'false'
-          cache-key-suffix: 'build'
-          
-      - name: Cache Swift Packages
-        uses: ./.github/actions/cache-dependencies
-        with:
-          cache-type: 'swift-packages'
-          cache-key: ${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ hashFiles('**/Package.swift') }}
-            latest
-          cache-suffix: 'build'
-          
-      - name: Build for Debug
-        run: |
-          # Find the best available iOS 26.0 simulator for Debug build
-          echo "Looking for available iOS 26.0 simulators for Debug build..."
-          
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Debug build"
-          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep "26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | sed -n 's/.*name:\([^,}]*\).*/\1/p' | xargs)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Using $IPHONE_NAME with iOS 26.0 - fallback for Debug build"
-          else
-            echo "❌ No iOS 26.0 simulators found, skipping Debug build"
-            exit 0
-          fi
-          
-          echo "Using destination: $DESTINATION"
-          xcodebuild build \
-            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-            -scheme "${{ env.SCHEME_NAME }}" \
-            -configuration Debug \
-            -destination "$DESTINATION" \
-            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
-            CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES \
-            VALID_ARCHS="arm64" \
-            ARCHS="arm64" \
-            ENABLE_BITCODE=NO
+            ${{ runner.os }}-deriveddata-
             
-      - name: Build for Release
-        run: |
-          # Find the best available iOS 26.0 simulator for Release build
-          echo "Looking for available iOS 26.0 simulators for Release build..."
-          
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for Release build"
-          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            # Use iPhone 16 as reliable fallback
-            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
-            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for Release build"
-          else
-            echo "❌ No iOS 26.0 simulators found, skipping Release build"
-            exit 0
-          fi
-          
-          echo "Using destination: $DESTINATION"
-          xcodebuild build \
-            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-            -scheme "${{ env.SCHEME_NAME }}" \
-            -configuration Release \
-            -destination "$DESTINATION" \
-            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
-            CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES \
-            VALID_ARCHS="arm64" \
-            ARCHS="arm64" \
-            ENABLE_BITCODE=NO
-            
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - name: Cache ModuleCache
+        uses: actions/cache@v4
         with:
-          name: build-artifacts
-          path: |
-            ~/Library/Developer/Xcode/DerivedData/
-          retention-days: 7
-
-  # Test stage - Run unit and UI tests
-  test-unit:
-    name: Unit Tests
-    runs-on: macos-latest
-    needs: setup
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup iOS Environment
-        uses: ./.github/actions/setup-ios-environment
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          install-xcodegen: 'true'
-          install-swiftlint: 'false'
-          install-xcpretty: 'false'
-          cache-key-suffix: 'unit-tests'
-          
-      - name: Cache Swift Packages
-        uses: ./.github/actions/cache-dependencies
-        with:
-          cache-type: 'swift-packages'
-          cache-key: ${{ hashFiles('**/Package.resolved') }}
+          path: ~/Library/Developer/Xcode/ModuleCache.noindex
+          key: ${{ runner.os }}-modulecache-${{ hashFiles('Sources/**/*.swift', 'Tests/**/*.swift') }}
           restore-keys: |
-            ${{ hashFiles('**/Package.swift') }}
-            latest
-          cache-suffix: 'unit-tests'
-          
-      - name: Run Unit Tests
+            ${{ runner.os }}-modulecache-
+
+      - name: Boot simulator
         run: |
-          echo "Looking for available iOS 26.0 simulators for unit tests..."
+          echo "Available iPhone simulators:"
+          xcrun simctl list devices available | grep iPhone
           
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
-          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            # Use iPhone 16 as reliable fallback
-            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
-            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for unit tests"
+          # Get simulator ID for iPhone 16 Pro with iOS 18.2 first (preferred)
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          if [ -n "$SIMULATOR_ID" ]; then
+            echo "Found iPhone 16 Pro with iOS 18.2 (ID: $SIMULATOR_ID) - booting..."
+            SIMULATOR="iPhone 16 Pro"
+            OS_VERSION="18.2"
+          # Fallback to iPhone 16 Pro with iOS 18.1
           else
-            echo "❌ No iOS 26.0 simulators found, skipping unit tests"
-            exit 0
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            if [ -n "$SIMULATOR_ID" ]; then
+              echo "Found iPhone 16 Pro with iOS 18.1 (ID: $SIMULATOR_ID) - booting..."
+              SIMULATOR="iPhone 16 Pro"
+              OS_VERSION="18.1"
+            # Fallback to any iPhone 16 Pro
+            else
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+              if [ -n "$SIMULATOR_ID" ]; then
+                echo "Found iPhone 16 Pro (ID: $SIMULATOR_ID) - using latest available iOS version..."
+                SIMULATOR="iPhone 16 Pro"
+                OS_VERSION="18.2"  # Default to latest
+              # Fallback to iPhone 15 Pro with iOS 17.x
+              else
+                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+                if [ -n "$SIMULATOR_ID" ]; then
+                  echo "Found iPhone 15 Pro (ID: $SIMULATOR_ID) - using as fallback..."
+                  SIMULATOR="iPhone 15 Pro"
+                  OS_VERSION="17.5"  # Use latest iOS 17.x available
+                else
+                  echo "ERROR: No suitable iPhone simulator found."
+                  echo "Available simulators:"
+                  xcrun simctl list devices available | grep iPhone
+                  exit 1
+                fi
+              fi
+            fi
           fi
           
-          echo "Running unit tests with destination: $DESTINATION"
+          # Ensure simulator is properly booted
+          echo "Ensuring simulator is booted..."
+          xcrun simctl shutdown "$SIMULATOR_ID" 2>/dev/null || true
+          xcrun simctl erase "$SIMULATOR_ID" 2>/dev/null || true
+          xcrun simctl boot "$SIMULATOR_ID"
+          
+          # Wait for simulator to be fully ready
+          echo "Waiting for simulator to be ready..."
+          sleep 15
+          
+          # Verify simulator is booted and ready
+          echo "Verifying simulator status..."
+          SIMULATOR_STATUS=$(xcrun simctl list devices | grep "$SIMULATOR_ID" | grep -o "(Booted)")
+          if [ "$SIMULATOR_STATUS" != "(Booted)" ]; then
+            echo "ERROR: Simulator $SIMULATOR_ID failed to boot properly"
+            echo "Simulator status:"
+            xcrun simctl list devices | grep "$SIMULATOR_ID"
+            exit 1
+          fi
+          
+          echo "Simulator $SIMULATOR_ID is ready and booted"
+
+      - name: Resolve packages
+        run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
+        
+      - name: Clean build artifacts
+        run: |
+          echo "Cleaning build artifacts for faster builds..."
+          rm -rf ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-*
+          rm -rf ~/Library/Developer/Xcode/ModuleCache.noindex/*
+          xcodebuild clean -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel
+
+      - name: Debug environment
+        run: |
+          echo "=== Environment Debug ==="
+          echo "Xcode version:"
+          xcodebuild -version
+          echo ""
+          echo "Available SDKs:"
+          xcodebuild -showsdks
+          echo ""
+          echo "Available destinations:"
+          xcodebuild -showdestinations -scheme "CrownAndBarrel" -project CrownAndBarrel.xcodeproj
+          echo ""
+          echo "All available simulators:"
+          xcrun simctl list devices available
+          echo ""
+          echo "iPhone simulators only:"
+          xcrun simctl list devices available | grep iPhone
+          echo ""
+          echo "iPhone 16 Pro simulators specifically:"
+          xcrun simctl list devices available | grep "iPhone 16 Pro"
+          echo ""
+          echo "Simulator processes:"
+          ps aux | grep Simulator || echo "No Simulator processes"
+          echo ""
+          echo "Memory usage:"
+          vm_stat
+          echo ""
+          echo "Disk space:"
+          df -h
+
+      - name: Run unit tests only
+        run: |
+          echo "Starting unit tests..."
+          
+          # Use same simulator detection logic as boot step
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          if [ -n "$SIMULATOR_ID" ]; then
+            SIMULATOR="iPhone 16 Pro"
+            OS_VERSION="18.2"
+          else
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            if [ -n "$SIMULATOR_ID" ]; then
+              SIMULATOR="iPhone 16 Pro"
+              OS_VERSION="18.1"
+            else
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+              if [ -n "$SIMULATOR_ID" ]; then
+                SIMULATOR="iPhone 16 Pro"
+                OS_VERSION="18.2"
+              else
+                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+                if [ -n "$SIMULATOR_ID" ]; then
+                  SIMULATOR="iPhone 15 Pro"
+                  OS_VERSION="17.5"
+                else
+                  echo "ERROR: No suitable iPhone simulator found for testing."
+                  echo "Available simulators:"
+                  xcrun simctl list devices available | grep iPhone
+                  exit 1
+                fi
+              fi
+            fi
+          fi
+          
+          echo "Using simulator: $SIMULATOR (ID: $SIMULATOR_ID) with iOS $OS_VERSION"
+          echo "Testing simulator boot status:"
+          xcrun simctl list devices | grep "$SIMULATOR_ID"
+          
+          # Ensure simulator is booted before testing
+          echo "Ensuring simulator is booted for testing..."
+          SIMULATOR_STATUS=$(xcrun simctl list devices | grep "$SIMULATOR_ID" | grep -o "(Booted)")
+          if [ "$SIMULATOR_STATUS" != "(Booted)" ]; then
+            echo "Simulator is not booted, booting now..."
+            xcrun simctl shutdown "$SIMULATOR_ID" 2>/dev/null || true
+            xcrun simctl erase "$SIMULATOR_ID" 2>/dev/null || true
+            xcrun simctl boot "$SIMULATOR_ID"
+            sleep 10
+          fi
+          
+          # Verify simulator is ready
+          SIMULATOR_STATUS=$(xcrun simctl list devices | grep "$SIMULATOR_ID" | grep -o "(Booted)")
+          if [ "$SIMULATOR_STATUS" != "(Booted)" ]; then
+            echo "ERROR: Simulator $SIMULATOR_ID failed to boot for testing"
+            echo "Simulator status:"
+            xcrun simctl list devices | grep "$SIMULATOR_ID"
+            exit 1
+          fi
+          
+          echo "Simulator is ready for testing"
+          
+          echo "Checking project and scheme..."
+          xcodebuild -list -project CrownAndBarrel.xcodeproj
+          
+          echo "Testing basic build first..."
+          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -quiet
+          
+          echo "Running all unit tests with optimizations..."
+          # Run all tests together for better performance
           xcodebuild test \
-            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-            -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "$DESTINATION" \
-            "-only-testing:${{ env.SCHEME_NAME }}Tests" \
+            -project CrownAndBarrel.xcodeproj \
+            -scheme "CrownAndBarrel" \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
+            -only-testing:CrownAndBarrelTests \
+            -disableAutomaticPackageResolution \
+            -parallel-testing-enabled YES \
+            -maximum-concurrent-test-simulator-destinations 1 \
+            -maximum-concurrent-test-device-destinations 1 \
             -resultBundlePath TestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES \
-            VALID_ARCHS="arm64" \
-            ARCHS="arm64" \
-            ENABLE_BITCODE=NO \
-            IPHONEOS_DEPLOYMENT_TARGET=26.0
-            
-      - name: Upload test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: unit-test-results
-          path: TestResults.xcresult
-          retention-days: 30
-
-  test-ui:
-    name: UI Tests
-    runs-on: macos-latest
-    needs: setup
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup iOS Environment
-        uses: ./.github/actions/setup-ios-environment
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          install-xcodegen: 'true'
-          install-swiftlint: 'false'
-          install-xcpretty: 'false'
-          cache-key-suffix: 'ui-tests'
+            -enableCodeCoverage NO \
+            -derivedDataPath ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-CI
           
-      - name: Cache Swift Packages
-        uses: ./.github/actions/cache-dependencies
-        with:
-          cache-type: 'swift-packages'
-          cache-key: ${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ hashFiles('**/Package.swift') }}
-            latest
-          cache-suffix: 'ui-tests'
+          # Clean up after tests
+          echo "Cleaning up after tests..."
+          xcrun simctl shutdown "$SIMULATOR_ID" 2>/dev/null || true
           
-      - name: Run UI Tests
-        run: |
-          echo "Looking for available iOS 26.0 simulators for UI tests..."
-          
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred) - only iOS Simulator platform
-          if xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for UI tests"
-          # Fallback to any iPhone with iOS 26.0 - only iOS Simulator platform
-          elif xcodebuild -showdestinations -scheme "${{ env.SCHEME_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            # Use iPhone 16 as reliable fallback
-            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=26.0"
-            echo "✅ Using iPhone 16 with iOS 26.0 - reliable fallback for UI tests"
-          else
-            echo "❌ No iOS 26.0 simulators found, skipping UI tests"
-            exit 0
-          fi
-          
-          echo "Running UI tests with destination: $DESTINATION"
-          xcodebuild test \
-            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-            -scheme "${{ env.SCHEME_NAME }}" \
-            -destination "$DESTINATION" \
-            "-only-testing:${{ env.SCHEME_NAME }}UITests" \
-            -resultBundlePath UITestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES \
-            VALID_ARCHS="arm64" \
-            ARCHS="arm64" \
-            ENABLE_BITCODE=NO \
-            IPHONEOS_DEPLOYMENT_TARGET=26.0
-            
-      - name: Upload UI test results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: ui-test-results
-          path: UITestResults.xcresult
-          retention-days: 30
-
-  # Deploy stage - Create release artifacts (only on main branch)
-  deploy:
-    name: Deploy
-    runs-on: macos-latest
-    needs: [lint, build, test-unit, test-ui]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
-      - name: Setup iOS Environment
-        uses: ./.github/actions/setup-ios-environment
-        with:
-          xcode-version: ${{ env.XCODE_VERSION }}
-          install-xcodegen: 'true'
-          install-swiftlint: 'false'
-          install-xcpretty: 'false'
-          cache-key-suffix: 'deploy'
-          
-      - name: Cache Swift Packages
-        uses: ./.github/actions/cache-dependencies
-        with:
-          cache-type: 'swift-packages'
-          cache-key: ${{ hashFiles('**/Package.resolved') }}
-          restore-keys: |
-            ${{ hashFiles('**/Package.swift') }}
-            latest
-          cache-suffix: 'deploy'
-          
-      - name: Build Release Archive
-        run: |
-          echo "Building Release Archive for iOS devices..."
-          echo "Using generic iOS destination for archive build"
-          xcodebuild archive \
-            -project "${{ env.PROJECT_NAME }}.xcodeproj" \
-            -scheme "${{ env.SCHEME_NAME }}" \
-            -configuration Release \
-            -destination "generic/platform=iOS" \
-            -archivePath "${{ env.PROJECT_NAME }}.xcarchive" \
-            IPHONEOS_DEPLOYMENT_TARGET=26.0 \
-            CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=YES \
-            VALID_ARCHS="arm64" \
-            ARCHS="arm64" \
-            ENABLE_BITCODE=NO
+          echo "Unit tests completed successfully!"

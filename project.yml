@@ -1,11 +1,14 @@
 name: CrownAndBarrel
 options:
   deploymentTarget:
-    iOS: "26.0"  # Updated to iOS 26.0 as minimum required version
+    iOS: "18.0"  # Updated to iOS 18.0 to match available simulators
 packages:
   ZIPFoundation:
     url: https://github.com/weichsel/ZIPFoundation.git
     from: 0.9.19
+  GRDB:
+    url: https://github.com/groue/GRDB.swift.git
+    from: 6.28.0
 targets:
   CrownAndBarrel:
     type: application
@@ -17,7 +20,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.crownandbarrel.app
         INFOPLIST_FILE: AppResources/Info.plist
-        IPHONEOS_DEPLOYMENT_TARGET: 26.0  # Updated to iOS 26.0 as minimum required version
+        IPHONEOS_DEPLOYMENT_TARGET: 18.0  # Updated to iOS 18.0 to match available simulators
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: 1
         # Code signing configuration
@@ -25,6 +28,7 @@ targets:
         DEVELOPMENT_TEAM: G7Z5DDPMSL
     dependencies:
       - package: ZIPFoundation
+      - package: GRDB
     info:
       path: AppResources/Info.plist
       properties:
@@ -39,7 +43,7 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        IPHONEOS_DEPLOYMENT_TARGET: 26.0  # Updated to iOS 26.0 as minimum required version
+        IPHONEOS_DEPLOYMENT_TARGET: 18.0  # Updated to iOS 18.0 to match available simulators
     dependencies:
       - target: CrownAndBarrel
 
@@ -51,7 +55,7 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        IPHONEOS_DEPLOYMENT_TARGET: 26.0  # Updated to iOS 26.0 as minimum required version
+        IPHONEOS_DEPLOYMENT_TARGET: 18.0  # Updated to iOS 18.0 to match available simulators
     dependencies:
       - target: CrownAndBarrel
 

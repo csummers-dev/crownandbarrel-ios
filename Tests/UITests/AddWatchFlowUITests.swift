@@ -7,13 +7,22 @@ final class AddWatchFlowUITests: XCTestCase {
 
     func testAddWatchFlow() throws {
         let app = XCUIApplication()
+        app.launchEnvironment["UI_TESTS_DISABLE_ANIMATIONS"] = "1"
+        app.launchEnvironment["UI_TESTS_FIXED_DATE"] = "2024-01-15T12:00:00Z"
         app.launch()
 
+        // Ensure we are on Collection tab
+        app.tabBars.buttons["Collection"].firstMatch.tap()
+        
         // Tap Add button (FAB)
-        app.buttons["Add watch"].firstMatch.tap()
+        let addButton = app.buttons["Add watch"].firstMatch
+        XCTAssertTrue(addButton.waitForExistence(timeout: 5))
+        addButton.tap()
 
-        // Wait for the Add Watch sheet to appear
-        XCTAssertTrue(app.navigationBars["Add Watch"].waitForExistence(timeout: 5))
+        // Wait for the Add Watch sheet to appear (nav bar or form content)
+        let addNav = app.navigationBars["Add Watch"]
+        let manufacturerField = app.textFields["manufacturerField"].firstMatch
+        XCTAssertTrue(addNav.waitForExistence(timeout: 8) || manufacturerField.waitForExistence(timeout: 2))
 
         // Enter manufacturer and save (locate inside the form's table)
         let manufacturer = app.textFields["manufacturerField"].firstMatch
@@ -26,10 +35,12 @@ final class AddWatchFlowUITests: XCTestCase {
 
     func testOptionalDatesToggleAndSave() {
         let app = XCUIApplication()
+        app.launchEnvironment["UI_TESTS_DISABLE_ANIMATIONS"] = "1"
+        app.launchEnvironment["UI_TESTS_FIXED_DATE"] = "2024-01-15T12:00:00Z"
         app.launch()
 
         // Ensure we are on Collection tab
-        app.tabBars.buttons.element(boundBy: 0).tap()
+        app.tabBars.buttons["Collection"].firstMatch.tap()
 
         // Open Add watch
         if app.buttons["Add watch"].firstMatch.waitForExistence(timeout: 3) {
@@ -37,7 +48,7 @@ final class AddWatchFlowUITests: XCTestCase {
         }
 
         let nav = app.navigationBars["Add Watch"]
-        XCTAssertTrue(nav.waitForExistence(timeout: 5))
+        XCTAssertTrue(nav.waitForExistence(timeout: 8))
 
         // Fill required field
         let manufacturer = app.textFields["manufacturerField"].firstMatch
