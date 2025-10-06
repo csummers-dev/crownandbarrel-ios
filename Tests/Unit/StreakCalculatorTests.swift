@@ -326,7 +326,7 @@ final class StreakCalculatorTests: XCTestCase {
     func testCalculateConsecutiveWeekdaysSkipsWeekends() {
         let watchId = UUID()
         
-        // Find a Monday
+        // Find the most recent Monday to make the test work with the current date
         var monday = calendar.startOfDay(for: Date())
         while calendar.component(.weekday, from: monday) != 2 {
             monday = calendar.date(byAdding: .day, value: -1, to: monday)!
@@ -334,7 +334,7 @@ final class StreakCalculatorTests: XCTestCase {
         
         var entries: [WearEntry] = []
         
-        // Monday, Tuesday, Wednesday, Thursday, Friday of one week
+        // Monday, Tuesday, Wednesday, Thursday, Friday of this week
         for i in 0..<5 {
             let date = calendar.date(byAdding: .day, value: i, to: monday)!
             entries.append(WearEntry(watchId: watchId, date: date))
