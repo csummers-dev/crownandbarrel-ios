@@ -180,23 +180,23 @@ jobs:
           # First, run individual test classes to identify which one hangs
           echo "Testing individual test classes to identify hanging tests..."
           
-          # List all test classes
+          # List all test classes (correct format)
           TEST_CLASSES=(
-            "CrownAndBarrelTests.RadiusTokensTests"
-            "CrownAndBarrelTests.SpacingTokensTests" 
-            "CrownAndBarrelTests.HapticsTests"
-            "CrownAndBarrelTests.ImageStoreCropTests"
-            "CrownAndBarrelTests.LaunchConfigurationTests"
-            "CrownAndBarrelTests.PhotoPipelineV2Tests"
-            "CrownAndBarrelTests.AssetsPresenceTests"
-            "CrownAndBarrelTests.StreakCalculatorTests"
-            "CrownAndBarrelTests.ThemeDefaultingTests"
-            "CrownAndBarrelTests.ThemeSystemTests"
-            "CrownAndBarrelTests.WatchValidationTests"
-            "CrownAndBarrelTests.WearEntryTests"
-            "CrownAndBarrelTests.AchievementTests"
-            "CrownAndBarrelTests.AchievementRepositoryTests"
-            "CrownAndBarrelTests.WatchRepositoryGRDBTests"
+            "CrownAndBarrelTests/RadiusTokensTests"
+            "CrownAndBarrelTests/SpacingTokensTests" 
+            "CrownAndBarrelTests/HapticsTests"
+            "CrownAndBarrelTests/ImageStoreCropTests"
+            "CrownAndBarrelTests/LaunchConfigurationTests"
+            "CrownAndBarrelTests/PhotoPipelineV2Tests"
+            "CrownAndBarrelTests/AssetsPresenceTests"
+            "CrownAndBarrelTests/StreakCalculatorTests"
+            "CrownAndBarrelTests/ThemeDefaultingTests"
+            "CrownAndBarrelTests/ThemeSystemTests"
+            "CrownAndBarrelTests/WatchValidationTests"
+            "CrownAndBarrelTests/WearEntryTests"
+            "CrownAndBarrelTests/AchievementTests"
+            "CrownAndBarrelTests/AchievementRepositoryTests"
+            "CrownAndBarrelTests/WatchRepositoryGRDBTests"
           )
           
           # Test each class individually to identify any remaining issues
