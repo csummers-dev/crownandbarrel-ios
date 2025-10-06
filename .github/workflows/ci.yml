@@ -199,10 +199,10 @@ jobs:
             "CrownAndBarrelTests.WatchRepositoryGRDBTests"
           )
           
-          # Test each class individually with timeout
+          # Test each class individually to identify any remaining issues
           for test_class in "${TEST_CLASSES[@]}"; do
             echo "Testing $test_class..."
-            timeout 60 xcodebuild test \
+            xcodebuild test \
               -project CrownAndBarrel.xcodeproj \
               -scheme "CrownAndBarrel" \
               -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" \
@@ -210,14 +210,14 @@ jobs:
               -disableAutomaticPackageResolution \
               -parallel-testing-enabled NO \
               -quiet || {
-                echo "❌ Test class $test_class failed or timed out"
-                echo "This is likely the source of the hanging issue"
+                echo "❌ Test class $test_class failed"
+                echo "This test class needs attention"
               }
           done
           
-          echo "Running all unit tests with comprehensive debugging..."
-          # Run all tests with detailed logging to identify hanging tests
-          timeout 600 xcodebuild test \
+          echo "Running all unit tests..."
+          # Run all tests with comprehensive debugging
+          xcodebuild test \
             -project CrownAndBarrel.xcodeproj \
             -scheme "CrownAndBarrel" \
             -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" \

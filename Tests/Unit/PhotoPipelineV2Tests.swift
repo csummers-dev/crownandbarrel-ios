@@ -14,7 +14,7 @@ final class PhotoPipelineV2Tests: XCTestCase {
         // Clean up any test files created during tests
         for watchId in testWatchIds {
             // Clean up photo directories for test watch IDs
-            let photoDir = try PhotoStoreV2.photosDirectory(watchId: watchId)
+            let photoDir = try PhotoStoreV2.watchDirectory(watchId: watchId)
             if FileManager.default.fileExists(atPath: photoDir.path) {
                 try? FileManager.default.removeItem(at: photoDir)
             }
