@@ -66,34 +66,30 @@ jobs:
           xcrun simctl list devices available | grep iPhone
           
           # Get simulator ID for iPhone 16 Pro with iOS 18.2 first (preferred)
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
           if [ -n "$SIMULATOR_ID" ]; then
             echo "Found iPhone 16 Pro with iOS 18.2 (ID: $SIMULATOR_ID) - booting..."
-            xcrun simctl boot "$SIMULATOR_ID" || true
             SIMULATOR="iPhone 16 Pro"
             OS_VERSION="18.2"
           # Fallback to iPhone 16 Pro with iOS 18.1
           else
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             if [ -n "$SIMULATOR_ID" ]; then
               echo "Found iPhone 16 Pro with iOS 18.1 (ID: $SIMULATOR_ID) - booting..."
-              xcrun simctl boot "$SIMULATOR_ID" || true
               SIMULATOR="iPhone 16 Pro"
               OS_VERSION="18.1"
             # Fallback to any iPhone 16 Pro
             else
-              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
               if [ -n "$SIMULATOR_ID" ]; then
                 echo "Found iPhone 16 Pro (ID: $SIMULATOR_ID) - using latest available iOS version..."
-                xcrun simctl boot "$SIMULATOR_ID" || true
                 SIMULATOR="iPhone 16 Pro"
                 OS_VERSION="18.2"  # Default to latest
               # Fallback to iPhone 15 Pro with iOS 17.x
               else
-                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
                 if [ -n "$SIMULATOR_ID" ]; then
                   echo "Found iPhone 15 Pro (ID: $SIMULATOR_ID) - using as fallback..."
-                  xcrun simctl boot "$SIMULATOR_ID" || true
                   SIMULATOR="iPhone 15 Pro"
                   OS_VERSION="17.5"  # Use latest iOS 17.x available
                 else
@@ -106,10 +102,27 @@ jobs:
             fi
           fi
           
+          # Ensure simulator is properly booted
+          echo "Ensuring simulator is booted..."
+          xcrun simctl shutdown "$SIMULATOR_ID" 2>/dev/null || true
+          xcrun simctl erase "$SIMULATOR_ID" 2>/dev/null || true
+          xcrun simctl boot "$SIMULATOR_ID"
+          
+          # Wait for simulator to be fully ready
           echo "Waiting for simulator to be ready..."
-          sleep 10
-          echo "Simulator status:"
-          xcrun simctl list devices | grep "$SIMULATOR_ID"
+          sleep 15
+          
+          # Verify simulator is booted and ready
+          echo "Verifying simulator status..."
+          SIMULATOR_STATUS=$(xcrun simctl list devices | grep "$SIMULATOR_ID" | grep -o "(Booted)")
+          if [ "$SIMULATOR_STATUS" != "(Booted)" ]; then
+            echo "ERROR: Simulator $SIMULATOR_ID failed to boot properly"
+            echo "Simulator status:"
+            xcrun simctl list devices | grep "$SIMULATOR_ID"
+            exit 1
+          fi
+          
+          echo "Simulator $SIMULATOR_ID is ready and booted"
 
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
@@ -149,22 +162,22 @@ jobs:
           echo "Starting unit tests..."
           
           # Use same simulator detection logic as boot step
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
           if [ -n "$SIMULATOR_ID" ]; then
             SIMULATOR="iPhone 16 Pro"
             OS_VERSION="18.2"
           else
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             if [ -n "$SIMULATOR_ID" ]; then
               SIMULATOR="iPhone 16 Pro"
               OS_VERSION="18.1"
             else
-              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
               if [ -n "$SIMULATOR_ID" ]; then
                 SIMULATOR="iPhone 16 Pro"
                 OS_VERSION="18.2"
               else
-                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([^)]*\)).*/\1/')
+                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
                 if [ -n "$SIMULATOR_ID" ]; then
                   SIMULATOR="iPhone 15 Pro"
                   OS_VERSION="17.5"
@@ -182,12 +195,27 @@ jobs:
           echo "Testing simulator boot status:"
           xcrun simctl list devices | grep "$SIMULATOR_ID"
           
-          # Clean up any previous test state
-          echo "Cleaning up previous test state..."
-          xcrun simctl shutdown "$SIMULATOR_ID" 2>/dev/null || true
-          xcrun simctl erase "$SIMULATOR_ID" 2>/dev/null || true
-          xcrun simctl boot "$SIMULATOR_ID" || true
-          sleep 5
+          # Ensure simulator is booted before testing
+          echo "Ensuring simulator is booted for testing..."
+          SIMULATOR_STATUS=$(xcrun simctl list devices | grep "$SIMULATOR_ID" | grep -o "(Booted)")
+          if [ "$SIMULATOR_STATUS" != "(Booted)" ]; then
+            echo "Simulator is not booted, booting now..."
+            xcrun simctl shutdown "$SIMULATOR_ID" 2>/dev/null || true
+            xcrun simctl erase "$SIMULATOR_ID" 2>/dev/null || true
+            xcrun simctl boot "$SIMULATOR_ID"
+            sleep 10
+          fi
+          
+          # Verify simulator is ready
+          SIMULATOR_STATUS=$(xcrun simctl list devices | grep "$SIMULATOR_ID" | grep -o "(Booted)")
+          if [ "$SIMULATOR_STATUS" != "(Booted)" ]; then
+            echo "ERROR: Simulator $SIMULATOR_ID failed to boot for testing"
+            echo "Simulator status:"
+            xcrun simctl list devices | grep "$SIMULATOR_ID"
+            exit 1
+          fi
+          
+          echo "Simulator is ready for testing"
           
           echo "Checking project and scheme..."
           xcodebuild -list -project CrownAndBarrel.xcodeproj
