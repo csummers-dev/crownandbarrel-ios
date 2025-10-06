@@ -221,7 +221,7 @@ jobs:
           xcodebuild -list -project CrownAndBarrel.xcodeproj
           
           echo "Testing basic build first..."
-          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,id=$SIMULATOR_ID,arch=arm64" -quiet
+          xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -quiet
           
           echo "Running unit tests with comprehensive debugging and cleanup..."
           
@@ -253,7 +253,7 @@ jobs:
             xcodebuild test \
               -project CrownAndBarrel.xcodeproj \
               -scheme "CrownAndBarrel" \
-              -destination "platform=iOS Simulator,id=$SIMULATOR_ID,arch=arm64" \
+              -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
               -only-testing:"$test_class" \
               -disableAutomaticPackageResolution \
               -parallel-testing-enabled NO \
@@ -268,7 +268,7 @@ jobs:
           xcodebuild test \
             -project CrownAndBarrel.xcodeproj \
             -scheme "CrownAndBarrel" \
-            -destination "platform=iOS Simulator,id=$SIMULATOR_ID,arch=arm64" \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
             -only-testing:CrownAndBarrelTests \
             -disableAutomaticPackageResolution \
             -parallel-testing-enabled NO \
