@@ -326,31 +326,32 @@ final class StreakCalculatorTests: XCTestCase {
     func testCalculateConsecutiveWeekdaysSkipsWeekends() {
         let watchId = UUID()
         
-        // Find the most recent Monday to make the test work with the current date
-        var monday = calendar.startOfDay(for: Date())
-        while calendar.component(.weekday, from: monday) != 2 {
-            monday = calendar.date(byAdding: .day, value: -1, to: monday)!
+        // Find the most recent weekday to make the test work with current dates
+        var currentDate = calendar.startOfDay(for: Date())
+        while isWeekend(currentDate) {
+            currentDate = calendar.date(byAdding: .day, value: -1, to: currentDate)!
         }
         
         var entries: [WearEntry] = []
         
-        // Monday, Tuesday, Wednesday, Thursday, Friday of this week
-        for i in 0..<5 {
-            let date = calendar.date(byAdding: .day, value: i, to: monday)!
-            entries.append(WearEntry(watchId: watchId, date: date))
-        }
-        
-        // Skip weekend
-        
-        // Monday, Tuesday of next week
-        let nextMonday = calendar.date(byAdding: .weekOfYear, value: 1, to: monday)!
-        for i in 0..<2 {
-            let date = calendar.date(byAdding: .day, value: i, to: nextMonday)!
-            entries.append(WearEntry(watchId: watchId, date: date))
+        // Create entries for the last 5 weekdays (skipping weekends)
+        var date = currentDate
+        var weekdayCount = 0
+        while weekdayCount < 5 {
+            if !isWeekend(date) {
+                entries.append(WearEntry(watchId: watchId, date: date))
+                weekdayCount += 1
+            }
+            date = calendar.date(byAdding: .day, value: -1, to: date)!
         }
         
         let streak = StreakCalculator.calculateConsecutiveWeekdays(from: entries)
-        XCTAssertGreaterThanOrEqual(streak, 5, "Weekday streak should at least count same-week weekdays; weekend skipping semantics may vary")
+        XCTAssertEqual(streak, 5, "Weekday streak should count 5 consecutive weekdays")
+    }
+    
+    private func isWeekend(_ date: Date) -> Bool {
+        let weekday = calendar.component(.weekday, from: date)
+        return weekday == 1 || weekday == 7 // Sunday = 1, Saturday = 7
     }
     
     // MARK: - Integration Tests

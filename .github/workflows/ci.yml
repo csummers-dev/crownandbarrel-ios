@@ -56,9 +56,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-deriveddata-${{ hashFiles('Sources/**/*.swift', 'Tests/**/*.swift') }}
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('Sources/**/*.swift', 'Tests/**/*.swift', 'project.yml') }}
           restore-keys: |
             ${{ runner.os }}-deriveddata-
+            
+      - name: Cache ModuleCache
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/ModuleCache.noindex
+          key: ${{ runner.os }}-modulecache-${{ hashFiles('Sources/**/*.swift', 'Tests/**/*.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-modulecache-
 
       - name: Boot simulator
         run: |
@@ -126,6 +134,13 @@ jobs:
 
       - name: Resolve packages
         run: xcodebuild -resolvePackageDependencies -project CrownAndBarrel.xcodeproj
+        
+      - name: Clean build artifacts
+        run: |
+          echo "Cleaning build artifacts for faster builds..."
+          rm -rf ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-*
+          rm -rf ~/Library/Developer/Xcode/ModuleCache.noindex/*
+          xcodebuild clean -project CrownAndBarrel.xcodeproj -scheme CrownAndBarrel
 
       - name: Debug environment
         run: |
@@ -223,55 +238,17 @@ jobs:
           echo "Testing basic build first..."
           xcodebuild build -project CrownAndBarrel.xcodeproj -scheme "CrownAndBarrel" -destination "platform=iOS Simulator,id=$SIMULATOR_ID" -quiet
           
-          echo "Running unit tests with comprehensive debugging and cleanup..."
-          
-          # First, run individual test classes to identify which one hangs
-          echo "Testing individual test classes to identify hanging tests..."
-          
-          # List all test classes (correct format)
-          TEST_CLASSES=(
-            "CrownAndBarrelTests/RadiusTokensTests"
-            "CrownAndBarrelTests/SpacingTokensTests" 
-            "CrownAndBarrelTests/HapticsTests"
-            "CrownAndBarrelTests/ImageStoreCropTests"
-            "CrownAndBarrelTests/LaunchConfigurationTests"
-            "CrownAndBarrelTests/PhotoPipelineV2Tests"
-            "CrownAndBarrelTests/AssetsPresenceTests"
-            "CrownAndBarrelTests/StreakCalculatorTests"
-            "CrownAndBarrelTests/ThemeDefaultingTests"
-            "CrownAndBarrelTests/ThemeSystemTests"
-            "CrownAndBarrelTests/WatchValidationTests"
-            "CrownAndBarrelTests/WearEntryTests"
-            "CrownAndBarrelTests/AchievementTests"
-            "CrownAndBarrelTests/AchievementRepositoryTests"
-            "CrownAndBarrelTests/WatchRepositoryGRDBTests"
-          )
-          
-          # Test each class individually to identify any remaining issues
-          for test_class in "${TEST_CLASSES[@]}"; do
-            echo "Testing $test_class..."
-            xcodebuild test \
-              -project CrownAndBarrel.xcodeproj \
-              -scheme "CrownAndBarrel" \
-              -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-              -only-testing:"$test_class" \
-              -disableAutomaticPackageResolution \
-              -parallel-testing-enabled NO \
-              -quiet || {
-                echo "❌ Test class $test_class failed"
-                echo "This test class needs attention"
-              }
-          done
-          
-          echo "Running all unit tests..."
-          # Run all tests with comprehensive debugging
+          echo "Running all unit tests with optimizations..."
+          # Run all tests together for better performance
           xcodebuild test \
             -project CrownAndBarrel.xcodeproj \
             -scheme "CrownAndBarrel" \
             -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
             -only-testing:CrownAndBarrelTests \
             -disableAutomaticPackageResolution \
-            -parallel-testing-enabled NO \
+            -parallel-testing-enabled YES \
+            -maximum-concurrent-test-simulator-destinations 1 \
+            -maximum-concurrent-test-device-destinations 1 \
             -resultBundlePath TestResults.xcresult \
             -enableCodeCoverage NO \
             -derivedDataPath ~/Library/Developer/Xcode/DerivedData/CrownAndBarrel-CI
