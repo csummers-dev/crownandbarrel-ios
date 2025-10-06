@@ -208,7 +208,6 @@ jobs:
               -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" \
               -only-testing:"$test_class" \
               -disableAutomaticPackageResolution \
-              -testTimeout 30 \
               -parallel-testing-enabled NO \
               -quiet || {
                 echo "❌ Test class $test_class failed or timed out"
@@ -224,7 +223,6 @@ jobs:
             -destination "platform=iOS Simulator,name=$SIMULATOR,OS=$OS_VERSION" \
             -only-testing:CrownAndBarrelTests \
             -disableAutomaticPackageResolution \
-            -testTimeout 120 \
             -parallel-testing-enabled NO \
             -resultBundlePath TestResults.xcresult \
             -enableCodeCoverage NO \
