@@ -297,7 +297,79 @@ for workflow_file in $WORKFLOW_FILES; do
     fi
 done
 
-# 8. Test with GitHub Actions linter if available
+# 8. Validate shell scripts within workflows
+print_status "info" "Validating shell scripts in workflow run blocks..."
+
+if command -v shellcheck &> /dev/null; then
+    for workflow_file in $WORKFLOW_FILES; do
+        # Extract shell scripts from run blocks and validate them
+        if grep -q "run: |" "$workflow_file"; then
+            # Extract multi-line shell scripts
+            if python3 -c "
+import yaml
+import sys
+import tempfile
+import os
+
+try:
+    with open('$workflow_file', 'r') as f:
+        config = yaml.safe_load(f)
+    
+    if 'jobs' in config:
+        for job_name, job_config in config.items():
+            if isinstance(job_config, dict) and 'steps' in job_config:
+                for i, step in enumerate(job_config['steps']):
+                    if isinstance(step, dict) and 'run' in step:
+                        run_content = step['run']
+                        if isinstance(run_content, str) and '|' in run_content:
+                            # Extract the shell script part after |
+                            lines = run_content.split('\n')
+                            script_lines = []
+                            in_script = False
+                            for line in lines:
+                                if 'run: |' in line or 'run:' in line:
+                                    in_script = True
+                                    continue
+                                if in_script and line.strip():
+                                    # Remove YAML indentation
+                                    script_lines.append(line.strip())
+                            
+                            if script_lines:
+                                # Write to temporary file and check with shellcheck
+                                with tempfile.NamedTemporaryFile(mode='w', suffix='.sh', delete=False) as tmp:
+                                    tmp.write('\n'.join(script_lines))
+                                    tmp_path = tmp.name
+                                
+                                # Run shellcheck
+                                import subprocess
+                                result = subprocess.run(['shellcheck', tmp_path], 
+                                                      capture_output=True, text=True)
+                                os.unlink(tmp_path)
+                                
+                                if result.returncode != 0:
+                                    print(f'Shell script validation failed in $workflow_file, job {job_name}, step {i}:')
+                                    print(result.stdout)
+                                    print(result.stderr)
+                                    sys.exit(1)
+                                else:
+                                    print(f'Shell script validation passed: $workflow_file, job {job_name}, step {i}')
+
+except Exception as e:
+    print(f'Error validating shell scripts in $workflow_file: {e}')
+    sys.exit(1)
+" 2>/dev/null; then
+                print_status "success" "Shell script validation passed: $workflow_file"
+            else
+                print_status "error" "Shell script validation failed: $workflow_file"
+                VALIDATION_FAILED=true
+            fi
+        fi
+    done
+else
+    print_status "info" "shellcheck not available - install with: brew install shellcheck"
+fi
+
+# 9. Test with GitHub Actions linter if available
 print_status "info" "Testing with GitHub Actions linter..."
 
 if command -v actionlint &> /dev/null; then
@@ -312,7 +384,7 @@ else
     print_status "info" "actionlint not available - install with: brew install actionlint"
 fi
 
-# 9. Generate summary
+# 10. Generate summary
 echo ""
 echo "📊 Validation Summary"
 echo "===================="
@@ -333,7 +405,7 @@ print_status "info" "Security workflows: $SECURITY_WORKFLOWS"
 
 print_status "info" "Ready for GitHub Actions deployment"
 
-# 10. Optional: Check if GitHub CLI is available for additional validation
+# 11. Optional: Check if GitHub CLI is available for additional validation
 if command -v gh &> /dev/null; then
     print_status "info" "GitHub CLI detected - you can run 'gh workflow list' to see workflows"
     if gh auth status &> /dev/null; then
