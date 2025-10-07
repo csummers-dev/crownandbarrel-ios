@@ -120,13 +120,18 @@ Crown & Barrel prioritizes user privacy and data security:
 - **[Theme System](docs/themes/README.md)** - Theme implementation and customization guide
 - **[Typography Guide](docs/LUXURY_TYPOGRAPHY_GUIDE.md)** - Typography system documentation
 
+### CI/CD Pipeline Documentation
+- **[Main CI Guide](docs/ci/README.md)** - Complete pipeline architecture and workflow overview
+- **[Troubleshooting Guide](docs/ci/TROUBLESHOOTING.md)** - Detailed troubleshooting for common issues
+- **[DevOps Maintenance](docs/ci/DEVOPS_MAINTENANCE.md)** - Maintenance procedures and best practices
+- **[Quick Reference](docs/ci/QUICK_REFERENCE.md)** - Emergency commands and quick fixes
+
 ### Deployment Documentation
 - **[TestFlight Setup](docs/deployment/README.md)** - Complete deployment guide
 - **[App Store Content](docs/deployment/APP_STORE_CONTENT.md)** - Marketing and listing content
 
 ### Infrastructure Documentation
-- **[CI/CD Pipeline](docs/CI_CD_TROUBLESHOOTING.md)** - Continuous integration and deployment
-- **[Pipeline Maintenance](docs/PIPELINE_MAINTENANCE_GUIDE.md)** - Infrastructure maintenance guide
+- **[CI/CD Pipeline Documentation](docs/ci/)** - Complete CI/CD documentation including troubleshooting and maintenance
 
 ### Complete Documentation Index
 - **[Documentation Hub](docs/README.md)** - Complete documentation overview and navigation

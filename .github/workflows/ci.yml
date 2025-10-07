@@ -73,26 +73,33 @@ jobs:
           echo "Available iPhone simulators:"
           xcrun simctl list devices available | grep iPhone
           
-          # Get simulator ID for iPhone 16 Pro with iOS 18.2 first (preferred)
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          # Get simulator ID for iPhone 16 Pro with iOS 18.4 first (preferred)
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.4" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
           if [ -n "$SIMULATOR_ID" ]; then
-            echo "Found iPhone 16 Pro with iOS 18.2 (ID: $SIMULATOR_ID) - booting..."
+            echo "Found iPhone 16 Pro with iOS 18.4 (ID: $SIMULATOR_ID) - booting..."
             SIMULATOR="iPhone 16 Pro"
-            OS_VERSION="18.2"
-          # Fallback to iPhone 16 Pro with iOS 18.1
+            OS_VERSION="18.4"
+          # Fallback to iPhone 16 Pro with iOS 18.5
           else
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.5" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             if [ -n "$SIMULATOR_ID" ]; then
-              echo "Found iPhone 16 Pro with iOS 18.1 (ID: $SIMULATOR_ID) - booting..."
+              echo "Found iPhone 16 Pro with iOS 18.5 (ID: $SIMULATOR_ID) - booting..."
               SIMULATOR="iPhone 16 Pro"
-              OS_VERSION="18.1"
-            # Fallback to any iPhone 16 Pro
+              OS_VERSION="18.5"
+            # Fallback to iPhone 16 Pro with iOS 18.6
             else
-              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.6" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
               if [ -n "$SIMULATOR_ID" ]; then
-                echo "Found iPhone 16 Pro (ID: $SIMULATOR_ID) - using latest available iOS version..."
+                echo "Found iPhone 16 Pro with iOS 18.6 (ID: $SIMULATOR_ID) - booting..."
                 SIMULATOR="iPhone 16 Pro"
-                OS_VERSION="18.2"  # Default to latest
+                OS_VERSION="18.6"
+              # Fallback to any iPhone 16 Pro
+              else
+                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+                if [ -n "$SIMULATOR_ID" ]; then
+                  echo "Found iPhone 16 Pro (ID: $SIMULATOR_ID) - using latest available iOS version..."
+                  SIMULATOR="iPhone 16 Pro"
+                  OS_VERSION="18.6"  # Default to latest available
               # Fallback to iPhone 15 Pro with iOS 17.x
               else
                 SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
@@ -177,20 +184,25 @@ jobs:
           echo "Starting unit tests..."
           
           # Use same simulator detection logic as boot step
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.2" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.4" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
           if [ -n "$SIMULATOR_ID" ]; then
             SIMULATOR="iPhone 16 Pro"
-            OS_VERSION="18.2"
+            OS_VERSION="18.4"
           else
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.1" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.5" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             if [ -n "$SIMULATOR_ID" ]; then
               SIMULATOR="iPhone 16 Pro"
-              OS_VERSION="18.1"
+              OS_VERSION="18.5"
             else
-              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.6" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
               if [ -n "$SIMULATOR_ID" ]; then
                 SIMULATOR="iPhone 16 Pro"
-                OS_VERSION="18.2"
+                OS_VERSION="18.6"
+              else
+                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+                if [ -n "$SIMULATOR_ID" ]; then
+                  SIMULATOR="iPhone 16 Pro"
+                  OS_VERSION="18.6"
               else
                 SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
                 if [ -n "$SIMULATOR_ID" ]; then

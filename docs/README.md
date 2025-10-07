@@ -39,8 +39,11 @@ Complete documentation for the Crown & Barrel watch collection management app.
 - [`deployment/TESTFLIGHT_PREPARATION_PROJECT_PLAN.md`](deployment/TESTFLIGHT_PREPARATION_PROJECT_PLAN.md) - Complete TestFlight setup guide
 
 ### **CI/CD**
-- [`CI_CD_TROUBLESHOOTING.md`](CI_CD_TROUBLESHOOTING.md) - Pipeline troubleshooting
-- [`PIPELINE_MAINTENANCE_GUIDE.md`](PIPELINE_MAINTENANCE_GUIDE.md) - Maintenance procedures
+- **[CI/CD Pipeline Documentation](ci/)** - Complete CI/CD documentation including troubleshooting and maintenance
+  - [`ci/README.md`](ci/README.md) - Main CI guide and architecture
+  - [`ci/TROUBLESHOOTING.md`](ci/TROUBLESHOOTING.md) - Detailed troubleshooting guide
+  - [`ci/DEVOPS_MAINTENANCE.md`](ci/DEVOPS_MAINTENANCE.md) - DevOps maintenance procedures
+  - [`ci/QUICK_REFERENCE.md`](ci/QUICK_REFERENCE.md) - Quick reference and emergency commands
 
 ## 📁 **Archive**
 

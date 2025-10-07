@@ -67,7 +67,7 @@ graph LR
 ## 📞 **Support**
 
 For deployment issues:
-1. Check [`../CI_CD_TROUBLESHOOTING.md`](../CI_CD_TROUBLESHOOTING.md)
+1. Check [`../ci/TROUBLESHOOTING.md`](../ci/TROUBLESHOOTING.md)
 2. Review Apple Developer documentation
 3. Verify code signing certificates in Keychain Access
 
