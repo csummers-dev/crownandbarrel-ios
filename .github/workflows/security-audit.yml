@@ -28,7 +28,7 @@ on:
 
 env:
   PROJECT_NAME: "CrownAndBarrel"
-  XCODE_VERSION: "26.0.1"
+  XCODE_VERSION: "latest-stable"
 
 jobs:
   # Comprehensive security audit
@@ -64,6 +64,7 @@ jobs:
         run: |
           echo "Installing security auditing tools..."
           # Install Semgrep for static analysis
+          python3 -m pip install --upgrade pip
           pip3 install semgrep
           # Install safety for Python dependencies (if any)
           pip3 install safety
