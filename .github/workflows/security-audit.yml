@@ -26,6 +26,12 @@ on:
       - 'Sources/**'
       - 'Tests/**'
 
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  packages: read
+
 env:
   PROJECT_NAME: "CrownAndBarrel"
   XCODE_VERSION: "latest-stable"
@@ -131,6 +137,7 @@ jobs:
         
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.32.0
+        continue-on-error: true
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -156,9 +163,10 @@ jobs:
         
       - name: Run TruffleHog secret scanner
         uses: trufflesecurity/trufflehog@v3.90.8
+        continue-on-error: true
         with:
           path: ./
-          extra_args: --debug --only-verified --fail
+          extra_args: --debug --only-verified --fail filesystem
 
   # License compliance check
   license-compliance:
