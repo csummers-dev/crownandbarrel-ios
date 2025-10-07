@@ -26,7 +26,7 @@ env:
   
   # Build settings
   ARCHIVE_CONFIGURATION: "Release"
-  XCODE_VERSION: "26.0.1"
+  XCODE_VERSION: "latest-stable"
 
 jobs:
   # TestFlight Deployment

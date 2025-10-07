@@ -24,7 +24,7 @@ jobs:
       - name: Setup iOS Environment
         uses: ./.github/actions/setup-ios-environment
         with:
-          xcode-version: "26.0.1"
+          xcode-version: "latest-stable"
           install-xcodegen: 'true'
           install-swiftlint: 'false'
           install-xcpretty: 'true'
@@ -42,22 +42,26 @@ jobs:
 
       - name: Run Unit Tests (only)
         run: |
-          # Find the best available iOS 26.0 simulator for unit tests
-          echo "Looking for available iOS 26.0 simulators for unit tests..."
+          # Find the best available iOS simulator for unit tests
+          echo "Looking for available iOS simulators for unit tests..."
           
-          # Check for iPhone 16 Pro with iOS 26.0 first (preferred)
-          if xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "26.0"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=26.0"
-            echo "✅ Found iPhone 16 Pro with iOS 26.0 - using preferred target for unit tests"
-          # Fallback to any iPhone with iOS 26.0
-          elif xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "26.0"; then
-            # Get first available iPhone with iOS 26.0
-            IPHONE_26_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep "26.0" | head -1)
-            IPHONE_NAME=$(echo "$IPHONE_26_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
-            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=26.0"
-            echo "✅ Found $IPHONE_NAME with iOS 26.0 - using fallback target for unit tests"
+          # Check for iPhone 16 Pro with iOS 18.2 first (preferred)
+          if xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "18.2"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2"
+            echo "✅ Found iPhone 16 Pro with iOS 18.2 - using preferred target for unit tests"
+          # Fallback to any iPhone with iOS 18.1
+          elif xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "18.1"; then
+            # Get first available iPhone with iOS 18.1
+            IPHONE_18_LINE=$(xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep "18.1" | head -1)
+            IPHONE_NAME=$(echo "$IPHONE_18_LINE" | grep -o 'name:[^,]*' | cut -d: -f2)
+            DESTINATION="platform=iOS Simulator,name=$IPHONE_NAME,OS=18.1"
+            echo "✅ Found $IPHONE_NAME with iOS 18.1 - using fallback target for unit tests"
+          # Fallback to iPhone 15 Pro with iOS 17.x
+          elif xcodebuild -showdestinations -scheme CrownAndBarrel -project CrownAndBarrel.xcodeproj 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 15 Pro"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5"
+            echo "✅ Using iPhone 15 Pro with iOS 17.5 - reliable fallback target for unit tests"
           else
-            echo "❌ No iOS 26.0 simulators found, skipping unit tests"
+            echo "❌ No suitable iOS simulators found, skipping unit tests"
             exit 0
           fi
           
