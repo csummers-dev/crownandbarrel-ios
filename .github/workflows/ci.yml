@@ -74,21 +74,21 @@ jobs:
           xcrun simctl list devices available | grep iPhone
           
           # Get simulator ID for iPhone 16 Pro with iOS 18.4 first (preferred)
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.4" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep -A 5 "iOS 18.4" | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
           if [ -n "$SIMULATOR_ID" ]; then
             echo "Found iPhone 16 Pro with iOS 18.4 (ID: $SIMULATOR_ID) - booting..."
             SIMULATOR="iPhone 16 Pro"
             OS_VERSION="18.4"
           # Fallback to iPhone 16 Pro with iOS 18.5
           else
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.5" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep -A 5 "iOS 18.5" | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             if [ -n "$SIMULATOR_ID" ]; then
               echo "Found iPhone 16 Pro with iOS 18.5 (ID: $SIMULATOR_ID) - booting..."
               SIMULATOR="iPhone 16 Pro"
               OS_VERSION="18.5"
             # Fallback to iPhone 16 Pro with iOS 18.6
             else
-              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.6" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep -A 5 "iOS 18.6" | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
               if [ -n "$SIMULATOR_ID" ]; then
                 echo "Found iPhone 16 Pro with iOS 18.6 (ID: $SIMULATOR_ID) - booting..."
                 SIMULATOR="iPhone 16 Pro"
@@ -100,18 +100,19 @@ jobs:
                   echo "Found iPhone 16 Pro (ID: $SIMULATOR_ID) - using latest available iOS version..."
                   SIMULATOR="iPhone 16 Pro"
                   OS_VERSION="18.6"  # Default to latest available
-              # Fallback to iPhone 15 Pro with iOS 17.x
-              else
-                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
-                if [ -n "$SIMULATOR_ID" ]; then
-                  echo "Found iPhone 15 Pro (ID: $SIMULATOR_ID) - using as fallback..."
-                  SIMULATOR="iPhone 15 Pro"
-                  OS_VERSION="17.5"  # Use latest iOS 17.x available
+                # Fallback to iPhone 15 Pro with iOS 17.x
                 else
-                  echo "ERROR: No suitable iPhone simulator found."
-                  echo "Available simulators:"
-                  xcrun simctl list devices available | grep iPhone
-                  exit 1
+                  SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+                  if [ -n "$SIMULATOR_ID" ]; then
+                    echo "Found iPhone 15 Pro (ID: $SIMULATOR_ID) - using as fallback..."
+                    SIMULATOR="iPhone 15 Pro"
+                    OS_VERSION="17.5"  # Use latest iOS 17.x available
+                  else
+                    echo "ERROR: No suitable iPhone simulator found."
+                    echo "Available simulators:"
+                    xcrun simctl list devices available | grep iPhone
+                    exit 1
+                  fi
                 fi
               fi
             fi
@@ -184,17 +185,17 @@ jobs:
           echo "Starting unit tests..."
           
           # Use same simulator detection logic as boot step
-          SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.4" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+          SIMULATOR_ID=$(xcrun simctl list devices available | grep -A 5 "iOS 18.4" | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
           if [ -n "$SIMULATOR_ID" ]; then
             SIMULATOR="iPhone 16 Pro"
             OS_VERSION="18.4"
           else
-            SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.5" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+            SIMULATOR_ID=$(xcrun simctl list devices available | grep -A 5 "iOS 18.5" | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
             if [ -n "$SIMULATOR_ID" ]; then
               SIMULATOR="iPhone 16 Pro"
               OS_VERSION="18.5"
             else
-              SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 16 Pro.*18.6" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+              SIMULATOR_ID=$(xcrun simctl list devices available | grep -A 5 "iOS 18.6" | grep "iPhone 16 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
               if [ -n "$SIMULATOR_ID" ]; then
                 SIMULATOR="iPhone 16 Pro"
                 OS_VERSION="18.6"
@@ -203,16 +204,17 @@ jobs:
                 if [ -n "$SIMULATOR_ID" ]; then
                   SIMULATOR="iPhone 16 Pro"
                   OS_VERSION="18.6"
-              else
-                SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
-                if [ -n "$SIMULATOR_ID" ]; then
-                  SIMULATOR="iPhone 15 Pro"
-                  OS_VERSION="17.5"
                 else
-                  echo "ERROR: No suitable iPhone simulator found for testing."
-                  echo "Available simulators:"
-                  xcrun simctl list devices available | grep iPhone
-                  exit 1
+                  SIMULATOR_ID=$(xcrun simctl list devices available | grep "iPhone 15 Pro" | head -1 | sed 's/.*(\([A-F0-9-]*\)).*/\1/')
+                  if [ -n "$SIMULATOR_ID" ]; then
+                    SIMULATOR="iPhone 15 Pro"
+                    OS_VERSION="17.5"
+                  else
+                    echo "ERROR: No suitable iPhone simulator found for testing."
+                    echo "Available simulators:"
+                    xcrun simctl list devices available | grep iPhone
+                    exit 1
+                  fi
                 fi
               fi
             fi
