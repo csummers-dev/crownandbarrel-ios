@@ -283,6 +283,10 @@ jobs:
     name: Security Validation
     runs-on: ubuntu-latest
     continue-on-error: true
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     
     steps:
       - name: Checkout code
