@@ -510,16 +510,22 @@ jobs:
           # Find the best available iOS simulator for performance validation
           echo "Looking for available iOS simulators..."
           
-          # Check for iPhone 16 Pro with iOS 18.2 first (preferred)
-          if xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "18.2"; then
-            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=18.2"
-            echo "✅ Found iPhone 16 Pro with iOS 18.2 - using preferred target"
-          # Fallback to any iPhone with iOS 18.1
-          elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone" | grep -q "18.1"; then
-            # Get first available iPhone with iOS 18.1
-            # Use iPhone 16 as reliable fallback
-            DESTINATION="platform=iOS Simulator,name=iPhone 16,OS=18.1"
-            echo "✅ Using iPhone 16 with iOS 18.1 - reliable fallback target"
+          # Check for iPhone 16 Pro with iOS 18.4 first (preferred)
+          if xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "18.4"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=18.4"
+            echo "✅ Found iPhone 16 Pro with iOS 18.4 - using preferred target"
+          # Fallback to iPhone 16 Pro with iOS 18.5
+          elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "18.5"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5"
+            echo "✅ Found iPhone 16 Pro with iOS 18.5 - using fallback target"
+          # Fallback to iPhone 16 Pro with iOS 18.6
+          elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro" | grep -q "18.6"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6"
+            echo "✅ Found iPhone 16 Pro with iOS 18.6 - using fallback target"
+          # Fallback to any iPhone 16 Pro
+          elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 16 Pro"; then
+            DESTINATION="platform=iOS Simulator,name=iPhone 16 Pro,OS=18.6"
+            echo "✅ Using iPhone 16 Pro with iOS 18.6 - reliable fallback target"
           # Fallback to iPhone 15 Pro with iOS 17.x
           elif xcodebuild -showdestinations -scheme "${{ env.PROJECT_NAME }}" -project "${{ env.PROJECT_NAME }}.xcodeproj" 2>/dev/null | grep "platform:iOS Simulator" | grep "iPhone 15 Pro"; then
             DESTINATION="platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5"
