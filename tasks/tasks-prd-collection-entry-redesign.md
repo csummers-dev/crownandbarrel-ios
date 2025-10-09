@@ -28,13 +28,13 @@
   - [x] 1.3 Ensure the shared component handles optional nickname field gracefully without breaking layout
   - [x] 1.4 Update `WatchV2ListView.swift` to use the new shared components
 
-- [ ] 2.0 Implement Fixed-Size Grid Layout with Visual Hierarchy
-  - [ ] 2.1 Calculate optimal square dimensions for grid items (considering 2-column layout with proper spacing)
-  - [ ] 2.2 Apply fixed frame dimensions to grid items using `.frame(width:height:)` modifier
-  - [ ] 2.3 Implement visual hierarchy for text fields: manufacturer (large/bold), model (medium), nickname (small)
-  - [ ] 2.4 Remove shadows/borders from grid items to achieve flat design
-  - [ ] 2.5 Ensure consistent spacing between grid items using `AppSpacing` tokens
-  - [ ] 2.6 Position image prominently within each grid item with consistent sizing
+- [x] 2.0 Implement Fixed-Size Grid Layout with Visual Hierarchy
+  - [x] 2.1 Calculate optimal square dimensions for grid items (considering 2-column layout with proper spacing)
+  - [x] 2.2 Apply fixed frame dimensions to grid items using `.frame(width:height:)` modifier
+  - [x] 2.3 Implement visual hierarchy for text fields: manufacturer (large/bold), model (medium), nickname (small)
+  - [x] 2.4 Remove shadows/borders from grid items to achieve flat design
+  - [x] 2.5 Ensure consistent spacing between grid items using `AppSpacing` tokens
+  - [x] 2.6 Position image prominently within each grid item with consistent sizing
 
 - [ ] 3.0 Implement Consistent List View Layout
   - [ ] 3.1 Apply fixed height to all list items for consistency

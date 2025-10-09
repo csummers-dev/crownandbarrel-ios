@@ -109,11 +109,11 @@ public struct WatchV2ListView: View {
                         .frame(maxWidth: .infinity, minHeight: 400) // Ensure consistent height
                     } else {
                         if isGridView {
-                            // Grid View
+                            // Grid View - Fixed-size square items in 2-column layout
                             LazyVGrid(columns: [
-                                GridItem(.flexible(), spacing: 8),
-                                GridItem(.flexible(), spacing: 8)
-                            ], spacing: 16) {
+                                GridItem(.fixed(176), spacing: AppSpacing.sm),
+                                GridItem(.fixed(176), spacing: AppSpacing.sm)
+                            ], spacing: AppSpacing.lg) {
                                 ForEach(viewModel.watches, id: \.id) { watch in
                                     NavigationLink(destination: WatchV2DetailView(watch: watch)) {
                                         WatchGridCard(watch: watch)
@@ -121,7 +121,7 @@ public struct WatchV2ListView: View {
                                     .buttonStyle(PlainButtonStyle())
                                 }
                             }
-                            .padding(.horizontal)
+                            .padding(.horizontal, AppSpacing.lg)
                         } else {
                             // List View - Use LazyVStack instead of List for consistency
                             LazyVStack(spacing: 8) {

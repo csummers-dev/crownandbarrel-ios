@@ -18,22 +18,25 @@ struct WatchEntryContent: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // Manufacturer - displayed separately on first line
+            // Manufacturer - Large and bold for visual prominence
             Text(manufacturer)
-                .font(.headline)
+                .font(.system(size: 16, weight: .bold))
                 .lineLimit(1)
+                .truncationMode(.tail)
             
-            // Model - displayed on second line
+            // Model - Medium size, regular weight
             Text(modelName)
-                .font(.subheadline)
+                .font(.system(size: 14, weight: .regular))
                 .lineLimit(1)
+                .truncationMode(.tail)
             
-            // Nickname - optional, displayed on third line if present
+            // Nickname - Small size, lighter weight, secondary color
             if let nickname = nickname {
                 Text(nickname)
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    .font(.system(size: 12, weight: .regular))
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
     }
@@ -45,26 +48,31 @@ struct WatchEntryContent: View {
 public struct WatchGridCard: View {
     let watch: WatchV2
     
+    // Fixed square dimensions for consistent grid layout
+    // Calculation: (iPhone screen width ~393pt - horizontal padding 32pt - column spacing 8pt) / 2 = 176.5pt
+    private let cardSize: CGFloat = 176
+    
     public init(watch: WatchV2) {
         self.watch = watch
     }
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Photo
+            // Photo - Takes up about 60% of card height for proper balance
+            let imageHeight: CGFloat = cardSize * 0.6
             let primary = watch.photos.first(where: { $0.isPrimary }) ?? watch.photos.first
             if let primary,
                let img = PhotoStoreV2.loadThumb(watchId: watch.id, photoId: primary.id) {
                 Image(uiImage: img)
                     .resizable()
                     .scaledToFill()
-                    .frame(height: 120)
+                    .frame(width: cardSize, height: imageHeight)
                     .clipped()
                     .cornerRadius(8)
             } else {
                 Rectangle()
                     .fill(Color.secondary.opacity(0.15))
-                    .frame(height: 120)
+                    .frame(width: cardSize, height: imageHeight)
                     .cornerRadius(8)
                     .overlay(
                         Image(systemName: "clock")
@@ -80,10 +88,11 @@ public struct WatchGridCard: View {
                 nickname: watch.nickname
             )
             .padding(.horizontal, 4)
+            
+            Spacer(minLength: 0)
         }
+        .frame(width: cardSize, height: cardSize)
         .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
     }
 }
 
