@@ -48,6 +48,7 @@
 		580129D2CA8E3CAAB1687E60 /* StreakCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51005ABED1C99BF2E2183A24 /* StreakCalculatorTests.swift */; };
 		58034F5C84D901B1F0073E5F /* AchievementRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7E260174CA4AE9A87E356E8 /* AchievementRepository.swift */; };
 		5D44DDE7D6E68E6B1A63CAC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74509E100C9332C647116B14 /* Assets.xcassets */; };
+		5EF9D3A3CC46AAF6B8A1AC1A /* WatchEntryComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D305B6021304D60A00318951 /* WatchEntryComponents.swift */; };
 		6B528C35BB332594BAE38C63 /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FAA6F983DB17B8E7D8DE637 /* AppDatabase.swift */; };
 		6E3CAF8EA086B1EE28C78B45 /* ThemeLiveRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */; };
 		71086D918BB2006B1460C219 /* WatchValueObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4068F2E096C2E1EA275756FC /* WatchValueObjects.swift */; };
@@ -210,6 +211,7 @@
 		CB2CF228B7367C81B79C2A6E /* AchievementEvaluatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementEvaluatorTests.swift; sourceTree = "<group>"; };
 		CBAFA9A592B67182F3D74B9B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CBCA221D16C3282138A56B11 /* EnvironmentKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentKeys.swift; sourceTree = "<group>"; };
+		D305B6021304D60A00318951 /* WatchEntryComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchEntryComponents.swift; sourceTree = "<group>"; };
 		D77C7F307F3A08A71A8169B8 /* CrownAndBarrelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownAndBarrelApp.swift; sourceTree = "<group>"; };
 		DBB834B5A6CC03E86A33C4BF /* Repositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories.swift; sourceTree = "<group>"; };
 		DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWatchFlowUITests.swift; sourceTree = "<group>"; };
@@ -310,6 +312,7 @@
 		5814052DF7A96DFA00EB6DBC /* WatchV2List */ = {
 			isa = PBXGroup;
 			children = (
+				D305B6021304D60A00318951 /* WatchEntryComponents.swift */,
 				5161016A666C5C54CE2DD145 /* WatchV2ListView.swift */,
 				BD60115E524E1C9655AE33D5 /* WatchV2ListViewModel.swift */,
 			);
@@ -765,6 +768,7 @@
 				4CAE4842DB64E17D848AE629 /* Typography.swift in Sources */,
 				B65D8E437A86373CF09C0250 /* ValuationsSection.swift in Sources */,
 				2F1317BCD42A887A98BDFE03 /* WatchChildEntities.swift in Sources */,
+				5EF9D3A3CC46AAF6B8A1AC1A /* WatchEntryComponents.swift in Sources */,
 				96A6D114CA127D4CE1C344CA /* WatchEnums.swift in Sources */,
 				CD394BBF187E944268213B59 /* WatchImageView.swift in Sources */,
 				E9C78EC4C05CDFA5CAEB578D /* WatchV2.swift in Sources */,
