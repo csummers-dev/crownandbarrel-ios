@@ -43,17 +43,17 @@
   - [x] 3.4 Apply consistent spacing and alignment using `AppSpacing` tokens
   - [x] 3.5 Position image consistently within list items
 
-- [ ] 4.0 Apply Text Truncation and Typography System
-  - [ ] 4.1 Apply `.lineLimit(1)` and `.truncationMode(.tail)` to all text fields in both grid and list views
-  - [ ] 4.2 Implement manufacturer text using large font from `AppTypography` or custom size
-  - [ ] 4.3 Implement model text using medium font size
-  - [ ] 4.4 Implement nickname text using small font from `AppTypography` (caption style)
-  - [ ] 4.5 Verify text truncation works correctly with long manufacturer/model/nickname values
+- [x] 4.0 Apply Text Truncation and Typography System
+  - [x] 4.1 Apply `.lineLimit(1)` and `.truncationMode(.tail)` to all text fields in both grid and list views
+  - [x] 4.2 Implement manufacturer text using large font from `AppTypography` or custom size
+  - [x] 4.3 Implement model text using medium font size
+  - [x] 4.4 Implement nickname text using small font from `AppTypography` (caption style)
+  - [x] 4.5 Verify text truncation works correctly with long manufacturer/model/nickname values
 
 - [ ] 5.0 Ensure Design System Integration and Theme Consistency
-  - [ ] 5.1 Replace all hardcoded colors with `AppColors` semantic tokens
-  - [ ] 5.2 Replace all hardcoded spacing values with `AppSpacing` tokens
-  - [ ] 5.3 Ensure text colors work correctly in both light and dark modes
+  - [x] 5.1 Replace all hardcoded colors with `AppColors` semantic tokens
+  - [x] 5.2 Replace all hardcoded spacing values with `AppSpacing` tokens
+  - [x] 5.3 Ensure text colors work correctly in both light and dark modes
   - [ ] 5.4 Verify layout consistency across different device sizes (iPhone SE, standard, Max)
   - [ ] 5.5 Test with watches that have missing optional fields (no nickname, no line)
   - [ ] 5.6 Verify visual consistency with rest of app's design principles

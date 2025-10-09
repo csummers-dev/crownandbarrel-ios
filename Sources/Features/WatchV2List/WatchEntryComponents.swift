@@ -17,7 +17,7 @@ struct WatchEntryContent: View {
     let nickname: String?
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
             // Manufacturer - Large and bold for visual prominence
             Text(manufacturer)
                 .font(.system(size: 16, weight: .bold))
@@ -57,7 +57,7 @@ public struct WatchGridCard: View {
     }
     
     public var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
             // Photo - Takes up about 60% of card height for proper balance
             let imageHeight: CGFloat = cardSize * 0.6
             let primary = watch.photos.first(where: { $0.isPrimary }) ?? watch.photos.first
@@ -87,7 +87,7 @@ public struct WatchGridCard: View {
                 modelName: watch.modelName,
                 nickname: watch.nickname
             )
-            .padding(.horizontal, 4)
+            .padding(.horizontal, AppSpacing.xs)
             
             Spacer(minLength: 0)
         }
@@ -111,7 +111,7 @@ public struct WatchListRow: View {
     }
     
     public var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: AppSpacing.md) {
             // Photo
             let primary = watch.photos.first(where: { $0.isPrimary }) ?? watch.photos.first
             if let primary,
