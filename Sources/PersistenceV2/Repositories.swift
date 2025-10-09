@@ -19,6 +19,7 @@ public protocol WatchRepositoryV2: Sendable {
     func totalWatchCount() async throws -> Int
     func totalWearCount() async throws -> Int
     func wearCountForWatch(watchId: UUID) async throws -> Int
+    func lastWornDate(watchId: UUID) async throws -> Date?
     func uniqueBrandsCount() async throws -> Int
     func currentStreak() async throws -> Int
     func allWearEntries() async throws -> [WearEntry]
@@ -480,6 +481,19 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
                 sql: "SELECT COUNT(*) FROM wearentry WHERE watch_id = ?",
                 arguments: [watchId.uuidString]
             ) ?? 0
+        }
+    }
+    
+    public func lastWornDate(watchId: UUID) async throws -> Date? {
+        return try await dbQueue.read { db in
+            // Get the most recent wear entry for this watch
+            let entries = try WearEntry
+                .filter(WearEntry.CodingKeys.watchId == watchId.uuidString)
+                .order(WearEntry.CodingKeys.date.desc)
+                .limit(1)
+                .fetchAll(db)
+            
+            return entries.first?.date
         }
     }
     

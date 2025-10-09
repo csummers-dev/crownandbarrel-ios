@@ -357,5 +357,59 @@ final class WearEntryTests: XCTestCase {
         let uniqueDays = try await repository.uniqueDaysWithEntries()
         XCTAssertEqual(uniqueDays, 2, "Should have entries on 2 unique days")
     }
+    
+    func testLastWornDate() async throws {
+        let watch1 = WatchV2(
+            manufacturer: "Rolex",
+            modelName: "Submariner",
+            movement: MovementSpec(type: .automatic),
+            ownership: WatchOwnership()
+        )
+        
+        let watch2 = WatchV2(
+            manufacturer: "Omega",
+            modelName: "Seamaster",
+            movement: MovementSpec(type: .automatic),
+            ownership: WatchOwnership()
+        )
+        
+        try repository.create(watch1)
+        try repository.create(watch2)
+        
+        // Test watch with no wear entries returns nil
+        let noWearDate = try await repository.lastWornDate(watchId: watch1.id)
+        XCTAssertNil(noWearDate, "Watch with no wear entries should return nil")
+        
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+        let twoDaysAgo = calendar.date(byAdding: .day, value: -2, to: today)!
+        
+        // Add wear entries for watch1 on multiple days
+        try await repository.incrementWear(for: watch1.id, on: twoDaysAgo)
+        try await repository.incrementWear(for: watch1.id, on: yesterday)
+        try await repository.incrementWear(for: watch1.id, on: today)
+        
+        // Add wear entry for watch2 on a different day
+        try await repository.incrementWear(for: watch2.id, on: yesterday)
+        
+        // Test lastWornDate returns the most recent date for watch1
+        let lastWorn1 = try await repository.lastWornDate(watchId: watch1.id)
+        XCTAssertNotNil(lastWorn1, "Watch 1 should have a last worn date")
+        
+        if let lastWorn1 = lastWorn1 {
+            let lastWornDay = calendar.startOfDay(for: lastWorn1)
+            XCTAssertEqual(lastWornDay, today, "Watch 1's last worn date should be today")
+        }
+        
+        // Test lastWornDate for watch2
+        let lastWorn2 = try await repository.lastWornDate(watchId: watch2.id)
+        XCTAssertNotNil(lastWorn2, "Watch 2 should have a last worn date")
+        
+        if let lastWorn2 = lastWorn2 {
+            let lastWornDay = calendar.startOfDay(for: lastWorn2)
+            XCTAssertEqual(lastWornDay, yesterday, "Watch 2's last worn date should be yesterday")
+        }
+    }
 }
 
