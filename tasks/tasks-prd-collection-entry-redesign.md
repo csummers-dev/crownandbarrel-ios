@@ -50,11 +50,11 @@
   - [x] 4.4 Implement nickname text using small font from `AppTypography` (caption style)
   - [x] 4.5 Verify text truncation works correctly with long manufacturer/model/nickname values
 
-- [ ] 5.0 Ensure Design System Integration and Theme Consistency
+- [x] 5.0 Ensure Design System Integration and Theme Consistency
   - [x] 5.1 Replace all hardcoded colors with `AppColors` semantic tokens
   - [x] 5.2 Replace all hardcoded spacing values with `AppSpacing` tokens
   - [x] 5.3 Ensure text colors work correctly in both light and dark modes
-  - [ ] 5.4 Verify layout consistency across different device sizes (iPhone SE, standard, Max)
-  - [ ] 5.5 Test with watches that have missing optional fields (no nickname, no line)
-  - [ ] 5.6 Verify visual consistency with rest of app's design principles
+  - [x] 5.4 Verify layout consistency across different device sizes (iPhone SE, standard, Max)
+  - [x] 5.5 Test with watches that have missing optional fields (no nickname, no line)
+  - [x] 5.6 Verify visual consistency with rest of app's design principles
 
