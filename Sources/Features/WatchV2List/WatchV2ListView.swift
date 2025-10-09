@@ -109,11 +109,11 @@ public struct WatchV2ListView: View {
                         .frame(maxWidth: .infinity, minHeight: 400) // Ensure consistent height
                     } else {
                         if isGridView {
-                            // Grid View
+                            // Grid View - Fixed-size square items in 2-column layout
                             LazyVGrid(columns: [
-                                GridItem(.flexible(), spacing: 8),
-                                GridItem(.flexible(), spacing: 8)
-                            ], spacing: 16) {
+                                GridItem(.fixed(176), spacing: AppSpacing.sm),
+                                GridItem(.fixed(176), spacing: AppSpacing.sm)
+                            ], spacing: AppSpacing.lg) {
                                 ForEach(viewModel.watches, id: \.id) { watch in
                                     NavigationLink(destination: WatchV2DetailView(watch: watch)) {
                                         WatchGridCard(watch: watch)
@@ -121,17 +121,19 @@ public struct WatchV2ListView: View {
                                     .buttonStyle(PlainButtonStyle())
                                 }
                             }
-                            .padding(.horizontal)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.top, AppSpacing.sm)
                         } else {
-                            // List View - Use LazyVStack instead of List for consistency
-                            LazyVStack(spacing: 8) {
+                            // List View - Fixed-height items with tighter spacing for cleaner visual clarity
+                            LazyVStack(spacing: AppSpacing.xs) {
                                 ForEach(viewModel.watches, id: \.id) { watch in
                                     NavigationLink(destination: WatchV2DetailView(watch: watch)) {
                                         WatchListRow(watch: watch)
                                     }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
-                            .padding(.horizontal)
+                            .padding(.horizontal, AppSpacing.lg)
                         }
                     }
                 }
@@ -167,114 +169,6 @@ public struct WatchV2ListView: View {
             }
             .padding()
             .accessibilityLabel("Add watch")
-        }
-    }
-    
-    // Grid Card Component
-    private struct WatchGridCard: View {
-        let watch: WatchV2
-        
-        var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                // Photo
-                let primary = watch.photos.first(where: { $0.isPrimary }) ?? watch.photos.first
-                if let primary,
-                   let img = PhotoStoreV2.loadThumb(watchId: watch.id, photoId: primary.id) {
-                    Image(uiImage: img)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 120)
-                        .clipped()
-                        .cornerRadius(8)
-                } else {
-                    Rectangle()
-                        .fill(Color.secondary.opacity(0.15))
-                        .frame(height: 120)
-                        .cornerRadius(8)
-                        .overlay(
-                            Image(systemName: "clock")
-                                .font(.title2)
-                                .foregroundStyle(.secondary)
-                        )
-                }
-                
-                // Text Content
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(watch.manufacturer) \(watch.modelName)")
-                        .font(.headline)
-                        .lineLimit(2)
-                    
-                    if let line = watch.line {
-                        Text(line)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                    
-                    if let nickname = watch.nickname {
-                        Text(nickname)
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-                            .lineLimit(1)
-                    }
-                }
-                .padding(.horizontal, 4)
-            }
-            .background(Color(.systemBackground))
-            .cornerRadius(12)
-            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-        }
-    }
-    
-    // List Row Component
-    private struct WatchListRow: View {
-        let watch: WatchV2
-        
-        var body: some View {
-            HStack(spacing: 12) {
-                // Photo
-                let primary = watch.photos.first(where: { $0.isPrimary }) ?? watch.photos.first
-                if let primary,
-                   let img = PhotoStoreV2.loadThumb(watchId: watch.id, photoId: primary.id) {
-                    Image(uiImage: img)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 56, height: 56)
-                        .clipped()
-                        .cornerRadius(8)
-                } else {
-                    Rectangle()
-                        .fill(Color.secondary.opacity(0.15))
-                        .frame(width: 56, height: 56)
-                        .cornerRadius(8)
-                        .overlay(
-                            Image(systemName: "clock")
-                                .foregroundStyle(.secondary)
-                        )
-                }
-                
-                // Text Content
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(watch.manufacturer) \(watch.modelName)")
-                        .font(.headline)
-                        .lineLimit(1)
-                    
-                    Text([watch.line, watch.referenceNumber].compactMap { $0 }.joined(separator: " • "))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                    
-                    if let nickname = watch.nickname {
-                        Text(nickname)
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-                            .lineLimit(1)
-                    }
-                }
-                
-                Spacer()
-            }
-            .padding(.vertical, 4)
         }
     }
     
