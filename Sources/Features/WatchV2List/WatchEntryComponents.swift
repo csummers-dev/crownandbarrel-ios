@@ -21,12 +21,14 @@ struct WatchEntryContent: View {
             // Manufacturer - Large and bold for visual prominence
             Text(manufacturer)
                 .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(.primary)
                 .lineLimit(1)
                 .truncationMode(.tail)
             
             // Model - Medium size, regular weight
             Text(modelName)
                 .font(.system(size: 14, weight: .regular))
+                .foregroundStyle(.primary)
                 .lineLimit(1)
                 .truncationMode(.tail)
             

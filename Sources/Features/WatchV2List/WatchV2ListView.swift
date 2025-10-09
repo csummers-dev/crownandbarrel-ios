@@ -122,9 +122,10 @@ public struct WatchV2ListView: View {
                                 }
                             }
                             .padding(.horizontal, AppSpacing.lg)
+                            .padding(.top, AppSpacing.sm)
                         } else {
-                            // List View - Fixed-height items with consistent spacing
-                            LazyVStack(spacing: AppSpacing.sm) {
+                            // List View - Fixed-height items with tighter spacing for cleaner visual clarity
+                            LazyVStack(spacing: AppSpacing.xs) {
                                 ForEach(viewModel.watches, id: \.id) { watch in
                                     NavigationLink(destination: WatchV2DetailView(watch: watch)) {
                                         WatchListRow(watch: watch)
