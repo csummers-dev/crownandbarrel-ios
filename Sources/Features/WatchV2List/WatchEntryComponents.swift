@@ -102,6 +102,10 @@ public struct WatchGridCard: View {
 public struct WatchListRow: View {
     let watch: WatchV2
     
+    // Fixed height for consistent list item sizing
+    // Height accommodates image (56pt) plus vertical padding
+    private let rowHeight: CGFloat = 72
+    
     public init(watch: WatchV2) {
         self.watch = watch
     }
@@ -138,7 +142,8 @@ public struct WatchListRow: View {
             
             Spacer()
         }
-        .padding(.vertical, 4)
+        .frame(height: rowHeight)
+        .padding(.vertical, AppSpacing.xs)
     }
 }
 

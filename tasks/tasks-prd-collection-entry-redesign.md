@@ -36,12 +36,12 @@
   - [x] 2.5 Ensure consistent spacing between grid items using `AppSpacing` tokens
   - [x] 2.6 Position image prominently within each grid item with consistent sizing
 
-- [ ] 3.0 Implement Consistent List View Layout
-  - [ ] 3.1 Apply fixed height to all list items for consistency
-  - [ ] 3.2 Implement same visual hierarchy as grid view (manufacturer large, model medium, nickname small)
-  - [ ] 3.3 Ensure same font colors are used as grid view
-  - [ ] 3.4 Apply consistent spacing and alignment using `AppSpacing` tokens
-  - [ ] 3.5 Position image consistently within list items
+- [x] 3.0 Implement Consistent List View Layout
+  - [x] 3.1 Apply fixed height to all list items for consistency
+  - [x] 3.2 Implement same visual hierarchy as grid view (manufacturer large, model medium, nickname small)
+  - [x] 3.3 Ensure same font colors are used as grid view
+  - [x] 3.4 Apply consistent spacing and alignment using `AppSpacing` tokens
+  - [x] 3.5 Position image consistently within list items
 
 - [ ] 4.0 Apply Text Truncation and Typography System
   - [ ] 4.1 Apply `.lineLimit(1)` and `.truncationMode(.tail)` to all text fields in both grid and list views
