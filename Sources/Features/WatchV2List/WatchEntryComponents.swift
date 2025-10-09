@@ -114,20 +114,20 @@ public struct WatchListRow: View {
     
     public var body: some View {
         HStack(spacing: AppSpacing.md) {
-            // Photo
+            // Photo - Rectangular shape matching grid view proportions
             let primary = watch.photos.first(where: { $0.isPrimary }) ?? watch.photos.first
             if let primary,
                let img = PhotoStoreV2.loadThumb(watchId: watch.id, photoId: primary.id) {
                 Image(uiImage: img)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 56, height: 56)
+                    .frame(width: 80, height: 56)
                     .clipped()
                     .cornerRadius(8)
             } else {
                 Rectangle()
                     .fill(Color.secondary.opacity(0.15))
-                    .frame(width: 56, height: 56)
+                    .frame(width: 80, height: 56)
                     .cornerRadius(8)
                     .overlay(
                         Image(systemName: "clock")

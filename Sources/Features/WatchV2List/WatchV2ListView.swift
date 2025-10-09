@@ -130,6 +130,7 @@ public struct WatchV2ListView: View {
                                     NavigationLink(destination: WatchV2DetailView(watch: watch)) {
                                         WatchListRow(watch: watch)
                                     }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             .padding(.horizontal, AppSpacing.lg)
