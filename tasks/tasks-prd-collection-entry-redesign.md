@@ -16,18 +16,18 @@
 
 ## Tasks
 
-- [ ] 1.0 Extend Repository with Missing Data Methods
+- [x] 1.0 Extend Repository with Missing Data Methods
   - [x] 1.1 Add `lastWornDate(watchId:)` method to WatchRepositoryV2 protocol
   - [x] 1.2 Implement `lastWornDate(watchId:)` in WatchRepositoryGRDB to query most recent WearEntry
   - [x] 1.3 Verify existing `wearCountForWatch(watchId:)` method works correctly
   - [x] 1.4 Test new repository method with unit tests
 
 - [ ] 2.0 Create Reusable UI Components for Detail View
-  - [ ] 2.1 Create `DetailSectionHeader.swift` component with luxury typography styling
-  - [ ] 2.2 Create `StatisticRow.swift` component for displaying statistics (times worn, last worn)
-  - [ ] 2.3 Create `AchievementBadge.swift` compact component for horizontal achievement display
-  - [ ] 2.4 Create `SpecificationRow.swift` component for key-value pairs with smart visibility
-  - [ ] 2.5 Create tag pill component for displaying tags as chips
+  - [x] 2.1 Create `DetailSectionHeader.swift` component with luxury typography styling
+  - [x] 2.2 Create `StatisticRow.swift` component for displaying statistics (times worn, last worn)
+  - [x] 2.3 Create `AchievementBadge.swift` compact component for horizontal achievement display
+  - [x] 2.4 Create `SpecificationRow.swift` component for key-value pairs with smart visibility
+  - [x] 2.5 Create tag pill component for displaying tags as chips
 
 - [ ] 3.0 Implement Field Visibility and Formatting Utilities
   - [ ] 3.1 Create `DateFormatters.swift` with relative/absolute date formatting logic
