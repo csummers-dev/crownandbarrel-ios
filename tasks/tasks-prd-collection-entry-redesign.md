@@ -36,7 +36,7 @@
   - [x] 3.4 Add numeric precision formatting for measurements (diameter, thickness, etc.)
   - [x] 3.5 Create helper methods to determine if specification groups have any populated fields
 
-- [ ] 4.0 Redesign WatchV2DetailView with New Layout
+- [x] 4.0 Redesign WatchV2DetailView with New Layout
   - [x] 4.1 Replace CollapsibleSection components with new ScrollView-based layout
   - [x] 4.2 Implement photo gallery carousel at the top using TabView with page indicators
   - [x] 4.3 Create watch identity section with manufacturer, model, line, reference, nickname
@@ -57,8 +57,8 @@
   - [x] 4.18 Apply luxury typography using AppTypography styles
 
 - [ ] 5.0 Add Unit Tests for New Components and Logic
-  - [ ] 5.1 Write unit tests for DateFormatters utility
-  - [ ] 5.2 Write unit tests for WatchFieldFormatters visibility logic
-  - [ ] 5.3 Write unit tests for currency and numeric formatting
-  - [ ] 5.4 Add repository tests for lastWornDate method
-  - [ ] 5.5 Create UI tests or preview tests for new components
+  - [x] 5.1 Write unit tests for DateFormatters utility
+  - [x] 5.2 Write unit tests for WatchFieldFormatters visibility logic
+  - [x] 5.3 Write unit tests for currency and numeric formatting
+  - [x] 5.4 Add repository tests for lastWornDate method
+  - [x] 5.5 Create UI tests or preview tests for new components
