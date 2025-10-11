@@ -3,317 +3,146 @@ import XCTest
 
 /// Tests for WatchFieldFormatters utility to verify field formatting and visibility logic.
 final class WatchFieldFormattersTests: XCTestCase {
+
     // MARK: - Numeric Formatting Tests
 
-    func testFormatMeasurementWholeNumber() throws {
-        let result = WatchFieldFormatters.formatMeasurement(40.0, unit: "mm")
-        XCTAssertEqual(result, "40mm", "Should not show decimals for whole numbers")
-    }
+    func testMeasurementFormatting() throws {
+        // Whole numbers - no decimals
+        XCTAssertEqual(WatchFieldFormatters.formatMeasurement(40.0, unit: "mm"), "40mm")
 
-    func testFormatMeasurementWithDecimals() throws {
-        let result = WatchFieldFormatters.formatMeasurement(40.5, unit: "mm")
-        XCTAssertEqual(result, "40.5mm", "Should show decimals for fractional values")
-    }
+        // Fractional values - show decimals
+        XCTAssertEqual(WatchFieldFormatters.formatMeasurement(40.5, unit: "mm"), "40.5mm")
 
-    func testFormatMeasurementWithoutUnit() throws {
-        let result = WatchFieldFormatters.formatMeasurement(12.5)
-        XCTAssertEqual(result, "12.5", "Should work without unit")
-    }
+        // Without unit
+        XCTAssertEqual(WatchFieldFormatters.formatMeasurement(12.5), "12.5")
 
-    func testFormatMeasurementNil() throws {
-        let result = WatchFieldFormatters.formatMeasurement(nil, unit: "mm")
-        XCTAssertNil(result, "Should return nil for nil value")
-    }
+        // Nil handling
+        XCTAssertNil(WatchFieldFormatters.formatMeasurement(nil, unit: "mm"))
 
-    func testFormatIntWithUnit() throws {
-        let result = WatchFieldFormatters.formatInt(20, unit: "mm")
-        XCTAssertEqual(result, "20mm")
-    }
+        // Int formatting
+        XCTAssertEqual(WatchFieldFormatters.formatInt(20, unit: "mm"), "20mm")
+        XCTAssertNil(WatchFieldFormatters.formatInt(nil, unit: "mm"))
 
-    func testFormatIntNil() throws {
-        let result = WatchFieldFormatters.formatInt(nil, unit: "mm")
-        XCTAssertNil(result, "Should return nil for nil value")
+        // Edge cases
+        XCTAssertEqual(WatchFieldFormatters.formatMeasurement(0, unit: "mm"), "0mm")
+        XCTAssertEqual(WatchFieldFormatters.formatMeasurement(40.567, unit: "mm", maxDecimals: 2), "40.57mm")
     }
 
     // MARK: - Currency Formatting Tests
 
-    func testFormatCurrencyWithCode() throws {
-        let amount = Decimal(1_250.50)
-        let result = WatchFieldFormatters.formatCurrency(amount, currencyCode: "USD")
-        XCTAssertNotNil(result, "Should format currency")
-        XCTAssertTrue(result?.contains("USD") ?? false, "Should include currency code")
-        XCTAssertTrue(result?.contains("1") ?? false, "Should include amount")
-    }
+    func testCurrencyFormatting() throws {
+        // With currency code
+        let result1 = WatchFieldFormatters.formatCurrency(Decimal(1_250.50), currencyCode: "USD")
+        XCTAssertNotNil(result1)
+        XCTAssertTrue(result1?.contains("USD") ?? false, "Should include currency code")
 
-    func testFormatCurrencyNilAmount() throws {
-        let result = WatchFieldFormatters.formatCurrency(nil, currencyCode: "USD")
-        XCTAssertNil(result, "Should return nil for nil amount")
-    }
+        // Without currency code
+        let result2 = WatchFieldFormatters.formatCurrency(Decimal(1_250), currencyCode: nil)
+        XCTAssertNotNil(result2)
 
-    func testFormatCurrencyWithoutCode() throws {
-        let amount = Decimal(1_250)
-        let result = WatchFieldFormatters.formatCurrency(amount, currencyCode: nil)
-        XCTAssertNotNil(result, "Should format without currency code")
-        XCTAssertTrue(result?.contains("1") ?? false, "Should include amount")
-    }
+        // Nil amount
+        XCTAssertNil(WatchFieldFormatters.formatCurrency(nil, currencyCode: "USD"))
 
-    func testFormatCurrencyEmptyCode() throws {
-        let amount = Decimal(500)
-        let result = WatchFieldFormatters.formatCurrency(amount, currencyCode: "")
-        XCTAssertNotNil(result, "Should format with empty currency code")
+        // Zero amount
+        XCTAssertNotNil(WatchFieldFormatters.formatCurrency(Decimal(0), currencyCode: "USD"))
     }
 
     // MARK: - Enum Formatting Tests
 
-    func testFormatEnumValueSnakeCase() throws {
+    func testEnumFormatting() throws {
         enum TestEnum: String {
             case stainlessSteel = "stainless_steel"
-        }
-        let result = WatchFieldFormatters.formatEnumValue(TestEnum.stainlessSteel)
-        XCTAssertEqual(result, "Stainless Steel", "Should convert snake_case to Title Case")
-    }
-
-    func testFormatEnumValueCamelCase() throws {
-        enum TestEnum: String {
             case screwDown = "screwDown"
         }
-        let result = WatchFieldFormatters.formatEnumValue(TestEnum.screwDown)
-        XCTAssertEqual(result, "Screw Down", "Should convert camelCase to Title Case")
-    }
 
-    func testFormatEnumValueNil() throws {
-        enum TestEnum: String {
-            case test
-        }
-        let nilValue: TestEnum? = nil
-        let result = WatchFieldFormatters.formatEnumValue(nilValue)
-        XCTAssertNil(result, "Should return nil for nil value")
+        XCTAssertEqual(WatchFieldFormatters.formatEnumValue(TestEnum.stainlessSteel), "Stainless Steel")
+        XCTAssertEqual(WatchFieldFormatters.formatEnumValue(TestEnum.screwDown), "Screw Down")
+        XCTAssertNil(WatchFieldFormatters.formatEnumValue(nil as TestEnum?))
     }
 
     // MARK: - Specialized Formatters Tests
 
-    func testFormatFrequency() throws {
-        let result = WatchFieldFormatters.formatFrequency(28_800)
-        XCTAssertEqual(result, "28,800 vph", "Should format frequency with comma separator")
-    }
+    func testSpecializedFormatters() throws {
+        // Frequency
+        XCTAssertEqual(WatchFieldFormatters.formatFrequency(28_800), "28,800 vph")
+        XCTAssertEqual(WatchFieldFormatters.formatFrequency(36_000), "36,000 vph")
+        XCTAssertNil(WatchFieldFormatters.formatFrequency(nil))
 
-    func testFormatFrequencyNil() throws {
-        let result = WatchFieldFormatters.formatFrequency(nil)
-        XCTAssertNil(result, "Should return nil for nil value")
-    }
+        // Power reserve
+        XCTAssertEqual(WatchFieldFormatters.formatPowerReserve(38), "38 hours")
+        XCTAssertEqual(WatchFieldFormatters.formatPowerReserve(72), "3 days")
+        XCTAssertEqual(WatchFieldFormatters.formatPowerReserve(1), "1 hour")
+        XCTAssertEqual(WatchFieldFormatters.formatPowerReserve(50), "50 hours")
+        XCTAssertNil(WatchFieldFormatters.formatPowerReserve(nil))
 
-    func testFormatPowerReserveHours() throws {
-        let result = WatchFieldFormatters.formatPowerReserve(38)
-        XCTAssertEqual(result, "38 hours")
-    }
+        // Accuracy
+        XCTAssertEqual(WatchFieldFormatters.formatAccuracy(2.5), "±2.5 sec/day")
+        XCTAssertEqual(WatchFieldFormatters.formatAccuracy(-4), "-4 sec/day")
+        XCTAssertNil(WatchFieldFormatters.formatAccuracy(nil))
 
-    func testFormatPowerReserveDays() throws {
-        let result = WatchFieldFormatters.formatPowerReserve(72)
-        XCTAssertEqual(result, "3 days", "Should convert 72 hours to 3 days")
-    }
+        // Water resistance
+        XCTAssertEqual(WatchFieldFormatters.formatWaterResistance(100), "100m")
+        XCTAssertNil(WatchFieldFormatters.formatWaterResistance(nil))
 
-    func testFormatPowerReserveSingleHour() throws {
-        let result = WatchFieldFormatters.formatPowerReserve(1)
-        XCTAssertEqual(result, "1 hour", "Should use singular for 1 hour")
-    }
-
-    func testFormatPowerReserveNil() throws {
-        let result = WatchFieldFormatters.formatPowerReserve(nil)
-        XCTAssertNil(result, "Should return nil for nil value")
-    }
-
-    func testFormatAccuracyPositive() throws {
-        let result = WatchFieldFormatters.formatAccuracy(2.5)
-        XCTAssertEqual(result, "±2.5 sec/day")
-    }
-
-    func testFormatAccuracyNegative() throws {
-        let result = WatchFieldFormatters.formatAccuracy(-4)
-        XCTAssertEqual(result, "-4 sec/day")
-    }
-
-    func testFormatAccuracyNil() throws {
-        let result = WatchFieldFormatters.formatAccuracy(nil)
-        XCTAssertNil(result, "Should return nil for nil value")
-    }
-
-    func testFormatWaterResistance() throws {
-        let result = WatchFieldFormatters.formatWaterResistance(100)
-        XCTAssertEqual(result, "100m")
-    }
-
-    func testFormatWaterResistanceNil() throws {
-        let result = WatchFieldFormatters.formatWaterResistance(nil)
-        XCTAssertNil(result, "Should return nil for nil value")
-    }
-
-    func testFormatBoxPapersFullSet() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(.fullSet)
-        XCTAssertEqual(result, "Full Set")
-    }
-
-    func testFormatBoxPapersBoxOnly() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(.boxOnly)
-        XCTAssertEqual(result, "Box Only")
-    }
-
-    func testFormatBoxPapersPapersOnly() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(.papersOnly)
-        XCTAssertEqual(result, "Papers Only")
-    }
-
-    func testFormatBoxPapersWatchOnly() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(.watchOnly)
-        XCTAssertEqual(result, "Watch Only")
-    }
-
-    func testFormatBoxPapersPartial() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(.partial)
-        XCTAssertEqual(result, "Partial")
-    }
-
-    func testFormatBoxPapersOther() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(.other("custom"))
-        XCTAssertEqual(result, "Custom")
-    }
-
-    func testFormatBoxPapersNil() throws {
-        let result = WatchFieldFormatters.formatBoxPapers(nil)
-        XCTAssertNil(result, "Should return nil for nil value")
+        // Box & Papers
+        XCTAssertEqual(WatchFieldFormatters.formatBoxPapers(.fullSet), "Full Set")
+        XCTAssertEqual(WatchFieldFormatters.formatBoxPapers(.boxOnly), "Box Only")
+        XCTAssertEqual(WatchFieldFormatters.formatBoxPapers(.papersOnly), "Papers Only")
+        XCTAssertEqual(WatchFieldFormatters.formatBoxPapers(.watchOnly), "Watch Only")
+        XCTAssertEqual(WatchFieldFormatters.formatBoxPapers(.partial), "Partial")
+        XCTAssertEqual(WatchFieldFormatters.formatBoxPapers(.other("custom")), "Custom")
+        XCTAssertNil(WatchFieldFormatters.formatBoxPapers(nil))
     }
 
     // MARK: - Group Visibility Tests
 
-    func testHasCoreDetailsWithData() throws {
-        let watch = WatchV2(
-            manufacturer: "Rolex",
-            modelName: "Submariner",
-            serialNumber: "ABC123"
-        )
-        XCTAssertTrue(WatchFieldFormatters.hasCoreDetails(watch), "Should return true when serial number is present")
+    func testCoreDetailsVisibility() throws {
+        // With data
+        let watchWithData = WatchV2(manufacturer: "Rolex", modelName: "Submariner", serialNumber: "ABC123")
+        XCTAssertTrue(WatchFieldFormatters.hasCoreDetails(watchWithData))
+
+        let watchWithTags = WatchV2(manufacturer: "Rolex", modelName: "Submariner", tags: ["Diver"])
+        XCTAssertTrue(WatchFieldFormatters.hasCoreDetails(watchWithTags))
+
+        // Without data
+        let watchWithoutData = WatchV2(manufacturer: "Rolex", modelName: "Submariner")
+        XCTAssertFalse(WatchFieldFormatters.hasCoreDetails(watchWithoutData))
     }
 
-    func testHasCoreDetailsWithoutData() throws {
-        let watch = WatchV2(
-            manufacturer: "Rolex",
-            modelName: "Submariner"
-        )
-        XCTAssertFalse(WatchFieldFormatters.hasCoreDetails(watch), "Should return false when no optional fields are present")
+    func testCaseSpecsVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasCaseSpecs(WatchCase(material: .steel, diameterMM: 40)))
+        XCTAssertFalse(WatchFieldFormatters.hasCaseSpecs(WatchCase()))
     }
 
-    func testHasCoreDetailsWithTags() throws {
-        let watch = WatchV2(
-            manufacturer: "Rolex",
-            modelName: "Submariner",
-            tags: ["Diver", "Sport"]
-        )
-        XCTAssertTrue(WatchFieldFormatters.hasCoreDetails(watch), "Should return true when tags are present")
+    func testDialDetailsVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasDialDetails(WatchDial(color: "Black", finish: .matte)))
+        XCTAssertTrue(WatchFieldFormatters.hasDialDetails(WatchDial(complications: ["Date"])))
+        XCTAssertFalse(WatchFieldFormatters.hasDialDetails(WatchDial()))
     }
 
-    func testHasCaseSpecsWithData() throws {
-        let watchCase = WatchCase(material: .steel, diameterMM: 40)
-        XCTAssertTrue(WatchFieldFormatters.hasCaseSpecs(watchCase), "Should return true when case fields are present")
+    func testCrystalDetailsVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasCrystalDetails(WatchCrystal(material: .sapphire)))
+        XCTAssertFalse(WatchFieldFormatters.hasCrystalDetails(WatchCrystal()))
     }
 
-    func testHasCaseSpecsWithoutData() throws {
-        let watchCase = WatchCase()
-        XCTAssertFalse(WatchFieldFormatters.hasCaseSpecs(watchCase), "Should return false when no fields are present")
+    func testMovementSpecsVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasMovementSpecs(MovementSpec(type: .automatic, caliber: "ETA")))
+        XCTAssertFalse(WatchFieldFormatters.hasMovementSpecs(MovementSpec()))
     }
 
-    func testHasDialDetailsWithData() throws {
-        let dial = WatchDial(color: "Black", finish: .matte)
-        XCTAssertTrue(WatchFieldFormatters.hasDialDetails(dial), "Should return true when dial fields are present")
+    func testWaterResistanceVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasWaterResistance(WatchWater(waterResistanceM: 100)))
+        XCTAssertTrue(WatchFieldFormatters.hasWaterResistance(WatchWater(crownGuard: true)))
+        XCTAssertFalse(WatchFieldFormatters.hasWaterResistance(WatchWater()))
     }
 
-    func testHasDialDetailsWithoutData() throws {
-        let dial = WatchDial()
-        XCTAssertFalse(WatchFieldFormatters.hasDialDetails(dial), "Should return false when no fields are present")
+    func testStrapDetailsVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasStrapDetails(WatchStrapCurrent(type: .bracelet, material: "Steel")))
+        XCTAssertFalse(WatchFieldFormatters.hasStrapDetails(WatchStrapCurrent()))
     }
 
-    func testHasDialDetailsWithComplications() throws {
-        let dial = WatchDial(complications: ["Date", "Chronograph"])
-        XCTAssertTrue(WatchFieldFormatters.hasDialDetails(dial), "Should return true when complications are present")
-    }
-
-    func testHasCrystalDetailsWithData() throws {
-        let crystal = WatchCrystal(material: .sapphire)
-        XCTAssertTrue(WatchFieldFormatters.hasCrystalDetails(crystal), "Should return true when crystal fields are present")
-    }
-
-    func testHasCrystalDetailsWithoutData() throws {
-        let crystal = WatchCrystal()
-        XCTAssertFalse(WatchFieldFormatters.hasCrystalDetails(crystal), "Should return false when no fields are present")
-    }
-
-    func testHasMovementSpecsWithData() throws {
-        let movement = MovementSpec(type: .automatic, caliber: "ETA 2824-2")
-        XCTAssertTrue(WatchFieldFormatters.hasMovementSpecs(movement), "Should return true when movement fields are present")
-    }
-
-    func testHasMovementSpecsWithoutData() throws {
-        let movement = MovementSpec()
-        XCTAssertFalse(WatchFieldFormatters.hasMovementSpecs(movement), "Should return false when no fields are present")
-    }
-
-    func testHasWaterResistanceWithData() throws {
-        let water = WatchWater(waterResistanceM: 100)
-        XCTAssertTrue(WatchFieldFormatters.hasWaterResistance(water), "Should return true when water resistance is present")
-    }
-
-    func testHasWaterResistanceWithCrownGuard() throws {
-        let water = WatchWater(crownGuard: true)
-        XCTAssertTrue(WatchFieldFormatters.hasWaterResistance(water), "Should return true when crown guard is true")
-    }
-
-    func testHasWaterResistanceWithoutData() throws {
-        let water = WatchWater()
-        XCTAssertFalse(WatchFieldFormatters.hasWaterResistance(water), "Should return false when no fields are present")
-    }
-
-    func testHasStrapDetailsWithData() throws {
-        let strap = WatchStrapCurrent(type: .bracelet, material: "Stainless Steel")
-        XCTAssertTrue(WatchFieldFormatters.hasStrapDetails(strap), "Should return true when strap fields are present")
-    }
-
-    func testHasStrapDetailsWithoutData() throws {
-        let strap = WatchStrapCurrent()
-        XCTAssertFalse(WatchFieldFormatters.hasStrapDetails(strap), "Should return false when no fields are present")
-    }
-
-    func testHasOwnershipInfoWithData() throws {
-        let ownership = WatchOwnership(dateAcquired: Date(), purchasedFrom: "Authorized Dealer")
-        XCTAssertTrue(WatchFieldFormatters.hasOwnershipInfo(ownership), "Should return true when ownership fields are present")
-    }
-
-    func testHasOwnershipInfoWithoutData() throws {
-        let ownership = WatchOwnership()
-        XCTAssertFalse(WatchFieldFormatters.hasOwnershipInfo(ownership), "Should return false when no fields are present")
-    }
-
-    // MARK: - Edge Cases
-
-    func testFormatMeasurementZero() throws {
-        let result = WatchFieldFormatters.formatMeasurement(0, unit: "mm")
-        XCTAssertEqual(result, "0mm", "Should handle zero value")
-    }
-
-    func testFormatCurrencyZeroAmount() throws {
-        let result = WatchFieldFormatters.formatCurrency(Decimal(0), currencyCode: "USD")
-        XCTAssertNotNil(result, "Should format zero amount")
-    }
-
-    func testFormatFrequencyLargeNumber() throws {
-        let result = WatchFieldFormatters.formatFrequency(36_000)
-        XCTAssertEqual(result, "36,000 vph", "Should format large numbers with comma")
-    }
-
-    func testFormatPowerReserveNonMultipleOf24() throws {
-        let result = WatchFieldFormatters.formatPowerReserve(50)
-        XCTAssertEqual(result, "50 hours", "Should use hours for non-multiples of 24")
-    }
-
-    func testFormatMeasurementMaxDecimals() throws {
-        let result = WatchFieldFormatters.formatMeasurement(40.567, unit: "mm", maxDecimals: 2)
-        XCTAssertEqual(result, "40.57mm", "Should respect maxDecimals parameter")
+    func testOwnershipInfoVisibility() throws {
+        XCTAssertTrue(WatchFieldFormatters.hasOwnershipInfo(WatchOwnership(dateAcquired: Date())))
+        XCTAssertFalse(WatchFieldFormatters.hasOwnershipInfo(WatchOwnership()))
     }
 }

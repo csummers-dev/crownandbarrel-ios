@@ -396,32 +396,20 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
     }
 
     public func incrementWear(for watchId: UUID, on date: Date) async throws {
-        let logger = Logger(subsystem: "com.crownandbarrel", category: "WearEntry")
-
         try await dbQueue.write { db in
-            logger.info("🔍 incrementWear called for watchId: \(watchId.uuidString)")
-
             // CRITICAL: Always enable foreign keys at the start of every write operation
             // This ensures data integrity regardless of the prepareDatabase block
             try self.ensureForeignKeysEnabled(db)
 
-            // Check foreign keys status for logging
-            let foreignKeysEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
-            logger.info("🔍 Foreign keys enabled: \(foreignKeysEnabled)")
-
             // Verify watch exists
             let watchExists = try Bool.fetchOne(db, sql: "SELECT COUNT(*) > 0 FROM watches WHERE id = ?", arguments: [watchId.uuidString]) ?? false
-            logger.info("🔍 Watch exists in DB: \(watchExists)")
 
             if !watchExists {
-                logger.error("❌ Watch does not exist in database!")
                 throw AppError.repository("Watch not found in database. ID: \(watchId.uuidString)")
             }
 
             let calendar = Calendar.current
             let startOfDay = calendar.startOfDay(for: date)
-
-            logger.info("🔍 Checking for existing entry on: \(startOfDay.description)")
 
             // Check if entry already exists for this watch on this date (raw SQL for clarity)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
@@ -430,28 +418,15 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
                 sql: "SELECT COUNT(*) FROM wearentry WHERE watch_id = ? AND date >= ? AND date < ?",
                 arguments: [watchId.uuidString, ISO8601.string(from: startOfDay), ISO8601.string(from: endOfDay)]
             ) ?? 0
-            logger.info("🔍 Existing entry count: \(existingCount)")
 
             if existingCount == 0 {
                 // Create new wear entry
                 let entry = WearEntry(watchId: watchId, date: startOfDay)
-                logger.info("🔍 Attempting to insert wear entry: id=\(entry.id.uuidString), watchId=\(entry.watchId.uuidString)")
 
-                do {
-                    // Double-check foreign keys are enabled before insertion
-                    try self.ensureForeignKeysEnabled(db)
+                // Double-check foreign keys are enabled before insertion
+                try self.ensureForeignKeysEnabled(db)
 
-                    try entry.insert(db)
-                    logger.info("✅ Wear entry inserted successfully")
-                } catch {
-                    logger.error("❌ Insert failed: \(error.localizedDescription)")
-                    // Log additional debugging info
-                    let foreignKeysStatus = try? Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
-                    logger.error("❌ Foreign keys status at failure: \(foreignKeysStatus ?? false)")
-                    throw error
-                }
-            } else {
-                logger.info("ℹ️ Wear entry already exists, skipping insert")
+                try entry.insert(db)
             }
         }
     }
