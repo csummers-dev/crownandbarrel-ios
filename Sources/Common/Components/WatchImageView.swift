@@ -38,5 +38,3 @@ public struct WatchImageView: View {
         }
     }
 }
-
-

@@ -32,7 +32,7 @@ public enum WatchValidation {
     public static func validateProductionYear(_ year: Int?) -> Bool {
         guard let year else { return true }
         let current = Calendar.current.component(.year, from: Date())
-        return (1900...current).contains(year)
+        return (1_900...current).contains(year)
     }
 
     public static func validateCaseDimensions(diameter: Double?, thickness: Double?, lugToLug: Double?, lugWidth: Int?) -> Bool {
@@ -44,17 +44,17 @@ public enum WatchValidation {
     }
 
     public static func validateMovement(powerReserveHours: Double?, frequencyVPH: Int?, jewelCount: Int?, accuracyPPD: Double?) -> Bool {
-        let okPR = powerReserveHours.map { (0.0...2000.0).contains($0) } ?? true
-        let okVPH = frequencyVPH.map { $0 == 0 || [18000, 19800, 21600, 24000, 25200, 28800, 36000].contains($0) } ?? true
+        let okPR = powerReserveHours.map { (0.0...2_000.0).contains($0) } ?? true
+        let okVPH = frequencyVPH.map { $0 == 0 || [18_000, 19_800, 21_600, 24_000, 25_200, 28_800, 36_000].contains($0) } ?? true
         let okJewel = jewelCount.map { (0...60).contains($0) } ?? true
-        let _ = accuracyPPD // any Double allowed; represents +/- seconds per day
+        _ = accuracyPPD // any Double allowed; represents +/- seconds per day
         return okPR && okVPH && okJewel
     }
 
     public static func validateWaterResistance(_ meters: Int?) -> Bool {
         guard let meters else { return true }
-        let allowed: Set<Int> = [0, 30, 50, 100, 200, 300, 600, 1000]
-        return allowed.contains(meters) || meters > 1000
+        let allowed: Set<Int> = [0, 30, 50, 100, 200, 300, 600, 1_000]
+        return allowed.contains(meters) || meters > 1_000
     }
 
     // MARK: - Photos
@@ -86,7 +86,7 @@ public enum WatchValidation {
     }
 
     public static func validatePhotoLimit(_ photos: [WatchPhoto]) -> Bool {
-        return photos.count <= 10
+        photos.count <= 10
     }
 
     // MARK: - Aggregate validation
@@ -124,5 +124,3 @@ public enum WatchValidation {
         return errors
     }
 }
-
-

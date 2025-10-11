@@ -1,5 +1,5 @@
-import XCTest
 @testable import CrownAndBarrel
+import XCTest
 
 /// Verifies spacing scale tokens remain consistent.
 /// - What: Guards key increments used by recent list/card layout tweaks.
@@ -19,5 +19,3 @@ final class SpacingTokensTests: XCTestCase {
         XCTAssertLessThan(AppSpacing.lg, AppSpacing.xl)
     }
 }
-
-

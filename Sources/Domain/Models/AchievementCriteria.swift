@@ -8,80 +8,80 @@ import Foundation
 ///        these criteria to determine when to unlock achievements based on current user data.
 public enum AchievementCriteria: Codable, Hashable, Sendable {
     // MARK: - Collection Size Criteria
-    
+
     /// Achievement unlocks when the user owns a specific number of watches
     /// - Parameter count: The target number of watches required
     case watchCountReached(count: Int)
-    
+
     // MARK: - Wearing Frequency Criteria
-    
+
     /// Achievement unlocks when total wear entries across all watches reaches a count
     /// - Parameter count: The target number of total wears required
     case totalWearsReached(count: Int)
-    
+
     /// Achievement unlocks when a single specific watch is worn a certain number of times
     /// - Parameter count: The target number of wears for one watch
     case singleWatchWornCount(count: Int)
-    
+
     // MARK: - Consistency/Streak Criteria
-    
+
     /// Achievement unlocks when user logs wears on consecutive days
     /// - Parameter days: The target number of consecutive days
     case consecutiveDaysStreak(days: Int)
-    
+
     /// Achievement unlocks when user logs wears on consecutive weekends
     /// - Parameter weekends: The target number of consecutive weekends
     case consecutiveWeekendsStreak(weekends: Int)
-    
+
     /// Achievement unlocks when user logs wears on consecutive weekdays
     /// - Parameter weekdays: The target number of consecutive weekdays
     case consecutiveWeekdaysStreak(weekdays: Int)
-    
+
     // MARK: - Diversity Criteria
-    
+
     /// Achievement unlocks when user owns watches from a certain number of unique brands
     /// - Parameter count: The target number of unique brands
     case uniqueBrandsReached(count: Int)
-    
+
     /// Achievement unlocks when user wears a certain number of different watches in a week
     /// - Parameter count: The target number of different watches
     case differentWatchesInWeek(count: Int)
-    
+
     /// Achievement unlocks when user wears a certain number of different watches in a month
     /// - Parameter count: The target number of different watches
     case differentWatchesInMonth(count: Int)
-    
+
     /// Achievement unlocks when user wears a certain number of different watches in a quarter
     /// - Parameter count: The target number of different watches
     case differentWatchesInQuarter(count: Int)
-    
+
     /// Achievement unlocks when user has worn each watch in their collection at least once
     case allWatchesWornAtLeastOnce
-    
+
     /// Achievement unlocks when no single watch accounts for more than a certain percentage of total wears
     /// - Parameter maxPercentage: Maximum percentage (0.0 to 1.0) any single watch can account for
     case balancedWearDistribution(maxPercentage: Double)
-    
+
     // MARK: - Special Occasion Criteria
-    
+
     /// Achievement unlocks when the first watch is added to the collection
     case firstWatchAdded
-    
+
     /// Achievement unlocks when the first wear entry is logged
     case firstWearLogged
-    
+
     /// Achievement unlocks when user has tracked wears for a certain number of consecutive days
     /// - Parameter days: The target number of consecutive tracking days
     case trackingConsecutiveDays(days: Int)
-    
+
     /// Achievement unlocks when user has used the app for a certain period
     /// - Parameter days: The target number of days since first use
     case appUsageDuration(days: Int)
-    
+
     /// Achievement unlocks when user logs a certain number of wear entries on their first day
     /// - Parameter count: The target number of wears on day one
     case wearsOnFirstDay(count: Int)
-    
+
     /// Achievement unlocks when user has logged entries on a certain number of different calendar days
     /// - Parameter days: The target number of unique days with entries
     case uniqueDaysWithEntries(days: Int)
@@ -132,7 +132,7 @@ public extension AchievementCriteria {
             return "Log entries on \(days) different day\(days == 1 ? "" : "s")"
         }
     }
-    
+
     /// Returns the target value for progress tracking
     var targetValue: Double {
         switch self {
@@ -187,7 +187,7 @@ extension AchievementCriteria {
         case weekdays
         case maxPercentage
     }
-    
+
     private enum CriteriaType: String, Codable {
         case watchCountReached
         case totalWearsReached
@@ -208,11 +208,11 @@ extension AchievementCriteria {
         case wearsOnFirstDay
         case uniqueDaysWithEntries
     }
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(CriteriaType.self, forKey: .type)
-        
+
         switch type {
         case .watchCountReached:
             let count = try container.decode(Int.self, forKey: .count)
@@ -267,10 +267,10 @@ extension AchievementCriteria {
             self = .uniqueDaysWithEntries(days: days)
         }
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        
+
         switch self {
         case .watchCountReached(let count):
             try container.encode(CriteriaType.watchCountReached, forKey: .type)

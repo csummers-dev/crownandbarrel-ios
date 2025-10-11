@@ -38,5 +38,3 @@ public enum CollectionViewMode: String, CaseIterable, Identifiable, Codable {
 
     public var id: String { rawValue }
 }
-
-

@@ -29,7 +29,7 @@ public enum ImageStore {
     }
 
     public static func imageURL(assetId: String) throws -> URL {
-        return try imagesDirectory().appendingPathComponent("\(assetId).jpg")
+        try imagesDirectory().appendingPathComponent("\(assetId).jpg")
     }
 
     /// Loads an image by assetId or returns nil if it doesn't exist.
@@ -96,5 +96,3 @@ public enum ImageStore {
         return UIImage(cgImage: cg, scale: image.scale, orientation: image.imageOrientation)
     }
 }
-
-

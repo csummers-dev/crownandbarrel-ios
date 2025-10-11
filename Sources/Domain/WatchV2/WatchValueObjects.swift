@@ -182,5 +182,3 @@ public struct WatchOwnership: Codable, Hashable, Sendable {
         self.insuranceRenewalDate = insuranceRenewalDate
     }
 }
-
-

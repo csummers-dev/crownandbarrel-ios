@@ -85,5 +85,3 @@ public struct StrapInventoryItem: Codable, Hashable, Sendable, Identifiable {
         self.quickRelease = quickRelease
     }
 }
-
-

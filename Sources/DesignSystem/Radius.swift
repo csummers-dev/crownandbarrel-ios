@@ -9,5 +9,3 @@ public enum AppRadius {
     public static let medium: CGFloat = 10   // grid tiles and medium surfaces
     public static let large: CGFloat = 12    // list cards and prominent containers
 }
-
-

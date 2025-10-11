@@ -14,5 +14,3 @@ public enum AppIcons {
     public static let add = Image(systemName: "plus")
     public static let watch = Image(systemName: "applewatch")
 }
-
-

@@ -21,5 +21,3 @@ final class LaunchConfigurationTests: XCTestCase {
         XCTAssertTrue(hasStoryboard || hasLaunchDict, "Expected UILaunchStoryboardName or UILaunchScreen in Info.plist to avoid legacy letterboxing.")
     }
 }
-
-

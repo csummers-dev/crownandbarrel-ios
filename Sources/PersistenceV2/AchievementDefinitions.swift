@@ -7,17 +7,16 @@ import Foundation
 /// - How: This file defines all 50 achievements across 5 categories (10 per category).
 ///        Achievement IDs are deterministic UUIDs based on achievement names for consistency.
 public enum AchievementDefinitions {
-    
     /// All 50 achievement definitions organized by category
-    public static let all: [Achievement] = 
-        collectionSize + 
-        wearingFrequency + 
-        consistency + 
-        diversity + 
+    public static let all: [Achievement] =
+        collectionSize +
+        wearingFrequency +
+        consistency +
+        diversity +
         specialOccasions
-    
+
     // MARK: - Collection Size Achievements (10)
-    
+
     public static let collectionSize: [Achievement] = [
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-000000000001")!,
@@ -108,11 +107,11 @@ public enum AchievementDefinitions {
             category: .collectionSize,
             unlockCriteria: .watchCountReached(count: 250),
             targetValue: 250
-        ),
+        )
     ]
-    
+
     // MARK: - Wearing Frequency Achievements (10)
-    
+
     public static let wearingFrequency: [Achievement] = [
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-00000000000b")!,
@@ -183,8 +182,8 @@ public enum AchievementDefinitions {
             description: "Log 1000 total wears",
             imageAssetName: "achievement_018",
             category: .wearingFrequency,
-            unlockCriteria: .totalWearsReached(count: 1000),
-            targetValue: 1000
+            unlockCriteria: .totalWearsReached(count: 1_000),
+            targetValue: 1_000
         ),
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-000000000013")!,
@@ -192,8 +191,8 @@ public enum AchievementDefinitions {
             description: "Log 2500 total wears",
             imageAssetName: "achievement_019",
             category: .wearingFrequency,
-            unlockCriteria: .totalWearsReached(count: 2500),
-            targetValue: 2500
+            unlockCriteria: .totalWearsReached(count: 2_500),
+            targetValue: 2_500
         ),
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-000000000014")!,
@@ -201,13 +200,13 @@ public enum AchievementDefinitions {
             description: "Log 5000 total wears",
             imageAssetName: "achievement_020",
             category: .wearingFrequency,
-            unlockCriteria: .totalWearsReached(count: 5000),
-            targetValue: 5000
-        ),
+            unlockCriteria: .totalWearsReached(count: 5_000),
+            targetValue: 5_000
+        )
     ]
-    
+
     // MARK: - Consistency/Streak Achievements (10)
-    
+
     public static let consistency: [Achievement] = [
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-000000000015")!,
@@ -298,11 +297,11 @@ public enum AchievementDefinitions {
             category: .consistency,
             unlockCriteria: .consecutiveWeekdaysStreak(weekdays: 20),
             targetValue: 20
-        ),
+        )
     ]
-    
+
     // MARK: - Diversity Achievements (10)
-    
+
     public static let diversity: [Achievement] = [
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-00000000001f")!,
@@ -393,11 +392,11 @@ public enum AchievementDefinitions {
             category: .diversity,
             unlockCriteria: .differentWatchesInQuarter(count: 20),
             targetValue: 20
-        ),
+        )
     ]
-    
+
     // MARK: - Special Occasions/Firsts Achievements (10)
-    
+
     public static let specialOccasions: [Achievement] = [
         Achievement(
             id: UUID(uuidString: "a0000000-0000-0000-0000-000000000029")!,
@@ -488,16 +487,16 @@ public enum AchievementDefinitions {
             category: .specialOccasions,
             unlockCriteria: .uniqueDaysWithEntries(days: 100),
             targetValue: 100
-        ),
+        )
     ]
-    
+
     // MARK: - Helper Methods
-    
+
     /// Fetches an achievement by ID
     public static func achievement(withId id: UUID) -> Achievement? {
-        return all.first { $0.id == id }
+        all.first { $0.id == id }
     }
-    
+
     /// Fetches all achievements in a specific category
     public static func achievements(in category: AchievementCategory) -> [Achievement] {
         switch category {

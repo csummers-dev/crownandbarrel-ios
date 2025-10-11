@@ -8,15 +8,15 @@ public struct AchievementProgressView: View {
     public let current: Double
     public let target: Double
     public let isCompact: Bool
-    
+
     @Environment(\.themeToken) private var themeToken
-    
+
     public init(current: Double, target: Double, isCompact: Bool = false) {
         self.current = current
         self.target = target
         self.isCompact = isCompact
     }
-    
+
     public var body: some View {
         if isCompact {
             compactView
@@ -24,31 +24,31 @@ public struct AchievementProgressView: View {
             fullView
         }
     }
-    
+
     // MARK: - Subviews
-    
+
     private var compactView: some View {
         ProgressView(value: progressPercentage)
             .progressViewStyle(LinearProgressViewStyle(tint: AppColors.accent))
             .frame(height: 4)
             .accessibilityLabel("Progress: \(Int(progressPercentage * 100))%")
     }
-    
+
     private var fullView: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             HStack {
                 Text("Progress")
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary)
-                
+
                 Spacer()
-                
+
                 Text("\(Int(progressPercentage * 100))%")
                     .font(.caption)
                     .foregroundStyle(AppColors.textPrimary)
                     .fontWeight(.medium)
             }
-            
+
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     // Background
@@ -56,7 +56,7 @@ public struct AchievementProgressView: View {
                         .fill(AppColors.separator)
                         .frame(width: geometry.size.width, height: 8)
                         .cornerRadius(AppRadius.small)
-                    
+
                     // Progress fill
                     Rectangle()
                         .fill(AppColors.accent)
@@ -66,7 +66,7 @@ public struct AchievementProgressView: View {
                 }
             }
             .frame(height: 8)
-            
+
             Text(progressText)
                 .font(.caption2)
                 .foregroundStyle(AppColors.textSecondary)
@@ -75,14 +75,14 @@ public struct AchievementProgressView: View {
         .accessibilityLabel("Progress: \(progressText), \(Int(progressPercentage * 100))% complete")
         .id(themeToken)
     }
-    
+
     // MARK: - Helpers
-    
+
     private var progressPercentage: Double {
         guard target > 0 else { return 0 }
         return min(current / target, 1.0)
     }
-    
+
     private var progressText: String {
         let currentInt = Int(current)
         let targetInt = Int(target)

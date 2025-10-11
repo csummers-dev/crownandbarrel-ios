@@ -14,8 +14,8 @@ public final class PhotoPipelineV2 {
 
         // Transform
         let squared = PhotoTransformsV2.squareCropped(sourceImage)
-        let original = PhotoTransformsV2.downscale(squared, maxDimension: 3000)
-        let thumb = PhotoTransformsV2.thumbnail(original, size: 1000)
+        let original = PhotoTransformsV2.downscale(squared, maxDimension: 3_000)
+        let thumb = PhotoTransformsV2.thumbnail(original, size: 1_000)
 
         // Persist
         let photoId = UUID()
@@ -72,5 +72,3 @@ public final class PhotoPipelineV2 {
         return out
     }
 }
-
-

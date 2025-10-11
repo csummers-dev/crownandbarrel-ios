@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 /// Stats screen summarizing collection metrics and visualizing wear frequency.
 /// - What: Shows aggregate stats, top-most/least worn lists, and two pie charts.
@@ -9,15 +9,15 @@ import Charts
 struct StatsView: View {
     @Environment(\.themeToken) private var themeToken
     @State private var watches: [WatchV2] = []
-    @State private var errorMessage: String? = nil
+    @State private var errorMessage: String?
     @State private var achievements: [(achievement: Achievement, state: AchievementState?)] = []
-    @State private var unlockedAchievement: Achievement? = nil
+    @State private var unlockedAchievement: Achievement?
     @State private var showUnlockNotification: Bool = false
     @AppStorage("showLockedAchievements") private var showLockedAchievements: Bool = true
-    
+
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
-    private lazy var evaluator: AchievementEvaluator = AchievementEvaluator(
+    private lazy var evaluator = AchievementEvaluator(
         achievementRepository: achievementRepository,
         watchRepository: repository
     )
@@ -28,9 +28,9 @@ struct StatsView: View {
                 summaryCards
                 topMostLeast
                 charts
-                
+
                 Divider().padding(.vertical, 8)
-                
+
                 achievementsSection
             }
             .padding()
@@ -127,13 +127,13 @@ struct StatsView: View {
                 Text("Achievements")
                     .font(.title3)
                     .foregroundStyle(AppColors.textSecondary)
-                
+
                 Spacer()
-                
+
                 Toggle("Show locked", isOn: $showLockedAchievements)
                     .labelsHidden()
             }
-            
+
             if filteredAchievements.isEmpty {
                 Text("No achievements to display")
                     .font(.subheadline)
@@ -154,7 +154,7 @@ struct StatsView: View {
             }
         }
     }
-    
+
     private var filteredAchievements: [(achievement: Achievement, state: AchievementState?)] {
         if showLockedAchievements {
             return achievements
@@ -162,14 +162,14 @@ struct StatsView: View {
             return achievements.filter { $0.state?.isUnlocked == true }
         }
     }
-    
+
     private func load() async {
         do {
             watches = try repository.list(sortedBy: .manufacturerLineModel, filters: WatchFilters())
-            
+
             // Initialize achievement states if needed
             try await achievementRepository.initializeUserStates()
-            
+
             // Load achievements with states
             achievements = try await achievementRepository.fetchAchievementsWithStates()
         } catch {
@@ -215,5 +215,3 @@ private struct PieChart: View {
         .chartLegend(position: .trailing, spacing: 8)
     }
 }
-
-

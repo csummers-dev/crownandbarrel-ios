@@ -1,5 +1,5 @@
-import XCTest
 @testable import CrownAndBarrel
+import XCTest
 
 final class RadiusTokensTests: XCTestCase {
     func testRadiusTokensAreOrderedAndPositive() {
@@ -15,5 +15,3 @@ final class RadiusTokensTests: XCTestCase {
         XCTAssertLessThan(medium, large)
     }
 }
-
-

@@ -1,14 +1,13 @@
-import XCTest
 @testable import CrownAndBarrel
+import XCTest
 
 final class ImageStoreCropTests: XCTestCase {
-    
     private var testAssetIds: [String] = []
-    
+
     override func setUpWithError() throws {
         testAssetIds = []
     }
-    
+
     override func tearDownWithError() throws {
         // Clean up any test files created during tests
         for assetId in testAssetIds {
@@ -16,7 +15,7 @@ final class ImageStoreCropTests: XCTestCase {
         }
         testAssetIds = []
     }
-    
+
     func testSquareCropCentersAndProducesSquare() throws {
         // Create a 200x100 red image
         let size = CGSize(width: 200, height: 100)
@@ -41,11 +40,9 @@ final class ImageStoreCropTests: XCTestCase {
 
         let id = UUID().uuidString
         testAssetIds.append(id) // Track for cleanup
-        
+
         _ = try ImageStore.saveImage(img, assetId: id)
         let loaded = ImageStore.loadImage(assetId: id)
         XCTAssertNotNil(loaded)
     }
 }
-
-

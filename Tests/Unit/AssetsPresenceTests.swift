@@ -1,5 +1,5 @@
-import XCTest
 @testable import CrownAndBarrel
+import XCTest
 
 final class AssetsPresenceTests: XCTestCase {
     func testAppIconAssetExistsInBundle() {
@@ -16,5 +16,3 @@ final class AssetsPresenceTests: XCTestCase {
         XCTAssertNotNil(light ?? dark, "Placeholder image should load for light or dark mode from assets or bundled PNG.")
     }
 }
-
-

@@ -8,13 +8,13 @@ public enum DevSeedV2 {
             let repo = WatchRepositoryGRDB()
             let list = try repo.list(sortedBy: .manufacturerLineModel, filters: WatchFilters())
             guard list.isEmpty else { return }
-            
+
             // Generate comprehensive test data
             let testWatches = generateTestWatches()
-            
+
             for watchData in testWatches {
                 var watch = watchData.watch
-                
+
                 // Add placeholder image if specified
                 if watchData.addPhoto {
                     let img = generatePlaceholderImage(text: watchData.imageText, color: watchData.imageColor)
@@ -22,22 +22,22 @@ public enum DevSeedV2 {
                     let (_, updated) = try pipeline.addPhoto(watchId: watch.id, sourceImage: img, makePrimary: true, existingPhotos: [])
                     watch.photos = updated
                 }
-                
+
                 try repo.create(watch)
             }
         } catch {
             // ignore in seed
         }
     }
-    
+
     public static func generateTestData() {
         do {
             let repo = WatchRepositoryGRDB()
             let testWatches = generateTestWatches()
-            
+
             for watchData in testWatches {
                 var watch = watchData.watch
-                
+
                 // Add placeholder image if specified
                 if watchData.addPhoto {
                     let img = generatePlaceholderImage(text: watchData.imageText, color: watchData.imageColor)
@@ -45,16 +45,16 @@ public enum DevSeedV2 {
                     let (_, updated) = try pipeline.addPhoto(watchId: watch.id, sourceImage: img, makePrimary: true, existingPhotos: [])
                     watch.photos = updated
                 }
-                
+
                 try repo.create(watch)
             }
         } catch {
             print("Error generating test data: \(error)")
         }
     }
-    
+
     private static func generateTestWatches() -> [TestWatchData] {
-        return [
+        [
             TestWatchData(
                 watch: WatchV2(
                     manufacturer: "Omega",
@@ -63,7 +63,7 @@ public enum DevSeedV2 {
                     referenceNumber: "311.30.42.30.01.005",
                     nickname: "Moonwatch",
                     serialNumber: "OM123456",
-                    productionYear: 2020,
+                    productionYear: 2_020,
                     tags: ["chronograph", "space", "heritage"],
                     watchCase: WatchCase(
                         material: .steel,
@@ -97,7 +97,7 @@ public enum DevSeedV2 {
                         type: .manual,
                         caliber: "Omega 1861",
                         powerReserveHours: 48,
-                        frequencyVPH: 21600,
+                        frequencyVPH: 21_600,
                         jewelCount: 18,
                         accuracySpecPPD: 4.0,
                         chronometerCert: .cosc
@@ -119,11 +119,11 @@ public enum DevSeedV2 {
                     ownership: WatchOwnership(
                         dateAcquired: Date().addingTimeInterval(-365 * 24 * 60 * 60), // 1 year ago
                         purchasedFrom: "Omega Boutique",
-                        purchasePriceAmount: Decimal(6300),
+                        purchasePriceAmount: Decimal(6_300),
                         purchasePriceCurrency: "USD",
                         condition: .excellent,
                         boxPapers: .fullSet,
-                        currentEstimatedValueAmount: Decimal(6500),
+                        currentEstimatedValueAmount: Decimal(6_500),
                         currentEstimatedValueCurrency: "USD",
                         insuranceProvider: "Chubb",
                         insurancePolicyNumber: "CH123456",
@@ -143,7 +143,7 @@ public enum DevSeedV2 {
                         ValuationEntry(
                             date: Date().addingTimeInterval(-30 * 24 * 60 * 60), // 1 month ago
                             source: .marketEst,
-                            valueAmount: Decimal(6500),
+                            valueAmount: Decimal(6_500),
                             valueCurrency: "USD"
                         )
                     ],
@@ -162,7 +162,7 @@ public enum DevSeedV2 {
                 imageText: "Ω",
                 imageColor: .systemBlue
             ),
-            
+
             TestWatchData(
                 watch: WatchV2(
                     manufacturer: "Rolex",
@@ -171,7 +171,7 @@ public enum DevSeedV2 {
                     referenceNumber: "126610LN",
                     nickname: "Sub",
                     serialNumber: "RL789012",
-                    productionYear: 2021,
+                    productionYear: 2_021,
                     tags: ["dive", "tool", "classic"],
                     watchCase: WatchCase(
                         material: .steel,
@@ -205,7 +205,7 @@ public enum DevSeedV2 {
                         type: .automatic,
                         caliber: "Rolex 3235",
                         powerReserveHours: 70,
-                        frequencyVPH: 28800,
+                        frequencyVPH: 28_800,
                         jewelCount: 31,
                         accuracySpecPPD: 2.0,
                         chronometerCert: .cosc
@@ -227,11 +227,11 @@ public enum DevSeedV2 {
                     ownership: WatchOwnership(
                         dateAcquired: Date().addingTimeInterval(-200 * 24 * 60 * 60), // ~7 months ago
                         purchasedFrom: "Authorized Dealer",
-                        purchasePriceAmount: Decimal(9100),
+                        purchasePriceAmount: Decimal(9_100),
                         purchasePriceCurrency: "USD",
                         condition: .excellent,
                         boxPapers: .fullSet,
-                        currentEstimatedValueAmount: Decimal(12000),
+                        currentEstimatedValueAmount: Decimal(12_000),
                         currentEstimatedValueCurrency: "USD"
                     )
                 ),
@@ -239,7 +239,7 @@ public enum DevSeedV2 {
                 imageText: "R",
                 imageColor: .systemGreen
             ),
-            
+
             TestWatchData(
                 watch: WatchV2(
                     manufacturer: "Seiko",
@@ -248,7 +248,7 @@ public enum DevSeedV2 {
                     referenceNumber: "SRP777",
                     nickname: "Turtle",
                     serialNumber: "SK345678",
-                    productionYear: 2019,
+                    productionYear: 2_019,
                     tags: ["dive", "affordable", "reliable"],
                     watchCase: WatchCase(
                         material: .steel,
@@ -282,7 +282,7 @@ public enum DevSeedV2 {
                         type: .automatic,
                         caliber: "Seiko 4R36",
                         powerReserveHours: 41,
-                        frequencyVPH: 21600,
+                        frequencyVPH: 21_600,
                         jewelCount: 24,
                         accuracySpecPPD: 15.0,
                         chronometerCert: ChronometerCert.none
@@ -316,7 +316,7 @@ public enum DevSeedV2 {
                 imageText: "S",
                 imageColor: .systemOrange
             ),
-            
+
             TestWatchData(
                 watch: WatchV2(
                     manufacturer: "Grand Seiko",
@@ -325,7 +325,7 @@ public enum DevSeedV2 {
                     referenceNumber: "SBGA211",
                     nickname: "Snowflake",
                     serialNumber: "GS901234",
-                    productionYear: 2022,
+                    productionYear: 2_022,
                     tags: ["spring-drive", "luxury", "japanese"],
                     watchCase: WatchCase(
                         material: .steel,
@@ -381,11 +381,11 @@ public enum DevSeedV2 {
                     ownership: WatchOwnership(
                         dateAcquired: Date().addingTimeInterval(-100 * 24 * 60 * 60), // ~3 months ago
                         purchasedFrom: "Grand Seiko Boutique",
-                        purchasePriceAmount: Decimal(5800),
+                        purchasePriceAmount: Decimal(5_800),
                         purchasePriceCurrency: "USD",
                         condition: .excellent,
                         boxPapers: .fullSet,
-                        currentEstimatedValueAmount: Decimal(6000),
+                        currentEstimatedValueAmount: Decimal(6_000),
                         currentEstimatedValueCurrency: "USD"
                     )
                 ),
@@ -395,19 +395,19 @@ public enum DevSeedV2 {
             )
         ]
     }
-    
+
     private static func generatePlaceholderImage(text: String, color: UIColor) -> UIImage {
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1200, height: 1200))
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1_200, height: 1_200))
         return renderer.image { ctx in
             color.setFill()
-            ctx.fill(CGRect(x: 0, y: 0, width: 1200, height: 1200))
-            
+            ctx.fill(CGRect(x: 0, y: 0, width: 1_200, height: 1_200))
+
             let attrs: [NSAttributedString.Key: Any] = [
                 .foregroundColor: UIColor.white,
                 .font: UIFont.systemFont(ofSize: 120, weight: .bold)
             ]
             let size = text.size(withAttributes: attrs)
-            text.draw(at: CGPoint(x: (1200 - size.width)/2.0, y: (1200 - size.height)/2.0), withAttributes: attrs)
+            text.draw(at: CGPoint(x: (1_200 - size.width) / 2.0, y: (1_200 - size.height) / 2.0), withAttributes: attrs)
         }
     }
 }
@@ -419,5 +419,3 @@ private struct TestWatchData {
     let imageColor: UIColor
 }
 #endif
-
-

@@ -13,5 +13,3 @@ public enum AppSpacing {
     public static let lg: CGFloat = 16
     public static let xl: CGFloat = 24
 }
-
-

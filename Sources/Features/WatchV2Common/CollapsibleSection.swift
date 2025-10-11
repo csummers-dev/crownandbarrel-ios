@@ -21,5 +21,3 @@ public struct CollapsibleSection<Content: View>: View {
         }
     }
 }
-
-

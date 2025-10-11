@@ -1,5 +1,5 @@
-import XCTest
 @testable import CrownAndBarrel
+import XCTest
 
 final class WatchRepositoryGRDBTests: XCTestCase {
     func testCreateFetchDelete() throws {
@@ -24,5 +24,3 @@ final class WatchRepositoryGRDBTests: XCTestCase {
         XCTAssertNil(try repo.fetch(id: w.id))
     }
 }
-
-

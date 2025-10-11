@@ -1,6 +1,6 @@
+import GRDB
 import SwiftUI
 import UIKit
-import GRDB
 
 /// Calendar screen showing wear entries by day.
 /// - What: Renders a native iOS calendar and a list of entries for the selected date, with an action to add worn entries.
@@ -9,9 +9,9 @@ import GRDB
 
 struct CalendarView: View {
     @Environment(\.themeToken) private var themeToken
-    @State private var selectedDate: Date = Date()
+    @State private var selectedDate = Date()
     @State private var entries: [WearEntry] = []
-    @State private var errorMessage: String? = nil
+    @State private var errorMessage: String?
     @State private var isPresentingPicker: Bool = false
     /// Top padding between the calendar's bottom divider and the entries section.
     /// Using 4pt (xs) maintains visible separation without overlapping the last calendar week.
@@ -44,7 +44,7 @@ struct CalendarView: View {
             await loadWatches()
             await loadEntries()
         }
-        .onChange(of: selectedDate) { newDate, _ in
+        .onChange(of: selectedDate) { _, _ in
             Haptics.calendarInteraction(.dateSelection)
             // Keep the divider spacing tight (4pt) and reload for the new date
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -58,7 +58,8 @@ struct CalendarView: View {
                 await loadWatches()
                 await loadEntries()
             }
-        }) }
+        })
+        }
         .alert("Error", isPresented: .constant(errorMessage != nil)) {
             Button("OK") { errorMessage = nil }
         } message: { Text(errorMessage ?? "") }
@@ -88,7 +89,7 @@ struct CalendarView: View {
         .background(AppColors.background)
         .accessibilityIdentifier("CalendarEntriesContainer")
     }
-    
+
     private var emptyStateView: some View {
         VStack(spacing: AppSpacing.sm) {
             Button(action: { isPresentingPicker = true }) {
@@ -100,19 +101,19 @@ struct CalendarView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding()
     }
-    
+
     private var populatedStateView: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             HStack {
                 Spacer()
-                Button("Add worn") { 
+                Button("Add worn") {
                     Haptics.calendarInteraction(.wearEntryAdded)
-                    isPresentingPicker = true 
+                    isPresentingPicker = true
                 }
                 .accessibilityIdentifier("Add worn")
                 .buttonStyle(.bordered)
             }
-            
+
             ZStack(alignment: .top) {
                 AppColors.background.ignoresSafeArea()
                 List(entries) { entry in
@@ -128,7 +129,7 @@ struct CalendarView: View {
         }
         .padding(.horizontal)
     }
-    
+
     private func entryRow(entry: WearEntry) -> some View {
         Group {
             if let watch = watchesById[entry.watchId] {
@@ -180,8 +181,7 @@ struct CalendarView: View {
     }
 
     private func loadEntries() async {
-        do { entries = try await repository.wearEntries(on: selectedDate) }
-        catch { errorMessage = error.localizedDescription }
+        do { entries = try await repository.wearEntries(on: selectedDate) } catch { errorMessage = error.localizedDescription }
     }
 
     private func loadWatches() async {
@@ -247,15 +247,15 @@ private struct UICalendarRepresentable: UIViewRepresentable {
 struct WatchPicker: View {
     @Environment(\.dismiss) private var dismiss
     let date: Date
-    var onComplete: (() -> Void)? = nil
+    var onComplete: (() -> Void)?
     @State private var watches: [WatchV2] = []
-    @State private var errorMessage: String? = nil
-    @State private var unlockedAchievement: Achievement? = nil
+    @State private var errorMessage: String?
+    @State private var unlockedAchievement: Achievement?
     @State private var showUnlockNotification: Bool = false
-    
+
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
-    
+
     private var evaluator: AchievementEvaluator {
         AchievementEvaluator(
             achievementRepository: achievementRepository,
@@ -276,10 +276,10 @@ struct WatchPicker: View {
             .navigationTitle("Add worn")
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
             .task { await load() }
-            .alert("Error", isPresented: .constant(errorMessage != nil)) { 
-                Button("OK") { errorMessage = nil } 
-            } message: { 
-                Text(errorMessage ?? "") 
+            .alert("Error", isPresented: .constant(errorMessage != nil)) {
+                Button("OK") { errorMessage = nil }
+            } message: {
+                Text(errorMessage ?? "")
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background)
@@ -287,34 +287,32 @@ struct WatchPicker: View {
         }
     }
 
-    private func load() async { 
-        do { 
-            watches = try await repository.fetchAll() 
-        } catch { 
-            errorMessage = error.localizedDescription 
-        } 
+    private func load() async {
+        do {
+            watches = try await repository.fetchAll()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
     private func mark(watch: WatchV2) async {
         do {
             // Add wear entry
             try await repository.incrementWear(for: watch.id, on: date)
-            
+
             // Evaluate achievements
             let newlyUnlockedIds = try await evaluator.evaluateOnWearLogged(watchId: watch.id, date: date)
-            
+
             // Show notification if achievement unlocked
             if let firstUnlockedId = newlyUnlockedIds.first,
                let achievement = try await achievementRepository.fetchDefinition(id: firstUnlockedId) {
                 unlockedAchievement = achievement
                 showUnlockNotification = true
             }
-            
+
             dismiss()
             onComplete?()
-        } catch { 
+        } catch {
             errorMessage = error.localizedDescription
         }
     }
 }
-
-

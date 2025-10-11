@@ -1,60 +1,64 @@
-# Task List: Collection Entry Visual Redesign
+# Task List: Collection Entry View Redesign
 
 ## Relevant Files
 
-- `Sources/Features/WatchV2List/WatchV2ListView.swift` - Main collection view containing both grid and list view implementations; uses `WatchGridCard` and `WatchListRow` components from WatchEntryComponents
-- `Sources/Features/WatchV2List/WatchEntryComponents.swift` - Shared reusable components for watch entries (WatchGridCard and WatchListRow)
-- `Sources/Features/WatchV2List/WatchV2ListViewModel.swift` - View model for the collection list view
-- `Sources/Domain/WatchV2/WatchV2.swift` - Watch domain model containing manufacturer, modelName, line, and nickname fields
-- `Sources/DesignSystem/Typography.swift` - Typography system defining font styles for the app
-- `Sources/DesignSystem/Colors.swift` - Centralized color tokens for consistent theming
-- `Sources/DesignSystem/Spacing.swift` - Spacing scale for layout rhythm
-- `Tests/Unit/WatchV2ListTests.swift` - Unit tests for the collection list view (if exists, otherwise needs creation)
-
-### Notes
-
-- The current implementation is in `WatchV2ListView.swift` with embedded `WatchGridCard` and `WatchListRow` structs (lines 174-279)
-- Grid view uses `LazyVGrid` with 2 flexible columns (lines 113-124)
-- List view uses `LazyVStack` (lines 126-135)
-- Watch model has: manufacturer, line, modelName, nickname (optional), and photos
-- Design system already has `AppColors`, `AppSpacing`, and `AppTypography` for consistency
-- Current implementation shows manufacturer + modelName concatenated, line separately, and nickname optionally
+- `Sources/PersistenceV2/Repositories.swift` - Extended WatchRepositoryV2 protocol and WatchRepositoryGRDB implementation with lastWornDate method
+- `Sources/Common/Utilities/DateFormatters.swift` - Centralized date formatting utilities for relative and absolute date displays
+- `Sources/Common/Utilities/WatchFieldFormatters.swift` - Field formatting and visibility logic utilities
+- `Sources/Common/Components/DetailSectionHeader.swift` - Reusable section header component for detail views
+- `Sources/Common/Components/StatisticRow.swift` - Component for displaying key statistics (times worn, last worn)
+- `Sources/Common/Components/AchievementBadge.swift` - Compact achievement badge for horizontal display
+- `Sources/Common/Components/SpecificationRow.swift` - Component for displaying key-value specification pairs
+- `Sources/Features/WatchV2Detail/WatchV2DetailView.swift` - Completely redesigned detail view (modified)
+- `Tests/Unit/DateFormattersTests.swift` - Unit tests for date formatting utilities
+- `Tests/Unit/WatchFieldFormattersTests.swift` - Unit tests for field visibility and formatting logic
+- `Tests/Unit/WatchRepositoryGRDBTests.swift` - Tests for new repository methods (modified)
 
 ## Tasks
 
-- [x] 1.0 Create Shared Component for Watch Entry Display
-  - [x] 1.1 Extract `WatchGridCard` and `WatchListRow` into separate reusable components in a new file `WatchEntryComponents.swift`
-  - [x] 1.2 Create a shared `WatchEntryContent` view that displays manufacturer, model, and nickname with consistent styling
-  - [x] 1.3 Ensure the shared component handles optional nickname field gracefully without breaking layout
-  - [x] 1.4 Update `WatchV2ListView.swift` to use the new shared components
+- [x] 1.0 Extend Repository with Missing Data Methods
+  - [x] 1.1 Add `lastWornDate(watchId:)` method to WatchRepositoryV2 protocol
+  - [x] 1.2 Implement `lastWornDate(watchId:)` in WatchRepositoryGRDB to query most recent WearEntry
+  - [x] 1.3 Verify existing `wearCountForWatch(watchId:)` method works correctly
+  - [x] 1.4 Test new repository method with unit tests
 
-- [x] 2.0 Implement Fixed-Size Grid Layout with Visual Hierarchy
-  - [x] 2.1 Calculate optimal square dimensions for grid items (considering 2-column layout with proper spacing)
-  - [x] 2.2 Apply fixed frame dimensions to grid items using `.frame(width:height:)` modifier
-  - [x] 2.3 Implement visual hierarchy for text fields: manufacturer (large/bold), model (medium), nickname (small)
-  - [x] 2.4 Remove shadows/borders from grid items to achieve flat design
-  - [x] 2.5 Ensure consistent spacing between grid items using `AppSpacing` tokens
-  - [x] 2.6 Position image prominently within each grid item with consistent sizing
+- [x] 2.0 Create Reusable UI Components for Detail View
+  - [x] 2.1 Create `DetailSectionHeader.swift` component with luxury typography styling
+  - [x] 2.2 Create `StatisticRow.swift` component for displaying statistics (times worn, last worn)
+  - [x] 2.3 Create `AchievementBadge.swift` compact component for horizontal achievement display
+  - [x] 2.4 Create `SpecificationRow.swift` component for key-value pairs with smart visibility
+  - [x] 2.5 Create tag pill component for displaying tags as chips
 
-- [x] 3.0 Implement Consistent List View Layout
-  - [x] 3.1 Apply fixed height to all list items for consistency
-  - [x] 3.2 Implement same visual hierarchy as grid view (manufacturer large, model medium, nickname small)
-  - [x] 3.3 Ensure same font colors are used as grid view
-  - [x] 3.4 Apply consistent spacing and alignment using `AppSpacing` tokens
-  - [x] 3.5 Position image consistently within list items
+- [x] 3.0 Implement Field Visibility and Formatting Utilities
+  - [x] 3.1 Create `DateFormatters.swift` with relative/absolute date formatting logic
+  - [x] 3.2 Create `WatchFieldFormatters.swift` with field visibility helpers for all watch properties
+  - [x] 3.3 Add currency formatting utilities for purchase prices and valuations
+  - [x] 3.4 Add numeric precision formatting for measurements (diameter, thickness, etc.)
+  - [x] 3.5 Create helper methods to determine if specification groups have any populated fields
 
-- [x] 4.0 Apply Text Truncation and Typography System
-  - [x] 4.1 Apply `.lineLimit(1)` and `.truncationMode(.tail)` to all text fields in both grid and list views
-  - [x] 4.2 Implement manufacturer text using large font from `AppTypography` or custom size
-  - [x] 4.3 Implement model text using medium font size
-  - [x] 4.4 Implement nickname text using small font from `AppTypography` (caption style)
-  - [x] 4.5 Verify text truncation works correctly with long manufacturer/model/nickname values
+- [x] 4.0 Redesign WatchV2DetailView with New Layout
+  - [x] 4.1 Replace CollapsibleSection components with new ScrollView-based layout
+  - [x] 4.2 Implement photo gallery carousel at the top using TabView with page indicators
+  - [x] 4.3 Create watch identity section with manufacturer, model, line, reference, nickname
+  - [x] 4.4 Add statistics section displaying times worn, last worn, and achievement progress
+  - [x] 4.5 Implement core details group with smart field visibility
+  - [x] 4.6 Implement case specifications group with section header and smart visibility
+  - [x] 4.7 Implement dial details group with smart visibility
+  - [x] 4.8 Implement crystal details group with smart visibility
+  - [x] 4.9 Implement movement specifications group with smart visibility
+  - [x] 4.10 Implement water resistance group with smart visibility
+  - [x] 4.11 Implement strap/bracelet details group with smart visibility
+  - [x] 4.12 Implement ownership information group with smart visibility
+  - [x] 4.13 Add service history display if entries exist
+  - [x] 4.14 Add valuations display if entries exist
+  - [x] 4.15 Add strap inventory display if items exist
+  - [x] 4.16 Implement achievements horizontal row at bottom with wrapping
+  - [x] 4.17 Apply consistent spacing using AppSpacing tokens throughout
+  - [x] 4.18 Apply luxury typography using AppTypography styles
 
-- [x] 5.0 Ensure Design System Integration and Theme Consistency
-  - [x] 5.1 Replace all hardcoded colors with `AppColors` semantic tokens
-  - [x] 5.2 Replace all hardcoded spacing values with `AppSpacing` tokens
-  - [x] 5.3 Ensure text colors work correctly in both light and dark modes
-  - [x] 5.4 Verify layout consistency across different device sizes (iPhone SE, standard, Max)
-  - [x] 5.5 Test with watches that have missing optional fields (no nickname, no line)
-  - [x] 5.6 Verify visual consistency with rest of app's design principles
-
+- [x] 5.0 Add Unit Tests for New Components and Logic
+  - [x] 5.1 Write unit tests for DateFormatters utility
+  - [x] 5.2 Write unit tests for WatchFieldFormatters visibility logic
+  - [x] 5.3 Write unit tests for currency and numeric formatting
+  - [x] 5.4 Add repository tests for lastWornDate method
+  - [x] 5.5 Create UI tests or preview tests for new components

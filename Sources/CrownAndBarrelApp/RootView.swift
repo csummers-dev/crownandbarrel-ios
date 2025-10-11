@@ -6,18 +6,17 @@ import SwiftUI
 /// - How: Each tab embeds a feature entry view. The settings menu uses `NavigationLink`s, so screens push on the current stack.
 
 struct RootView: View {
-    
     // MARK: - Types
-    
+
     /// Represents the different sheet presentations available from the settings menu.
     /// - What: Defines the possible modal sheets that can be presented.
     /// - Why: Type-safe sheet management with clear identification.
     /// - How: Conforms to Identifiable for use with SwiftUI sheet presentation.
     private enum PresentedSheet: Identifiable {
         case settings, appData, privacy, about
-        
+
         var id: String {
-            switch self { 
+            switch self {
             case .settings: return "settings"
             case .appData: return "appData"
             case .privacy: return "privacy"
@@ -35,26 +34,26 @@ struct RootView: View {
         case stats = "Stats"
         case calendar = "Calendar"
     }
-    
+
     // MARK: - State Properties
-    
+
     /// Currently presented modal sheet, if any.
     /// - What: Tracks which settings-related sheet is currently being displayed.
     /// - Why: Manages modal presentation state for settings, app data, privacy, and about screens.
-    @State private var activeSheet: PresentedSheet? = nil
-    
+    @State private var activeSheet: PresentedSheet?
+
     /// Currently selected tab in the main navigation.
     /// - What: Tracks which tab is currently active (Collection, Stats, or Calendar).
     /// - Why: Enables haptic feedback on tab changes and maintains tab state.
     @State private var selectedTab: Tab = .collection
-    
+
     /// Controls the visibility of the settings menu confirmation dialog.
     /// - What: Boolean state for showing/hiding the settings menu options.
     /// - Why: Enables haptic feedback when the gear icon is tapped to open the menu.
     @State private var showingSettingsMenu: Bool = false
-    
+
     // MARK: - Environment Properties
-    
+
     /// Theme change token injected at the app level.
     /// - What: A simple `String` environment value that changes whenever the user selects a different theme.
     /// - Why: Forces SwiftUI to re-render views that depend on theme tokens without rebuilding navigation stacks.
@@ -62,7 +61,7 @@ struct RootView: View {
     @Environment(\.themeToken) private var themeToken
 
     // MARK: - Body
-    
+
     var body: some View {
         TabView(selection: $selectedTab) {
             NavigationStack {
@@ -152,7 +151,7 @@ struct RootView: View {
             #endif
         }
     }
-    
+
     // MARK: - UI Components
 
     /// Settings and utilities menu shown on the trailing side of the navigation bar.
@@ -169,31 +168,31 @@ struct RootView: View {
                     .accessibilityIdentifier("SettingsMenuButton")
             }
             .confirmationDialog(
-                "Settings", 
-                isPresented: $showingSettingsMenu, 
+                "Settings",
+                isPresented: $showingSettingsMenu,
                 titleVisibility: .hidden
             ) {
-                Button("Settings") { 
+                Button("Settings") {
                     handleMenuSelection(.settings)
                 }
-                Button("App Data") { 
+                Button("App Data") {
                     handleMenuSelection(.appData)
                 }
-                Button("Privacy Policy") { 
+                Button("Privacy Policy") {
                     handleMenuSelection(.privacy)
                 }
-                Button("About") { 
+                Button("About") {
                     handleMenuSelection(.about)
                 }
-                Button("Cancel", role: .cancel) { 
+                Button("Cancel", role: .cancel) {
                     // No action needed for cancel
                 }
             }
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// Handles opening the settings menu with haptic feedback.
     /// - What: Triggers haptic feedback and shows the settings menu dialog.
     /// - Why: Provides tactile confirmation when user taps the settings gear icon.
@@ -202,7 +201,7 @@ struct RootView: View {
         Haptics.navigationInteraction(.menuOpened)
         showingSettingsMenu = true
     }
-    
+
     /// Handles menu item selection with haptic feedback and sheet presentation.
     /// - Parameter sheet: The sheet to present after providing haptic feedback.
     /// - What: Provides haptic feedback and presents the selected sheet.

@@ -37,5 +37,3 @@ public enum AppColors {
     public static let brandSilver = Color(red: 0.75, green: 0.75, blue: 0.75)
     public static let brandWhite = Color.white
 }
-
-

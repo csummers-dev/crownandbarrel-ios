@@ -7,9 +7,9 @@ public struct WatchV2ListView: View {
     @State private var isGridView: Bool = true
     @State private var searchText: String = ""
     @FocusState private var isSearchFocused: Bool
-    
+
     public init() {}
-    
+
     public var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack(spacing: 0) {
@@ -30,14 +30,14 @@ public struct WatchV2ListView: View {
                     .padding(.vertical, 8)
                     .background(Color(.systemGray6))
                     .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-                    
+
                     // Sort Button
                     Menu {
-                        Button("Manufacturer A-Z") { 
+                        Button("Manufacturer A-Z") {
                             viewModel.sort = .manufacturerLineModel
                             viewModel.load()
                         }
-                        Button("Recently Updated") { 
+                        Button("Recently Updated") {
                             viewModel.sort = .updatedAtDesc
                             viewModel.load()
                         }
@@ -48,11 +48,11 @@ public struct WatchV2ListView: View {
                             .background(Color(.systemGray6))
                             .clipShape(Circle())
                     }
-                    
+
                     // View Toggle - Always reserve space to prevent layout shifts
-                    Button(action: { 
+                    Button(action: {
                         if !viewModel.watches.isEmpty {
-                            isGridView.toggle() 
+                            isGridView.toggle()
                         }
                     }) {
                         Image(systemName: isGridView ? "list.bullet" : "square.grid.2x2")
@@ -66,7 +66,7 @@ public struct WatchV2ListView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
                 .padding(.bottom, 8)
-                
+
                 // Content - Use consistent ScrollView wrapper for both states
                 // FIXED: Search bar repositioning bug - both empty and populated states now use
                 // the same ScrollView container to prevent layout shifts when switching between
@@ -85,7 +85,7 @@ public struct WatchV2ListView: View {
                             Text("Add your first watch to get started")
                                 .font(.subheadline)
                                 .foregroundStyle(.tertiary)
-                            
+
                             Button(action: { showAddWatch = true }) {
                                 Label("Add Watch", systemImage: "plus.circle.fill")
                                     .font(.headline)
@@ -95,7 +95,7 @@ public struct WatchV2ListView: View {
                                     .background(Color.accentColor)
                                     .cornerRadius(8)
                             }
-                            
+
                             #if DEBUG
                             Button("Generate Test Data") {
                                 DevSeedV2.generateTestData()
@@ -157,7 +157,7 @@ public struct WatchV2ListView: View {
                     WatchV2FormView(watch: WatchV2(manufacturer: "", modelName: ""))
                 }
             }
-            
+
             // Floating Add Button
             Button(action: { showAddWatch = true }) {
                 Image(systemName: "plus")
@@ -171,11 +171,11 @@ public struct WatchV2ListView: View {
             .accessibilityLabel("Add watch")
         }
     }
-    
+
     private struct FilterSheet: View {
         @ObservedObject var viewModel: WatchV2ListViewModel
         @Environment(\.dismiss) private var dismiss
-        
+
         var body: some View {
             NavigationView {
                 Form {
@@ -188,8 +188,8 @@ public struct WatchV2ListView: View {
                     Section("Specs") {
                         TextField("Movement Type", text: Binding(get: { viewModel.filters.movementType ?? "" }, set: { viewModel.filters.movementType = $0.isEmpty ? nil : $0 }))
                         HStack {
-                            Stepper(value: Binding(get: { viewModel.filters.waterResistanceMin ?? 0 }, set: { viewModel.filters.waterResistanceMin = $0 == 0 ? nil : $0 }), in: 0...2000) { Text("WR min: \(viewModel.filters.waterResistanceMin.map(String.init) ?? "—")") }
-                            Stepper(value: Binding(get: { viewModel.filters.waterResistanceMax ?? 0 }, set: { viewModel.filters.waterResistanceMax = $0 == 0 ? nil : $0 }), in: 0...2000) { Text("WR max: \(viewModel.filters.waterResistanceMax.map(String.init) ?? "—")") }
+                            Stepper(value: Binding(get: { viewModel.filters.waterResistanceMin ?? 0 }, set: { viewModel.filters.waterResistanceMin = $0 == 0 ? nil : $0 }), in: 0...2_000) { Text("WR min: \(viewModel.filters.waterResistanceMin.map(String.init) ?? "—")") }
+                            Stepper(value: Binding(get: { viewModel.filters.waterResistanceMax ?? 0 }, set: { viewModel.filters.waterResistanceMax = $0 == 0 ? nil : $0 }), in: 0...2_000) { Text("WR max: \(viewModel.filters.waterResistanceMax.map(String.init) ?? "—")") }
                         }
                     }
                     Section("Ownership") {
@@ -222,4 +222,3 @@ public struct WatchV2ListView: View {
         }
     }
 }
-
