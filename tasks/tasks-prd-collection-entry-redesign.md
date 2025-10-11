@@ -22,7 +22,7 @@
   - [x] 1.3 Verify existing `wearCountForWatch(watchId:)` method works correctly
   - [x] 1.4 Test new repository method with unit tests
 
-- [ ] 2.0 Create Reusable UI Components for Detail View
+- [x] 2.0 Create Reusable UI Components for Detail View
   - [x] 2.1 Create `DetailSectionHeader.swift` component with luxury typography styling
   - [x] 2.2 Create `StatisticRow.swift` component for displaying statistics (times worn, last worn)
   - [x] 2.3 Create `AchievementBadge.swift` compact component for horizontal achievement display
@@ -30,11 +30,11 @@
   - [x] 2.5 Create tag pill component for displaying tags as chips
 
 - [ ] 3.0 Implement Field Visibility and Formatting Utilities
-  - [ ] 3.1 Create `DateFormatters.swift` with relative/absolute date formatting logic
-  - [ ] 3.2 Create `WatchFieldFormatters.swift` with field visibility helpers for all watch properties
-  - [ ] 3.3 Add currency formatting utilities for purchase prices and valuations
-  - [ ] 3.4 Add numeric precision formatting for measurements (diameter, thickness, etc.)
-  - [ ] 3.5 Create helper methods to determine if specification groups have any populated fields
+  - [x] 3.1 Create `DateFormatters.swift` with relative/absolute date formatting logic
+  - [x] 3.2 Create `WatchFieldFormatters.swift` with field visibility helpers for all watch properties
+  - [x] 3.3 Add currency formatting utilities for purchase prices and valuations
+  - [x] 3.4 Add numeric precision formatting for measurements (diameter, thickness, etc.)
+  - [x] 3.5 Create helper methods to determine if specification groups have any populated fields
 
 - [ ] 4.0 Redesign WatchV2DetailView with New Layout
   - [ ] 4.1 Replace CollapsibleSection components with new ScrollView-based layout
