@@ -26,6 +26,10 @@ targets:
         # Code signing configuration
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: G7Z5DDPMSL
+        # Versioning configuration for Fastlane
+        VERSIONING_SYSTEM: apple-generic
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 1.0
     dependencies:
       - package: ZIPFoundation
       - package: GRDB
