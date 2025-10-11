@@ -97,15 +97,15 @@ public struct AchievementBadge: View {
                         description: "Add your first watch",
                         imageAssetName: "achievement-first-watch",
                         category: .collectionSize,
-                        unlockCriteria: .totalWatchesOwned(count: 1),
+                        unlockCriteria: .watchCountReached(count: 1),
                         targetValue: 1
                     ),
                     state: AchievementState(
                         achievementId: UUID(),
                         isUnlocked: true,
+                        unlockedAt: Date(),
                         currentProgress: 1,
-                        progressTarget: 1,
-                        unlockedAt: Date()
+                        progressTarget: 1
                     )
                 )
                 
@@ -115,15 +115,15 @@ public struct AchievementBadge: View {
                         description: "Own 5 watches",
                         imageAssetName: "achievement-collector",
                         category: .collectionSize,
-                        unlockCriteria: .totalWatchesOwned(count: 5),
+                        unlockCriteria: .watchCountReached(count: 5),
                         targetValue: 5
                     ),
                     state: AchievementState(
                         achievementId: UUID(),
                         isUnlocked: true,
+                        unlockedAt: Date(),
                         currentProgress: 5,
-                        progressTarget: 5,
-                        unlockedAt: Date()
+                        progressTarget: 5
                     )
                 )
                 
@@ -133,15 +133,15 @@ public struct AchievementBadge: View {
                         description: "Own 10 watches",
                         imageAssetName: "achievement-enthusiast",
                         category: .collectionSize,
-                        unlockCriteria: .totalWatchesOwned(count: 10),
+                        unlockCriteria: .watchCountReached(count: 10),
                         targetValue: 10
                     ),
                     state: AchievementState(
                         achievementId: UUID(),
                         isUnlocked: false,
+                        unlockedAt: nil,
                         currentProgress: 7,
-                        progressTarget: 10,
-                        unlockedAt: nil
+                        progressTarget: 10
                     )
                 )
                 
@@ -151,15 +151,15 @@ public struct AchievementBadge: View {
                         description: "Wear any watch 7 days in a row",
                         imageAssetName: "achievement-daily",
                         category: .wearingFrequency,
-                        unlockCriteria: .consecutiveDaysWorn(count: 7),
+                        unlockCriteria: .consecutiveDaysStreak(days: 7),
                         targetValue: 7
                     ),
                     state: AchievementState(
                         achievementId: UUID(),
                         isUnlocked: true,
+                        unlockedAt: Date(),
                         currentProgress: 7,
-                        progressTarget: 7,
-                        unlockedAt: Date()
+                        progressTarget: 7
                     )
                 )
                 
@@ -169,15 +169,15 @@ public struct AchievementBadge: View {
                         description: "Wear any watch 30 days in a row",
                         imageAssetName: "achievement-dedicated",
                         category: .wearingFrequency,
-                        unlockCriteria: .consecutiveDaysWorn(count: 30),
+                        unlockCriteria: .consecutiveDaysStreak(days: 30),
                         targetValue: 30
                     ),
                     state: AchievementState(
                         achievementId: UUID(),
                         isUnlocked: false,
+                        unlockedAt: nil,
                         currentProgress: 12,
-                        progressTarget: 30,
-                        unlockedAt: nil
+                        progressTarget: 30
                     )
                 )
             }
@@ -187,52 +187,6 @@ public struct AchievementBadge: View {
         .padding()
     }
     .background(AppColors.background)
-}
-
-// Simple flow layout for horizontal wrapping
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 10
-    
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let result = FlowResult(in: proposal.replacingUnspecifiedDimensions().width, subviews: subviews, spacing: spacing)
-        return result.size
-    }
-    
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        let result = FlowResult(in: bounds.width, subviews: subviews, spacing: spacing)
-        for (index, subview) in subviews.enumerated() {
-            subview.place(at: CGPoint(x: bounds.minX + result.positions[index].x, y: bounds.minY + result.positions[index].y), proposal: .unspecified)
-        }
-    }
-    
-    struct FlowResult {
-        var size: CGSize
-        var positions: [CGPoint]
-        
-        init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
-            var positions: [CGPoint] = []
-            var currentX: CGFloat = 0
-            var currentY: CGFloat = 0
-            var lineHeight: CGFloat = 0
-            
-            for subview in subviews {
-                let size = subview.sizeThatFits(.unspecified)
-                
-                if currentX + size.width > maxWidth && currentX > 0 {
-                    currentX = 0
-                    currentY += lineHeight + spacing
-                    lineHeight = 0
-                }
-                
-                positions.append(CGPoint(x: currentX, y: currentY))
-                lineHeight = max(lineHeight, size.height)
-                currentX += size.width + spacing
-            }
-            
-            self.positions = positions
-            self.size = CGSize(width: maxWidth, height: currentY + lineHeight)
-        }
-    }
 }
 #endif
 

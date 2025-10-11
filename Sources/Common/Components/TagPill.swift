@@ -61,10 +61,14 @@ public struct TagPillGroup: View {
 /// - What: Custom layout that flows items left-to-right, wrapping to new rows as needed.
 /// - Why: Allows tag pills to wrap naturally without fixed row structure.
 /// - How: Calculates positions by tracking current x/y coordinates and line heights.
-struct FlowLayout: Layout {
-    var spacing: CGFloat = 8
+public struct FlowLayout: Layout {
+    public var spacing: CGFloat
     
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    public init(spacing: CGFloat = 8) {
+        self.spacing = spacing
+    }
+    
+    public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let result = FlowResult(
             in: proposal.replacingUnspecifiedDimensions().width,
             subviews: subviews,
@@ -73,7 +77,7 @@ struct FlowLayout: Layout {
         return result.size
     }
     
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let result = FlowResult(
             in: bounds.width,
             subviews: subviews,

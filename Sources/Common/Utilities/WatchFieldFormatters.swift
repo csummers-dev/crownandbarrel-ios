@@ -244,14 +244,18 @@ public enum WatchFieldFormatters {
     public static func formatBoxPapers(_ boxPapers: BoxPapers?) -> String? {
         guard let boxPapers = boxPapers else { return nil }
         switch boxPapers {
-        case .both:
-            return "Box & Papers"
+        case .fullSet:
+            return "Full Set"
+        case .watchOnly:
+            return "Watch Only"
+        case .partial:
+            return "Partial"
         case .boxOnly:
             return "Box Only"
         case .papersOnly:
             return "Papers Only"
-        case .neither:
-            return "Neither"
+        case .other(let value):
+            return value.capitalized
         }
     }
 }

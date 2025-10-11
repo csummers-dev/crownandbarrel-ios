@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		052B1F382A9450E0C87A9960 /* DetailSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A59D11970136A53A9AE94674 /* DetailSectionHeader.swift */; };
 		05D138399817C4D78E30537F /* WearEntryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EEEA0840A5107B54A7196CE /* WearEntryTests.swift */; };
 		0C00147A27F02139FC63C9ED /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A7E14FBC7396E2C345E576 /* Enums.swift */; };
 		0D98C4EFB084EA9DE79E6D50 /* Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45751E182AB37CBAD741AFA /* Appearance.swift */; };
@@ -14,6 +15,7 @@
 		13F018CE100E167CE41F4106 /* AchievementProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D5C001C7148E562FC3AF72 /* AchievementProgressView.swift */; };
 		15C85EC98730F8B412B26639 /* WatchValidationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A606BFB6BC229B927028EB58 /* WatchValidationTests.swift */; };
 		173EB3B1546EC14939B78DDF /* AppEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEA2F7503083711152B1A2C /* AppEvents.swift */; };
+		1AB220126BC0DBE67ABE30D0 /* WatchFieldFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38A08C76B7D3069EEDC4E432 /* WatchFieldFormatters.swift */; };
 		1C7CD32052CEF02C6EE18BF4 /* Radius.swift in Sources */ = {isa = PBXBuildFile; fileRef = E79BB55FBEEBDD119F94BC7E /* Radius.swift */; };
 		1E7D18CFB28245E72E8B2DE4 /* AddWatchFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */; };
 		215E571E9B66786BC46095C2 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB76A26B0E9FB5A6116187F /* Layout.swift */; };
@@ -34,6 +36,7 @@
 		3AF9D0D325EAA47BF32AC683 /* Spacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25FA41234E4DFEDC5B3923B3 /* Spacing.swift */; };
 		3B6A8DA0606711EDD6943E35 /* MediaCleanupV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9675290DF30052B8E86DC4 /* MediaCleanupV2.swift */; };
 		3C0578C33576D051C03BD180 /* AppError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B02611C4BD7A91D382299E62 /* AppError.swift */; };
+		3C68BC82F052CCD792C01554 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89C96A5ECC0A6806020E3E16 /* DateFormatters.swift */; };
 		3D75F3A8F7BF7EA4397545D5 /* WatchV2FormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 358CACA49C722956C00447D8 /* WatchV2FormViewModel.swift */; };
 		429D905C0D73FC831096328D /* ThemeDefaultingUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8FAD41D241F344B60E7EF87 /* ThemeDefaultingUITests.swift */; };
 		4424A93584582AD39BA2F469 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2B93F9791B1EC255A7DB33 /* Haptics.swift */; };
@@ -52,6 +55,7 @@
 		6E3CAF8EA086B1EE28C78B45 /* ThemeLiveRefreshUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */; };
 		71086D918BB2006B1460C219 /* WatchValueObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4068F2E096C2E1EA275756FC /* WatchValueObjects.swift */; };
 		7BCA234E7FA2B67C5244EAFF /* WatchV2ListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD60115E524E1C9655AE33D5 /* WatchV2ListViewModel.swift */; };
+		822D5F805AD8E9307EA9897C /* StatisticRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB709B36FA8823357237CF6B /* StatisticRow.swift */; };
 		8496A4105F76CD6A2E555933 /* PhotoPipelineV2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D55FF7450FB4767023E5DF /* PhotoPipelineV2Tests.swift */; };
 		87D3F53C9C32477BC2298D90 /* DateUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82A021FCBFB00FA8A866C416 /* DateUtils.swift */; };
 		87F3F1C9B3FA733E3097FF5E /* PrivacyPolicy.html in Resources */ = {isa = PBXBuildFile; fileRef = 017DAA579B6AFF18064256E2 /* PrivacyPolicy.html */; };
@@ -94,6 +98,7 @@
 		DE82BD5E26DDCC31030AF29B /* AppDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8A3A6028AAE227C44BAD7 /* AppDataView.swift */; };
 		E0283A9B2EE751F819953960 /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FCC5383B0F9FD69D24EEF3A /* Achievement.swift */; };
 		E0CE542C64C2518590BC298E /* LaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B298A749A64CE6C8DF50C7A /* LaunchConfigurationTests.swift */; };
+		E1CC2A02D7E9362B42971FC1 /* AchievementBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F88F8EDCE5B20BFC8B76ED /* AchievementBadge.swift */; };
 		E57D3357D8F964CA9BB061D1 /* AppIconSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91464DBDAE05DDE30024016A /* AppIconSize.swift */; };
 		E9BD7736E2F341FD0FFEE6DC /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 397D8E4F131857CBF1DDE7FF /* StatsView.swift */; };
 		E9C78EC4C05CDFA5CAEB578D /* WatchV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A30170CB494FC0F193110DA /* WatchV2.swift */; };
@@ -101,8 +106,10 @@
 		ED34CD5071CADD7664CC85B3 /* WatchV2FormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6781040A95E151BA7AD25AB9 /* WatchV2FormView.swift */; };
 		ED41FF7937B0AA30CBEB6AC9 /* ThemeToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9169B2CE7BD888138D7E710B /* ThemeToken.swift */; };
 		F125EEB47C869C31A6D55CDA /* WatchV2DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F1CB4E9F3C2E86D4219707A /* WatchV2DetailView.swift */; };
+		F2BB28869863B21AA24AC5D9 /* TagPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8E363A88CFA15B5A8C2478D /* TagPill.swift */; };
 		F3595C2E83827AB752894B8A /* AchievementCriteria.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E88F586A2E7B9B4D75AD765 /* AchievementCriteria.swift */; };
 		F65B5191AAC9FCDD94BA81CF /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AB4B9FBFC7C731F033FA86 /* RootView.swift */; };
+		F68A62CFAD47B24F4A6EC1F5 /* SpecificationRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEEF8F95D233DB6B4F5DC698 /* SpecificationRow.swift */; };
 		FE9F36467EADFB7B5D655D19 /* WatchValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE5EE2015F74F868AAAF259 /* WatchValidation.swift */; };
 /* End PBXBuildFile section */
 
@@ -149,6 +156,7 @@
 		3440693A6F1010838C498460 /* AchievementUnlockNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementUnlockNotification.swift; sourceTree = "<group>"; };
 		358CACA49C722956C00447D8 /* WatchV2FormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchV2FormViewModel.swift; sourceTree = "<group>"; };
 		35FD84E491D2D3E04D0EFF4F /* StrapsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrapsSection.swift; sourceTree = "<group>"; };
+		38A08C76B7D3069EEDC4E432 /* WatchFieldFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchFieldFormatters.swift; sourceTree = "<group>"; };
 		397D8E4F131857CBF1DDE7FF /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		3CF30BD6973E3AEDA840331C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3FCC5383B0F9FD69D24EEF3A /* Achievement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Achievement.swift; sourceTree = "<group>"; };
@@ -186,6 +194,8 @@
 		82CED535F55C7555D1F31A61 /* AchievementRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementRepositoryTests.swift; sourceTree = "<group>"; };
 		84D3F6881952CF6003AD939C /* PhotoPipelineV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPipelineV2.swift; sourceTree = "<group>"; };
 		86F1DC1ADC976AFD8AB01DD7 /* Themes.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Themes.json; sourceTree = "<group>"; };
+		88F88F8EDCE5B20BFC8B76ED /* AchievementBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementBadge.swift; sourceTree = "<group>"; };
+		89C96A5ECC0A6806020E3E16 /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
 		8A5D47A2F4520A15D5331C8E /* EnumPickerWithOther.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumPickerWithOther.swift; sourceTree = "<group>"; };
 		8B298A749A64CE6C8DF50C7A /* LaunchConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchConfigurationTests.swift; sourceTree = "<group>"; };
 		8B47CFDD2762E2AC4957C1CF /* ThemeLiveRefreshUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeLiveRefreshUITests.swift; sourceTree = "<group>"; };
@@ -194,8 +204,10 @@
 		91464DBDAE05DDE30024016A /* AppIconSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconSize.swift; sourceTree = "<group>"; };
 		9169B2CE7BD888138D7E710B /* ThemeToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeToken.swift; sourceTree = "<group>"; };
 		A355427121F1B0F50A796C58 /* ImageStoreCropTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStoreCropTests.swift; sourceTree = "<group>"; };
+		A59D11970136A53A9AE94674 /* DetailSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailSectionHeader.swift; sourceTree = "<group>"; };
 		A606BFB6BC229B927028EB58 /* WatchValidationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchValidationTests.swift; sourceTree = "<group>"; };
 		A77D104A99A098F7889A0DD0 /* WatchEntryPlaceholder-DarkMode-1000.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "WatchEntryPlaceholder-DarkMode-1000.png"; sourceTree = "<group>"; };
+		A8E363A88CFA15B5A8C2478D /* TagPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagPill.swift; sourceTree = "<group>"; };
 		A8FAD41D241F344B60E7EF87 /* ThemeDefaultingUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeDefaultingUITests.swift; sourceTree = "<group>"; };
 		ACA8A3A6028AAE227C44BAD7 /* AppDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDataView.swift; sourceTree = "<group>"; };
 		B02611C4BD7A91D382299E62 /* AppError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppError.swift; sourceTree = "<group>"; };
@@ -211,9 +223,11 @@
 		CBAFA9A592B67182F3D74B9B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CBCA221D16C3282138A56B11 /* EnvironmentKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentKeys.swift; sourceTree = "<group>"; };
 		D77C7F307F3A08A71A8169B8 /* CrownAndBarrelApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrownAndBarrelApp.swift; sourceTree = "<group>"; };
+		DB709B36FA8823357237CF6B /* StatisticRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticRow.swift; sourceTree = "<group>"; };
 		DBB834B5A6CC03E86A33C4BF /* Repositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories.swift; sourceTree = "<group>"; };
 		DD26335AEF4403223BFAD0F3 /* AddWatchFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddWatchFlowUITests.swift; sourceTree = "<group>"; };
 		DD9675290DF30052B8E86DC4 /* MediaCleanupV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCleanupV2.swift; sourceTree = "<group>"; };
+		DEEF8F95D233DB6B4F5DC698 /* SpecificationRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpecificationRow.swift; sourceTree = "<group>"; };
 		E10FC5993657650FC5F286E3 /* WatchRepositoryGRDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchRepositoryGRDBTests.swift; sourceTree = "<group>"; };
 		E6DBD1DE903B2F49D1CC9C7C /* AchievementsUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AchievementsUITests.swift; sourceTree = "<group>"; };
 		E79BB55FBEEBDD119F94BC7E /* Radius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Radius.swift; sourceTree = "<group>"; };
@@ -298,10 +312,15 @@
 		56FD3B03D9773AEFEA1AA6CB /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				88F88F8EDCE5B20BFC8B76ED /* AchievementBadge.swift */,
 				805E1DB65F83BC6BDE1D89BF /* AchievementCard.swift */,
 				7011700F8257764DC6F77550 /* AchievementGridView.swift */,
 				F0D5C001C7148E562FC3AF72 /* AchievementProgressView.swift */,
 				3440693A6F1010838C498460 /* AchievementUnlockNotification.swift */,
+				A59D11970136A53A9AE94674 /* DetailSectionHeader.swift */,
+				DEEF8F95D233DB6B4F5DC698 /* SpecificationRow.swift */,
+				DB709B36FA8823357237CF6B /* StatisticRow.swift */,
+				A8E363A88CFA15B5A8C2478D /* TagPill.swift */,
 				6BC3B81DAF69771C4611C99B /* WatchImageView.swift */,
 			);
 			path = Components;
@@ -462,6 +481,7 @@
 				8CEA2F7503083711152B1A2C /* AppEvents.swift */,
 				0E3F25C6A2072551C6442412 /* AppIconManager.swift */,
 				91464DBDAE05DDE30024016A /* AppIconSize.swift */,
+				89C96A5ECC0A6806020E3E16 /* DateFormatters.swift */,
 				82A021FCBFB00FA8A866C416 /* DateUtils.swift */,
 				FACF96F7B16556465795C338 /* DevSeedV2.swift */,
 				CBCA221D16C3282138A56B11 /* EnvironmentKeys.swift */,
@@ -473,6 +493,7 @@
 				258DE023485135F53024D284 /* PhotoStoreV2.swift */,
 				1B173074B97BE7498E6343D3 /* RepositoriesEnvironment.swift */,
 				8EEF8A94E53CEC2CD105E3F4 /* SampleData.swift */,
+				38A08C76B7D3069EEDC4E432 /* WatchFieldFormatters.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -653,6 +674,7 @@
 				AFF16D0031014FD1DBFB2896 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 				C29A45FE54EAAB10B4467041 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -709,6 +731,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E0283A9B2EE751F819953960 /* Achievement.swift in Sources */,
+				E1CC2A02D7E9362B42971FC1 /* AchievementBadge.swift in Sources */,
 				45F296E016D230CD37EC54DA /* AchievementCard.swift in Sources */,
 				24D3616073131C6B8DF37C00 /* AchievementCategory.swift in Sources */,
 				F3595C2E83827AB752894B8A /* AchievementCriteria.swift in Sources */,
@@ -733,7 +756,9 @@
 				983B821CEAC09B4C2ED1094A /* CollapsibleSection.swift in Sources */,
 				CB48CCA438F2F582F953C2EF /* Colors.swift in Sources */,
 				C62D109BE97CBC75D6D38CE2 /* CrownAndBarrelApp.swift in Sources */,
+				3C68BC82F052CCD792C01554 /* DateFormatters.swift in Sources */,
 				87D3F53C9C32477BC2298D90 /* DateUtils.swift in Sources */,
+				052B1F382A9450E0C87A9960 /* DetailSectionHeader.swift in Sources */,
 				9214810FE6782F970409CE23 /* DevSeedV2.swift in Sources */,
 				C61F701181A6BE5DD1CD5D38 /* EnumPickerWithOther.swift in Sources */,
 				0C00147A27F02139FC63C9ED /* Enums.swift in Sources */,
@@ -755,9 +780,12 @@
 				2475CF704152622EB2404A10 /* ServiceHistorySection.swift in Sources */,
 				B4E98F2CC116A098C8999048 /* SettingsView.swift in Sources */,
 				3AF9D0D325EAA47BF32AC683 /* Spacing.swift in Sources */,
+				F68A62CFAD47B24F4A6EC1F5 /* SpecificationRow.swift in Sources */,
+				822D5F805AD8E9307EA9897C /* StatisticRow.swift in Sources */,
 				E9BD7736E2F341FD0FFEE6DC /* StatsView.swift in Sources */,
 				2FA8DD0222001D2419CDCB00 /* StrapsSection.swift in Sources */,
 				AB8B88A1EF47382E066D33F8 /* StreakCalculator.swift in Sources */,
+				F2BB28869863B21AA24AC5D9 /* TagPill.swift in Sources */,
 				8C0DE8CDAE4033A0AE1BF3F1 /* ThemeCatalog.swift in Sources */,
 				56FCEEE42FA6235AE47398E9 /* ThemeManager.swift in Sources */,
 				ED41FF7937B0AA30CBEB6AC9 /* ThemeToken.swift in Sources */,
@@ -765,6 +793,7 @@
 				B65D8E437A86373CF09C0250 /* ValuationsSection.swift in Sources */,
 				2F1317BCD42A887A98BDFE03 /* WatchChildEntities.swift in Sources */,
 				96A6D114CA127D4CE1C344CA /* WatchEnums.swift in Sources */,
+				1AB220126BC0DBE67ABE30D0 /* WatchFieldFormatters.swift in Sources */,
 				CD394BBF187E944268213B59 /* WatchImageView.swift in Sources */,
 				E9C78EC4C05CDFA5CAEB578D /* WatchV2.swift in Sources */,
 				F125EEB47C869C31A6D55CDA /* WatchV2DetailView.swift in Sources */,

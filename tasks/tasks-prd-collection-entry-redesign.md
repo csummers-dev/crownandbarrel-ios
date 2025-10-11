@@ -29,7 +29,7 @@
   - [x] 2.4 Create `SpecificationRow.swift` component for key-value pairs with smart visibility
   - [x] 2.5 Create tag pill component for displaying tags as chips
 
-- [ ] 3.0 Implement Field Visibility and Formatting Utilities
+- [x] 3.0 Implement Field Visibility and Formatting Utilities
   - [x] 3.1 Create `DateFormatters.swift` with relative/absolute date formatting logic
   - [x] 3.2 Create `WatchFieldFormatters.swift` with field visibility helpers for all watch properties
   - [x] 3.3 Add currency formatting utilities for purchase prices and valuations
@@ -37,11 +37,11 @@
   - [x] 3.5 Create helper methods to determine if specification groups have any populated fields
 
 - [ ] 4.0 Redesign WatchV2DetailView with New Layout
-  - [ ] 4.1 Replace CollapsibleSection components with new ScrollView-based layout
-  - [ ] 4.2 Implement photo gallery carousel at the top using TabView with page indicators
-  - [ ] 4.3 Create watch identity section with manufacturer, model, line, reference, nickname
-  - [ ] 4.4 Add statistics section displaying times worn, last worn, and achievement progress
-  - [ ] 4.5 Implement core details group with smart field visibility
+  - [x] 4.1 Replace CollapsibleSection components with new ScrollView-based layout
+  - [x] 4.2 Implement photo gallery carousel at the top using TabView with page indicators
+  - [x] 4.3 Create watch identity section with manufacturer, model, line, reference, nickname
+  - [x] 4.4 Add statistics section displaying times worn, last worn, and achievement progress
+  - [x] 4.5 Implement core details group with smart field visibility
   - [ ] 4.6 Implement case specifications group with section header and smart visibility
   - [ ] 4.7 Implement dial details group with smart visibility
   - [ ] 4.8 Implement crystal details group with smart visibility
@@ -52,9 +52,9 @@
   - [ ] 4.13 Add service history display if entries exist
   - [ ] 4.14 Add valuations display if entries exist
   - [ ] 4.15 Add strap inventory display if items exist
-  - [ ] 4.16 Implement achievements horizontal row at bottom with wrapping
-  - [ ] 4.17 Apply consistent spacing using AppSpacing tokens throughout
-  - [ ] 4.18 Apply luxury typography using AppTypography styles
+  - [x] 4.16 Implement achievements horizontal row at bottom with wrapping
+  - [x] 4.17 Apply consistent spacing using AppSpacing tokens throughout
+  - [x] 4.18 Apply luxury typography using AppTypography styles
 
 - [ ] 5.0 Add Unit Tests for New Components and Logic
   - [ ] 5.1 Write unit tests for DateFormatters utility
