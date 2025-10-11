@@ -42,16 +42,16 @@
   - [x] 4.3 Create watch identity section with manufacturer, model, line, reference, nickname
   - [x] 4.4 Add statistics section displaying times worn, last worn, and achievement progress
   - [x] 4.5 Implement core details group with smart field visibility
-  - [ ] 4.6 Implement case specifications group with section header and smart visibility
-  - [ ] 4.7 Implement dial details group with smart visibility
-  - [ ] 4.8 Implement crystal details group with smart visibility
-  - [ ] 4.9 Implement movement specifications group with smart visibility
-  - [ ] 4.10 Implement water resistance group with smart visibility
-  - [ ] 4.11 Implement strap/bracelet details group with smart visibility
-  - [ ] 4.12 Implement ownership information group with smart visibility
-  - [ ] 4.13 Add service history display if entries exist
-  - [ ] 4.14 Add valuations display if entries exist
-  - [ ] 4.15 Add strap inventory display if items exist
+  - [x] 4.6 Implement case specifications group with section header and smart visibility
+  - [x] 4.7 Implement dial details group with smart visibility
+  - [x] 4.8 Implement crystal details group with smart visibility
+  - [x] 4.9 Implement movement specifications group with smart visibility
+  - [x] 4.10 Implement water resistance group with smart visibility
+  - [x] 4.11 Implement strap/bracelet details group with smart visibility
+  - [x] 4.12 Implement ownership information group with smart visibility
+  - [x] 4.13 Add service history display if entries exist
+  - [x] 4.14 Add valuations display if entries exist
+  - [x] 4.15 Add strap inventory display if items exist
   - [x] 4.16 Implement achievements horizontal row at bottom with wrapping
   - [x] 4.17 Apply consistent spacing using AppSpacing tokens throughout
   - [x] 4.18 Apply luxury typography using AppTypography styles
