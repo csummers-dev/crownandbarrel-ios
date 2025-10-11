@@ -59,5 +59,3 @@ public struct EnumPickerWithOther<Value>: View where Value: Hashable {
         }
     }
 }
-
-

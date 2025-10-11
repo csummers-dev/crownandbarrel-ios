@@ -91,5 +91,3 @@ public struct WatchV2: Identifiable, Hashable, Codable, Sendable {
         self.straps = straps
     }
 }
-
-

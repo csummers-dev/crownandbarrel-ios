@@ -11,5 +11,3 @@ public protocol BackupRepository {
     /// Deletes all persisted data. Callers must enforce double confirmation.
     func deleteAll() async throws
 }
-
-

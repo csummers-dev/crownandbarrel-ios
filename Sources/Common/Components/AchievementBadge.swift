@@ -7,14 +7,14 @@ import SwiftUI
 public struct AchievementBadge: View {
     public let achievement: Achievement
     public let state: AchievementState?
-    
+
     @Environment(\.themeToken) private var themeToken
-    
+
     public init(achievement: Achievement, state: AchievementState?) {
         self.achievement = achievement
         self.state = state
     }
-    
+
     public var body: some View {
         VStack(spacing: AppSpacing.xs) {
             // Achievement icon (compact size)
@@ -25,7 +25,7 @@ public struct AchievementBadge: View {
                     Circle()
                         .stroke(isUnlocked ? AppColors.accent : AppColors.separator, lineWidth: 2)
                 )
-            
+
             // Achievement name (compact, 2 lines max)
             Text(achievement.name)
                 .font(.caption)
@@ -40,9 +40,9 @@ public struct AchievementBadge: View {
         .accessibilityLabel(accessibilityLabel)
         .id(themeToken) // Force refresh on theme change
     }
-    
+
     // MARK: - Subviews
-    
+
     private var achievementImage: some View {
         Group {
             if let image = UIImage(named: achievement.imageAssetName) {
@@ -63,13 +63,13 @@ public struct AchievementBadge: View {
             }
         }
     }
-    
+
     // MARK: - Helpers
-    
+
     private var isUnlocked: Bool {
         state?.isUnlocked ?? false
     }
-    
+
     private var accessibilityLabel: String {
         var label = achievement.name
         if isUnlocked {
@@ -88,7 +88,7 @@ public struct AchievementBadge: View {
     ScrollView {
         VStack(alignment: .leading, spacing: AppSpacing.lg) {
             DetailSectionHeader(title: "Achievements")
-            
+
             // Horizontal wrapping row
             FlowLayout(spacing: AppSpacing.md) {
                 AchievementBadge(
@@ -108,7 +108,7 @@ public struct AchievementBadge: View {
                         progressTarget: 1
                     )
                 )
-                
+
                 AchievementBadge(
                     achievement: Achievement(
                         name: "Collector",
@@ -126,7 +126,7 @@ public struct AchievementBadge: View {
                         progressTarget: 5
                     )
                 )
-                
+
                 AchievementBadge(
                     achievement: Achievement(
                         name: "Enthusiast",
@@ -144,7 +144,7 @@ public struct AchievementBadge: View {
                         progressTarget: 10
                     )
                 )
-                
+
                 AchievementBadge(
                     achievement: Achievement(
                         name: "Daily Wearer",
@@ -162,7 +162,7 @@ public struct AchievementBadge: View {
                         progressTarget: 7
                     )
                 )
-                
+
                 AchievementBadge(
                     achievement: Achievement(
                         name: "Dedicated",
@@ -181,7 +181,7 @@ public struct AchievementBadge: View {
                     )
                 )
             }
-            
+
             Spacer()
         }
         .padding()
@@ -189,4 +189,3 @@ public struct AchievementBadge: View {
     .background(AppColors.background)
 }
 #endif
-

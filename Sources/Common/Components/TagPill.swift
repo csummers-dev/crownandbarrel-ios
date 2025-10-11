@@ -6,13 +6,13 @@ import SwiftUI
 /// - How: Small rounded rectangle with padding, designed to wrap in horizontal flow layouts.
 public struct TagPill: View {
     public let text: String
-    
+
     @Environment(\.themeToken) private var themeToken
-    
+
     public init(_ text: String) {
         self.text = text
     }
-    
+
     public var body: some View {
         Text(text)
             .font(.caption)
@@ -36,13 +36,13 @@ public struct TagPill: View {
 /// - How: Uses custom flow layout to arrange tag pills with proper spacing and wrapping.
 public struct TagPillGroup: View {
     public let tags: [String]
-    
+
     @Environment(\.themeToken) private var themeToken
-    
+
     public init(tags: [String]) {
         self.tags = tags
     }
-    
+
     public var body: some View {
         if !tags.isEmpty {
             FlowLayout(spacing: AppSpacing.xs) {
@@ -63,11 +63,11 @@ public struct TagPillGroup: View {
 /// - How: Calculates positions by tracking current x/y coordinates and line heights.
 public struct FlowLayout: Layout {
     public var spacing: CGFloat
-    
+
     public init(spacing: CGFloat = 8) {
         self.spacing = spacing
     }
-    
+
     public func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
         let result = FlowResult(
             in: proposal.replacingUnspecifiedDimensions().width,
@@ -76,7 +76,7 @@ public struct FlowLayout: Layout {
         )
         return result.size
     }
-    
+
     public func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
         let result = FlowResult(
             in: bounds.width,
@@ -93,32 +93,32 @@ public struct FlowLayout: Layout {
             )
         }
     }
-    
+
     struct FlowResult {
         var size: CGSize
         var positions: [CGPoint]
-        
+
         init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
             var positions: [CGPoint] = []
             var currentX: CGFloat = 0
             var currentY: CGFloat = 0
             var lineHeight: CGFloat = 0
-            
+
             for subview in subviews {
                 let size = subview.sizeThatFits(.unspecified)
-                
+
                 // Wrap to next line if current item doesn't fit
                 if currentX + size.width > maxWidth && currentX > 0 {
                     currentX = 0
                     currentY += lineHeight + spacing
                     lineHeight = 0
                 }
-                
+
                 positions.append(CGPoint(x: currentX, y: currentY))
                 lineHeight = max(lineHeight, size.height)
                 currentX += size.width + spacing
             }
-            
+
             self.positions = positions
             self.size = CGSize(width: maxWidth, height: currentY + lineHeight)
         }
@@ -132,11 +132,11 @@ public struct FlowLayout: Layout {
     ScrollView {
         VStack(alignment: .leading, spacing: AppSpacing.lg) {
             DetailSectionHeader(title: "Single Tag")
-            
+
             TagPill("Diver")
-            
+
             DetailSectionHeader(title: "Multiple Tags - Wrapping Flow")
-            
+
             TagPillGroup(tags: [
                 "Diver",
                 "Automatic",
@@ -147,31 +147,31 @@ public struct FlowLayout: Layout {
                 "Vintage Inspired",
                 "Limited Edition"
             ])
-            
+
             DetailSectionHeader(title: "Few Tags")
-            
+
             TagPillGroup(tags: ["Sports", "Daily Wearer"])
-            
+
             DetailSectionHeader(title: "In Specification Context")
-            
+
             VStack(spacing: 0) {
                 SpecificationRow(label: "Serial Number", value: "ABC123")
-                SpecificationRow(label: "Production Year", value: 2023).map { $0 }
+                SpecificationRow(label: "Production Year", value: 2_023).map { $0 }
                 SpecificationRow(label: "Country", value: "Switzerland")
             }
-            
+
             HStack(alignment: .top, spacing: AppSpacing.md) {
                 Text("Tags")
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textSecondary)
-                
+
                 Spacer()
-                
+
                 TagPillGroup(tags: ["Diver", "Automatic", "Swiss Made"])
                     .frame(maxWidth: 200, alignment: .trailing)
             }
             .padding(.vertical, AppSpacing.xxs)
-            
+
             Spacer()
         }
         .padding()
@@ -179,4 +179,3 @@ public struct FlowLayout: Layout {
     .background(AppColors.background)
 }
 #endif
-

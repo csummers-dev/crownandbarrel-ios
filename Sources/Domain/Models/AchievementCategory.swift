@@ -10,19 +10,19 @@ public enum AchievementCategory: String, Codable, Hashable, Sendable, CaseIterab
     /// Achievements based on collection size milestones
     /// Examples: "Own 10 watches", "Own 50 watches", "Century Club (100 watches)"
     case collectionSize
-    
+
     /// Achievements based on total wearing frequency across all watches
     /// Examples: "Log 100 wears", "Log 1000 wears", "Millennium Wearer"
     case wearingFrequency
-    
+
     /// Achievements based on wearing consistency and streaks
     /// Examples: "7 days in a row", "30 days in a row", "Year-Long Dedication"
     case consistency
-    
+
     /// Achievements based on collection diversity and variety
     /// Examples: "Own 5 different brands", "Wear 10 different watches in a month"
     case diversity
-    
+
     /// Achievements for special occasions and first-time events
     /// Examples: "First watch added", "First wear logged", "Anniversary Year"
     case specialOccasions
@@ -46,7 +46,7 @@ public extension AchievementCategory {
             return "Special Occasions"
         }
     }
-    
+
     /// SF Symbol icon name for the category
     var iconName: String {
         switch self {
@@ -62,7 +62,7 @@ public extension AchievementCategory {
             return "star.fill"
         }
     }
-    
+
     /// Brief description of what achievements in this category represent
     var categoryDescription: String {
         switch self {

@@ -7,15 +7,15 @@ import SwiftUI
 public struct AchievementGridView: View {
     public let achievements: [(achievement: Achievement, state: AchievementState?)]
     public let onAchievementTap: ((Achievement) -> Void)?
-    
+
     @Environment(\.themeToken) private var themeToken
     @State private var selectedCategory: AchievementCategory?
     @State private var showOnlyUnlocked: Bool = false
-    
+
     private let columns = [
         GridItem(.adaptive(minimum: 150, maximum: 200), spacing: AppSpacing.md)
     ]
-    
+
     public init(
         achievements: [(achievement: Achievement, state: AchievementState?)],
         onAchievementTap: ((Achievement) -> Void)? = nil
@@ -23,12 +23,12 @@ public struct AchievementGridView: View {
         self.achievements = achievements
         self.onAchievementTap = onAchievementTap
     }
-    
+
     public var body: some View {
         VStack(spacing: AppSpacing.md) {
             // Filter controls
             filterControls
-            
+
             // Achievement grid
             if filteredAchievements.isEmpty {
                 emptyState
@@ -51,9 +51,9 @@ public struct AchievementGridView: View {
         }
         .id(themeToken)
     }
-    
+
     // MARK: - Subviews
-    
+
     private var filterControls: some View {
         VStack(spacing: AppSpacing.sm) {
             // Category filter
@@ -65,7 +65,7 @@ public struct AchievementGridView: View {
                         isSelected: selectedCategory == nil,
                         action: { selectedCategory = nil }
                     )
-                    
+
                     // Category buttons
                     ForEach(AchievementCategory.allCases, id: \.self) { category in
                         FilterChip(
@@ -77,7 +77,7 @@ public struct AchievementGridView: View {
                 }
                 .padding(.horizontal, AppSpacing.md)
             }
-            
+
             // Unlock status toggle
             Toggle("Show only unlocked", isOn: $showOnlyUnlocked)
                 .padding(.horizontal, AppSpacing.md)
@@ -87,17 +87,17 @@ public struct AchievementGridView: View {
         .padding(.vertical, AppSpacing.sm)
         .background(AppColors.background)
     }
-    
+
     private var emptyState: some View {
         VStack(spacing: AppSpacing.md) {
             Image(systemName: "trophy.slash")
                 .font(.system(size: 60))
                 .foregroundStyle(AppColors.textSecondary)
-            
+
             Text("No achievements found")
                 .font(.headline)
                 .foregroundStyle(AppColors.textPrimary)
-            
+
             Text("Adjust your filters or start earning achievements!")
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textSecondary)
@@ -105,31 +105,31 @@ public struct AchievementGridView: View {
         }
         .padding(AppSpacing.xl)
     }
-    
+
     // MARK: - Filtering
-    
+
     private var filteredAchievements: [(achievement: Achievement, state: AchievementState?)] {
         var filtered = achievements
-        
+
         // Filter by category
         if let category = selectedCategory {
             filtered = filtered.filter { $0.achievement.category == category }
         }
-        
+
         // Filter by unlock status
         if showOnlyUnlocked {
             filtered = filtered.filter { $0.state?.isUnlocked == true }
         }
-        
+
         // Sort: unlocked first, then by progress, then alphabetically
         filtered.sort { lhs, rhs in
             let lhsUnlocked = lhs.state?.isUnlocked ?? false
             let rhsUnlocked = rhs.state?.isUnlocked ?? false
-            
+
             if lhsUnlocked != rhsUnlocked {
                 return lhsUnlocked // Unlocked first
             }
-            
+
             if !lhsUnlocked {
                 // For locked achievements, sort by progress percentage descending
                 let lhsProgress = lhs.state?.progressPercentage ?? 0
@@ -138,11 +138,11 @@ public struct AchievementGridView: View {
                     return lhsProgress > rhsProgress
                 }
             }
-            
+
             // Alphabetically by name
             return lhs.achievement.name < rhs.achievement.name
         }
-        
+
         return filtered
     }
 }
@@ -153,7 +153,7 @@ private struct FilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text(title)

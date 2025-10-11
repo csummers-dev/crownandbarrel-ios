@@ -574,5 +574,3 @@ public enum ValuationSource: StringBackedEnum { case insurer, appraisal, marketE
         case .other(let v): return v
     }}
 }
-
-

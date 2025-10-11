@@ -14,7 +14,7 @@ public final class AppDatabase {
             // Use WAL for better concurrency and crash resilience
             try db.execute(sql: "PRAGMA journal_mode=WAL;")
             try db.execute(sql: "PRAGMA foreign_keys=ON;")
-            
+
             // Verify foreign keys are enabled
             let foreignKeysEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
             if !foreignKeysEnabled {
@@ -45,7 +45,7 @@ public final class AppDatabase {
                         let ctype: String = c["type"] ?? ""
                         print("      -", cname, ctype)
                     }
-                    
+
                     // Check foreign keys for wearentry
                     if name == "wearentry" {
                         let fks = try Row.fetchAll(db, sql: "PRAGMA foreign_key_list(\(name))")
@@ -63,7 +63,7 @@ public final class AppDatabase {
                     }
                 }
             }
-            
+
             // Check foreign keys status
             let fkEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
             print("🔑 Foreign keys enabled:", fkEnabled)
@@ -160,13 +160,13 @@ public final class AppDatabase {
             }
 
             // Indexes
-            try db.create(index: "idx_watches_mfr_line_model", on: "watches", columns: ["manufacturer", "line", "model_name"])           
-            try db.create(index: "idx_watches_movement_type", on: "watches", columns: ["movement_type"])           
-            try db.create(index: "idx_watches_water_resistance", on: "watches", columns: ["water_resistance_m"])           
-            try db.create(index: "idx_watches_condition", on: "watches", columns: ["ownership_condition"])           
-            try db.create(index: "idx_watches_ownership_date", on: "watches", columns: ["ownership_date_acquired"])           
-            try db.create(index: "idx_watches_updated_at", on: "watches", columns: ["updated_at"])           
-            try db.create(index: "idx_watches_has_photos", on: "watches", columns: ["has_photos"]) 
+            try db.create(index: "idx_watches_mfr_line_model", on: "watches", columns: ["manufacturer", "line", "model_name"])
+            try db.create(index: "idx_watches_movement_type", on: "watches", columns: ["movement_type"])
+            try db.create(index: "idx_watches_water_resistance", on: "watches", columns: ["water_resistance_m"])
+            try db.create(index: "idx_watches_condition", on: "watches", columns: ["ownership_condition"])
+            try db.create(index: "idx_watches_ownership_date", on: "watches", columns: ["ownership_date_acquired"])
+            try db.create(index: "idx_watches_updated_at", on: "watches", columns: ["updated_at"])
+            try db.create(index: "idx_watches_has_photos", on: "watches", columns: ["has_photos"])
         }
 
         // v2: add explicit ownership_date_acquired column for efficient filtering
@@ -176,12 +176,12 @@ public final class AppDatabase {
             let hasColumn = columns.contains { row in
                 (row["name"] as String?) == "ownership_date_acquired"
             }
-            
+
             if !hasColumn {
                 try db.alter(table: "watches") { t in
                     t.add(column: "ownership_date_acquired", .text)
                 }
-                try db.create(index: "idx_watches_ownership_date", on: "watches", columns: ["ownership_date_acquired"])           
+                try db.create(index: "idx_watches_ownership_date", on: "watches", columns: ["ownership_date_acquired"])
             }
         }
 
@@ -189,13 +189,13 @@ public final class AppDatabase {
         migrator.registerMigration("v3_create_wear_entries") { db in
             // CRITICAL: Enable foreign keys for this migration
             try db.execute(sql: "PRAGMA foreign_keys=ON;")
-            
+
             // Check if table already exists (GRDB defaults to lowercase table names)
             let tableExists = try Bool.fetchOne(db, sql: """
-                SELECT COUNT(*) > 0 FROM sqlite_master 
+                SELECT COUNT(*) > 0 FROM sqlite_master
                 WHERE type='table' AND name='wearentry'
             """) ?? false
-            
+
             if !tableExists {
                 // Use snake_case to match all other tables in the schema
                 try db.create(table: "wearentry") { t in
@@ -203,50 +203,50 @@ public final class AppDatabase {
                     t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
                     t.column("date", .text).notNull()
                 }
-                
+
                 // Index for efficient date-range queries
                 try db.create(index: "idx_wear_entries_date", on: "wearentry", columns: ["date"])
                 // Composite index for watch-specific queries
                 try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watch_id", "date"])
             }
         }
-        
+
         // v3.1: CRITICAL FIX - Recreate wearentry table with foreign keys properly enabled
         // This migration fixes existing databases where the table was created without FK constraints
         migrator.registerMigration("v3.1_recreate_wear_entries_with_fk") { db in
             // CRITICAL: Ensure foreign keys are enabled
             try db.execute(sql: "PRAGMA foreign_keys=ON;")
-            
+
             // Check if the table exists
             let tableExists = try Bool.fetchOne(db, sql: """
-                SELECT COUNT(*) > 0 FROM sqlite_master 
+                SELECT COUNT(*) > 0 FROM sqlite_master
                 WHERE type='table' AND name='wearentry'
             """) ?? false
-            
+
             if tableExists {
                 // Back up existing data
                 try db.execute(sql: """
-                    CREATE TABLE IF NOT EXISTS wearentry_backup AS 
+                    CREATE TABLE IF NOT EXISTS wearentry_backup AS
                     SELECT * FROM wearentry
                 """)
-                
+
                 // Drop the old table
                 try db.execute(sql: "DROP TABLE IF EXISTS wearentry")
             }
-            
+
             // Recreate the table with foreign keys properly enabled
             try db.create(table: "wearentry") { t in
                 t.column("id", .text).primaryKey() // UUID string
                 t.column("watch_id", .text).notNull().indexed().references("watches", onDelete: .cascade)
                 t.column("date", .text).notNull()
             }
-            
+
             // Restore data if backup exists
             let backupExists = try Bool.fetchOne(db, sql: """
-                SELECT COUNT(*) > 0 FROM sqlite_master 
+                SELECT COUNT(*) > 0 FROM sqlite_master
                 WHERE type='table' AND name='wearentry_backup'
             """) ?? false
-            
+
             if backupExists {
                 // Only restore entries where the watch_id exists in watches table
                 try db.execute(sql: """
@@ -255,11 +255,11 @@ public final class AppDatabase {
                     FROM wearentry_backup wb
                     WHERE EXISTS (SELECT 1 FROM watches WHERE id = wb.watch_id)
                 """)
-                
+
                 // Drop the backup table
                 try db.execute(sql: "DROP TABLE wearentry_backup")
             }
-            
+
             // Recreate indexes
             try db.create(index: "idx_wear_entries_date", on: "wearentry", columns: ["date"])
             try db.create(index: "idx_wear_entries_watch_date", on: "wearentry", columns: ["watch_id", "date"])
@@ -269,7 +269,7 @@ public final class AppDatabase {
         migrator.registerMigration("v4_create_achievements") { db in
             // CRITICAL: Enable foreign keys for this migration
             try db.execute(sql: "PRAGMA foreign_keys=ON;")
-            
+
             // achievements table (definitions - these are constant and defined in code)
             try db.create(table: "achievements") { t in
                 t.column("id", .text).primaryKey() // UUID string
@@ -281,7 +281,7 @@ public final class AppDatabase {
                 t.column("target_value", .double).notNull()
                 t.column("created_at", .text).notNull()
             }
-            
+
             // user_achievement_state table (user's progress for each achievement)
             try db.create(table: "user_achievement_state") { t in
                 t.column("id", .text).primaryKey() // UUID string
@@ -293,11 +293,11 @@ public final class AppDatabase {
                 t.column("created_at", .text).notNull()
                 t.column("updated_at", .text).notNull()
             }
-            
+
             // Indexes for efficient queries
             try db.create(index: "idx_user_achievement_state_unlocked", on: "user_achievement_state", columns: ["is_unlocked"])
             try db.create(index: "idx_user_achievement_state_achievement_id", on: "user_achievement_state", columns: ["achievement_id"])
-            
+
             // Composite index for filtering unlocked achievements
             try db.create(index: "idx_user_achievement_state_unlocked_date", on: "user_achievement_state", columns: ["is_unlocked", "unlocked_at"])
         }
@@ -323,5 +323,3 @@ public enum ISO8601 {
     public static func string(from date: Date) -> String { formatter.string(from: date) }
     public static func date(from string: String) -> Date? { formatter.date(from: string) }
 }
-
-

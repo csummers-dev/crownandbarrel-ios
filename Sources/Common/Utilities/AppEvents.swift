@@ -11,5 +11,3 @@ public enum AppNotification {
     public static let watchUpserted = Notification.Name("watchUpserted")
     public static let watchDeleted = Notification.Name("watchDeleted")
 }
-
-

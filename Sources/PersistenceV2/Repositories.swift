@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
-import ZIPFoundation
 import OSLog
+import ZIPFoundation
 
 public protocol WatchRepositoryV2: Sendable {
     func create(_ watch: WatchV2) throws
@@ -9,12 +9,12 @@ public protocol WatchRepositoryV2: Sendable {
     func delete(id: UUID) throws
     func fetch(id: UUID) throws -> WatchV2?
     func list(sortedBy: WatchSort, filters: WatchFilters) throws -> [WatchV2]
-    
+
     // Wear entry methods
     func wearEntries(on date: Date) async throws -> [WearEntry]
     func incrementWear(for watchId: UUID, on date: Date) async throws
     func fetchAll() async throws -> [WatchV2]
-    
+
     // Achievement-related queries
     func totalWatchCount() async throws -> Int
     func totalWearCount() async throws -> Int
@@ -57,7 +57,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
     public init(dbQueue: DatabaseQueue = AppDatabase.shared.dbQueue) {
         self.dbQueue = dbQueue
     }
-    
+
     /// Ensures foreign keys are enabled for every database operation
     private func ensureForeignKeysEnabled(_ db: Database) throws {
         try db.execute(sql: "PRAGMA foreign_keys=ON;")
@@ -73,7 +73,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         try dbQueue.write { db in
             // Ensure foreign keys are enabled for data integrity
             try ensureForeignKeysEnabled(db)
-            
+
             try insertWatch(db: db, watch: watch)
             try upsertChildren(db: db, watchId: watch.id, watch: watch)
             try updateHasPhotosFlag(db: db, watchId: watch.id)
@@ -84,7 +84,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         try dbQueue.write { db in
             // Ensure foreign keys are enabled for data integrity
             try ensureForeignKeysEnabled(db)
-            
+
             try updateWatch(db: db, watch: watch)
             try deleteChildren(db: db, watchId: watch.id)
             try upsertChildren(db: db, watchId: watch.id, watch: watch)
@@ -96,7 +96,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
         try dbQueue.write { db in
             // Ensure foreign keys are enabled for data integrity
             try ensureForeignKeysEnabled(db)
-            
+
             _ = try Row.fetchOne(db, sql: "DELETE FROM watches WHERE id = ?", arguments: [id.uuidString])
         }
     }
@@ -118,18 +118,18 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             if let search = filters.searchText, !search.isEmpty {
                 let searchPattern = "%\(search)%"
                 clauses.append("""
-                    (manufacturer LIKE ? OR 
-                     line LIKE ? OR 
-                     model_name LIKE ? OR 
-                     reference_number LIKE ? OR 
-                     nickname LIKE ? OR 
-                     serial_number LIKE ? OR 
+                    (manufacturer LIKE ? OR
+                     line LIKE ? OR
+                     model_name LIKE ? OR
+                     reference_number LIKE ? OR
+                     nickname LIKE ? OR
+                     serial_number LIKE ? OR
                      notes LIKE ? OR
                      tags_json LIKE ?)
                     """)
                 args.append(contentsOf: [searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern, searchPattern])
             }
-            
+
             if let m = filters.manufacturer { clauses.append("manufacturer = ?"); args.append(m) }
             if let l = filters.line { clauses.append("line = ?"); args.append(l) }
             if let mt = filters.movementType { clauses.append("movement_type = ?"); args.append(mt) }
@@ -380,49 +380,49 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             straps: straps
         )
     }
-    
+
     // MARK: - Wear Entry Methods
-    
+
     public func wearEntries(on date: Date) async throws -> [WearEntry] {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             let calendar = Calendar.current
             let startOfDay = calendar.startOfDay(for: date)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
-            
+
             return try WearEntry
                 .filter(Column("date") >= startOfDay && Column("date") < endOfDay)
                 .fetchAll(db)
         }
     }
-    
+
     public func incrementWear(for watchId: UUID, on date: Date) async throws {
         let logger = Logger(subsystem: "com.crownandbarrel", category: "WearEntry")
-        
+
         try await dbQueue.write { db in
             logger.info("🔍 incrementWear called for watchId: \(watchId.uuidString)")
-            
+
             // CRITICAL: Always enable foreign keys at the start of every write operation
             // This ensures data integrity regardless of the prepareDatabase block
             try self.ensureForeignKeysEnabled(db)
-            
+
             // Check foreign keys status for logging
             let foreignKeysEnabled = try Bool.fetchOne(db, sql: "PRAGMA foreign_keys") ?? false
             logger.info("🔍 Foreign keys enabled: \(foreignKeysEnabled)")
-            
+
             // Verify watch exists
             let watchExists = try Bool.fetchOne(db, sql: "SELECT COUNT(*) > 0 FROM watches WHERE id = ?", arguments: [watchId.uuidString]) ?? false
             logger.info("🔍 Watch exists in DB: \(watchExists)")
-            
+
             if !watchExists {
                 logger.error("❌ Watch does not exist in database!")
                 throw AppError.repository("Watch not found in database. ID: \(watchId.uuidString)")
             }
-            
+
             let calendar = Calendar.current
             let startOfDay = calendar.startOfDay(for: date)
-            
+
             logger.info("🔍 Checking for existing entry on: \(startOfDay.description)")
-            
+
             // Check if entry already exists for this watch on this date (raw SQL for clarity)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
             let existingCount = try Int.fetchOne(
@@ -431,16 +431,16 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
                 arguments: [watchId.uuidString, ISO8601.string(from: startOfDay), ISO8601.string(from: endOfDay)]
             ) ?? 0
             logger.info("🔍 Existing entry count: \(existingCount)")
-            
+
             if existingCount == 0 {
                 // Create new wear entry
                 let entry = WearEntry(watchId: watchId, date: startOfDay)
                 logger.info("🔍 Attempting to insert wear entry: id=\(entry.id.uuidString), watchId=\(entry.watchId.uuidString)")
-                
+
                 do {
                     // Double-check foreign keys are enabled before insertion
                     try self.ensureForeignKeysEnabled(db)
-                    
+
                     try entry.insert(db)
                     logger.info("✅ Wear entry inserted successfully")
                 } catch {
@@ -455,27 +455,27 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             }
         }
     }
-    
+
     public func fetchAll() async throws -> [WatchV2] {
-        return try list(sortedBy: .manufacturerLineModel, filters: WatchFilters())
+        try list(sortedBy: .manufacturerLineModel, filters: WatchFilters())
     }
-    
+
     // MARK: - Achievement-Related Queries
-    
+
     public func totalWatchCount() async throws -> Int {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM watches") ?? 0
         }
     }
-    
+
     public func totalWearCount() async throws -> Int {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM wearentry") ?? 0
         }
     }
-    
+
     public func wearCountForWatch(watchId: UUID) async throws -> Int {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             try Int.fetchOne(
                 db,
                 sql: "SELECT COUNT(*) FROM wearentry WHERE watch_id = ?",
@@ -483,44 +483,44 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             ) ?? 0
         }
     }
-    
+
     public func lastWornDate(watchId: UUID) async throws -> Date? {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             // Get the most recent wear entry for this watch
             let entries = try WearEntry
                 .filter(WearEntry.CodingKeys.watchId == watchId.uuidString)
                 .order(WearEntry.CodingKeys.date.desc)
                 .limit(1)
                 .fetchAll(db)
-            
+
             return entries.first?.date
         }
     }
-    
+
     public func uniqueBrandsCount() async throws -> Int {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             try Int.fetchOne(db, sql: "SELECT COUNT(DISTINCT manufacturer) FROM watches") ?? 0
         }
     }
-    
+
     public func currentStreak() async throws -> Int {
         let allEntries = try await allWearEntries()
         guard !allEntries.isEmpty else { return 0 }
-        
+
         // Sort entries by date descending (most recent first)
         let sortedEntries = allEntries.sorted { $0.date > $1.date }
-        
+
         let calendar = Calendar.current
         var streak = 0
         var currentDate = calendar.startOfDay(for: Date())
-        
+
         // Group entries by day
         var daySet = Set<Date>()
         for entry in sortedEntries {
             let day = calendar.startOfDay(for: entry.date)
             daySet.insert(day)
         }
-        
+
         // Count consecutive days from today backwards
         while daySet.contains(currentDate) {
             streak += 1
@@ -529,36 +529,36 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             }
             currentDate = previousDay
         }
-        
+
         return streak
     }
-    
+
     public func allWearEntries() async throws -> [WearEntry] {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             try WearEntry.order(Column("date").desc).fetchAll(db)
         }
     }
-    
+
     public func wearEntriesForWatch(watchId: UUID) async throws -> [WearEntry] {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             try WearEntry
                 .filter(Column("watch_id") == watchId)
                 .order(Column("date").desc)
                 .fetchAll(db)
         }
     }
-    
+
     public func uniqueDaysWithEntries() async throws -> Int {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             // Count distinct calendar days (ignoring time component)
             try Int.fetchOne(db, sql: """
                 SELECT COUNT(DISTINCT DATE(date)) FROM wearentry
             """) ?? 0
         }
     }
-    
+
     public func firstWearDate() async throws -> Date? {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             guard let dateString = try String.fetchOne(
                 db,
                 sql: "SELECT MIN(date) FROM wearentry"
@@ -568,9 +568,9 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             return ISO8601.date(from: dateString)
         }
     }
-    
+
     public func firstWatchDate() async throws -> Date? {
-        return try await dbQueue.read { db in
+        try await dbQueue.read { db in
             guard let dateString = try String.fetchOne(
                 db,
                 sql: "SELECT MIN(created_at) FROM watches"
@@ -598,54 +598,54 @@ private func decodeJSON<T: Decodable>(_ raw: String?) throws -> T? {
 
 public final class BackupRepositoryGRDB: BackupRepository {
     private let dbQueue: DatabaseQueue
-    
+
     public init(dbQueue: DatabaseQueue = AppDatabase.shared.dbQueue) {
         self.dbQueue = dbQueue
     }
-    
+
     public func exportBackup() async throws -> URL {
         // Create temporary directory for backup
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        
+
         // Export database
         let dbFile = tempDir.appendingPathComponent("database.sqlite")
         try FileManager.default.copyItem(at: AppDatabase.shared.dbPath, to: dbFile)
-        
+
         // Create ZIP archive
         let archiveURL = FileManager.default.temporaryDirectory.appendingPathComponent("backup-\(Date().timeIntervalSince1970).crownandbarrel")
         try FileManager.default.zipItem(at: tempDir, to: archiveURL)
-        
+
         // Clean up temp directory
         try FileManager.default.removeItem(at: tempDir)
-        
+
         return archiveURL
     }
-    
+
     public func importBackup(from url: URL, replace: Bool) async throws {
         guard replace else {
             throw AppError.backupImportFailed("Replace must be true")
         }
-        
+
         // Extract backup
         let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         try FileManager.default.unzipItem(at: url, to: tempDir)
-        
+
         // Find database file
         let dbFile = tempDir.appendingPathComponent("database.sqlite")
         guard FileManager.default.fileExists(atPath: dbFile.path) else {
             throw AppError.backupImportFailed("Database file not found in backup")
         }
-        
+
         // Replace current database
         try FileManager.default.removeItem(at: AppDatabase.shared.dbPath)
         try FileManager.default.copyItem(at: dbFile, to: AppDatabase.shared.dbPath)
-        
+
         // Clean up temp directory
         try FileManager.default.removeItem(at: tempDir)
     }
-    
+
     public func deleteAll() async throws {
         try await dbQueue.write { db in
             // Delete all data in correct order (children before parents due to FK constraints)
@@ -659,5 +659,3 @@ public final class BackupRepositoryGRDB: BackupRepository {
         }
     }
 }
-
-

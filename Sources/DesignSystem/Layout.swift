@@ -18,5 +18,3 @@ public enum GridTileWidth: CaseIterable {
         }
     }
 }
-
-

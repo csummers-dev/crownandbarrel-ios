@@ -6,11 +6,11 @@ public struct WatchV2DetailView: View {
     @State private var showEditForm: Bool = false
     @State private var achievements: [(achievement: Achievement, state: AchievementState?)] = []
     @State private var wearCount: Int = 0
-    @State private var lastWorn: Date? = nil
-    
+    @State private var lastWorn: Date?
+
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
     private let watchRepository: WatchRepositoryV2 = WatchRepositoryGRDB()
-    
+
     @Environment(\.themeToken) private var themeToken
 
     public init(watch: WatchV2) {
@@ -22,46 +22,46 @@ public struct WatchV2DetailView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 // Photo gallery at the top
                 photoGallery
-                
+
                 // Watch identity section (manufacturer, model, line, reference, nickname)
                 watchIdentitySection
-                
+
                 // Statistics section (times worn, last worn, achievement progress)
                 statisticsSection
-                
+
                 // Core details group
                 coreDetailsSection
-                
+
                 // Case specifications group
                 caseSpecificationsSection
-                
+
                 // Dial details group
                 dialDetailsSection
-                
+
                 // Crystal details group
                 crystalDetailsSection
-                
+
                 // Movement specifications group
                 movementSpecificationsSection
-                
+
                 // Water resistance group
                 waterResistanceSection
-                
+
                 // Strap/bracelet details group
                 strapDetailsSection
-                
+
                 // Ownership information group
                 ownershipInfoSection
-                
+
                 // Service history
                 serviceHistorySection
-                
+
                 // Valuations
                 valuationsSection
-                
+
                 // Strap inventory
                 strapInventorySection
-                
+
                 // Achievements at bottom (horizontal row)
                 achievementsSection
             }
@@ -91,16 +91,16 @@ public struct WatchV2DetailView: View {
         }
         .id(themeToken) // Force refresh on theme change
     }
-    
+
     // MARK: - Section Views
-    
+
     private var watchIdentitySection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             // Manufacturer + Model (prominent)
             Text("\(watch.manufacturer) \(watch.modelName)")
                 .font(AppTypography.luxury)
                 .foregroundStyle(AppColors.textPrimary)
-            
+
             // Line + Reference (if available)
             if let line = watch.line, let reference = watch.referenceNumber {
                 Text("\(line) • \(reference)")
@@ -115,7 +115,7 @@ public struct WatchV2DetailView: View {
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textSecondary)
             }
-            
+
             // Nickname (if available)
             if let nickname = watch.nickname {
                 Text("\"\(nickname)\"")
@@ -125,17 +125,17 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var statisticsSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             DetailSectionHeader(title: "Statistics")
-            
+
             StatisticRow(
                 label: "Times Worn",
                 value: "\(wearCount)",
                 icon: "clock.fill"
             )
-            
+
             if let lastWorn = lastWorn {
                 StatisticRow(
                     label: "Last Worn",
@@ -143,7 +143,7 @@ public struct WatchV2DetailView: View {
                     icon: "calendar"
                 )
             }
-            
+
             if !watchAchievements.isEmpty {
                 let totalAchievements = achievements.count
                 let unlockedCount = watchAchievements.count
@@ -155,27 +155,27 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var coreDetailsSection: some View {
         Group {
             if WatchFieldFormatters.hasCoreDetails(watch) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Core Details")
-                    
+
                     SpecificationRow(label: "Serial Number", value: watch.serialNumber)
                     SpecificationRow(label: "Production Year", value: watch.productionYear)
                     SpecificationRow(label: "Country of Origin", value: watch.countryOfOrigin)
                     SpecificationRow(label: "Limited Edition", value: watch.limitedEditionNumber)
                     SpecificationRow(label: "Notes", value: watch.notes)
-                    
+
                     if !watch.tags.isEmpty {
                         HStack(alignment: .top, spacing: AppSpacing.md) {
                             Text("Tags")
                                 .font(.subheadline)
                                 .foregroundStyle(AppColors.textSecondary)
-                            
+
                             Spacer()
-                            
+
                             TagPillGroup(tags: watch.tags)
                                 .frame(maxWidth: 250, alignment: .trailing)
                         }
@@ -185,13 +185,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var caseSpecificationsSection: some View {
         Group {
             if WatchFieldFormatters.hasCaseSpecs(watch.watchCase) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Case Specifications")
-                    
+
                     if let material = watch.watchCase.material {
                         SpecificationRow(label: "Material", value: material.asString().capitalized)
                     }
@@ -233,13 +233,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var dialDetailsSection: some View {
         Group {
             if WatchFieldFormatters.hasDialDetails(watch.dial) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Dial Details")
-                    
+
                     SpecificationRow(label: "Color", value: watch.dial.color)
                     if let finish = watch.dial.finish {
                         SpecificationRow(label: "Finish", value: finish.asString().capitalized)
@@ -259,7 +259,7 @@ public struct WatchV2DetailView: View {
                     if let lumeType = watch.dial.lumeType {
                         SpecificationRow(label: "Lume Type", value: lumeType.asString().capitalized)
                     }
-                    
+
                     if !watch.dial.complications.isEmpty {
                         SpecificationRow(
                             label: "Complications",
@@ -270,13 +270,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var crystalDetailsSection: some View {
         Group {
             if WatchFieldFormatters.hasCrystalDetails(watch.crystal) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Crystal")
-                    
+
                     if let material = watch.crystal.material {
                         SpecificationRow(label: "Material", value: material.asString().capitalized)
                     }
@@ -290,13 +290,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var movementSpecificationsSection: some View {
         Group {
             if WatchFieldFormatters.hasMovementSpecs(watch.movement) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Movement")
-                    
+
                     SpecificationRow(label: "Type", enum: watch.movement.type)
                     SpecificationRow(label: "Caliber", value: watch.movement.caliber)
                     SpecificationRow(
@@ -319,13 +319,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var waterResistanceSection: some View {
         Group {
             if WatchFieldFormatters.hasWaterResistance(watch.water) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Water Resistance")
-                    
+
                     SpecificationRow(
                         label: "Water Resistance",
                         value: WatchFieldFormatters.formatWaterResistance(watch.water.waterResistanceM)
@@ -338,13 +338,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var strapDetailsSection: some View {
         Group {
             if WatchFieldFormatters.hasStrapDetails(watch.strapCurrent) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Strap/Bracelet")
-                    
+
                     if let type = watch.strapCurrent.type {
                         SpecificationRow(label: "Type", value: type.asString().capitalized)
                     }
@@ -362,22 +362,22 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var ownershipInfoSection: some View {
         Group {
             if WatchFieldFormatters.hasOwnershipInfo(watch.ownership) {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Ownership")
-                    
+
                     if let dateAcquired = watch.ownership.dateAcquired {
                         SpecificationRow(
                             label: "Date Acquired",
                             value: DateFormatters.absoluteFormat(dateAcquired)
                         )
                     }
-                    
+
                     SpecificationRow(label: "Purchased From", value: watch.ownership.purchasedFrom)
-                    
+
                     if let price = watch.ownership.purchasePriceAmount {
                         SpecificationRow(
                             label: "Purchase Price",
@@ -387,7 +387,7 @@ public struct WatchV2DetailView: View {
                             )
                         )
                     }
-                    
+
                     if let condition = watch.ownership.condition {
                         SpecificationRow(label: "Condition", value: condition.asString().capitalized)
                     }
@@ -395,7 +395,7 @@ public struct WatchV2DetailView: View {
                         label: "Box & Papers",
                         value: WatchFieldFormatters.formatBoxPapers(watch.ownership.boxPapers)
                     )
-                    
+
                     if let currentValue = watch.ownership.currentEstimatedValueAmount {
                         SpecificationRow(
                             label: "Current Est. Value",
@@ -405,10 +405,10 @@ public struct WatchV2DetailView: View {
                             )
                         )
                     }
-                    
+
                     SpecificationRow(label: "Insurance Provider", value: watch.ownership.insuranceProvider)
                     SpecificationRow(label: "Policy Number", value: watch.ownership.insurancePolicyNumber)
-                    
+
                     if let renewalDate = watch.ownership.insuranceRenewalDate {
                         SpecificationRow(
                             label: "Insurance Renewal",
@@ -419,13 +419,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var serviceHistorySection: some View {
         Group {
             if !watch.serviceHistory.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Service History")
-                    
+
                     ForEach(watch.serviceHistory) { entry in
                         VStack(alignment: .leading, spacing: AppSpacing.xs) {
                             if let date = entry.date {
@@ -434,19 +434,19 @@ public struct WatchV2DetailView: View {
                                     .fontWeight(.medium)
                                     .foregroundStyle(AppColors.textPrimary)
                             }
-                            
+
                             if let provider = entry.provider {
                                 Text(provider)
                                     .font(.caption)
                                     .foregroundStyle(AppColors.textSecondary)
                             }
-                            
+
                             if let work = entry.workDescription {
                                 Text(work)
                                     .font(.caption)
                                     .foregroundStyle(AppColors.textSecondary)
                             }
-                            
+
                             if let cost = entry.costAmount {
                                 Text(WatchFieldFormatters.formatCurrency(cost, currencyCode: entry.costCurrency) ?? "")
                                     .font(.caption)
@@ -454,7 +454,7 @@ public struct WatchV2DetailView: View {
                             }
                         }
                         .padding(.vertical, AppSpacing.sm)
-                        
+
                         if entry.id != watch.serviceHistory.last?.id {
                             Divider()
                         }
@@ -463,13 +463,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var valuationsSection: some View {
         Group {
             if !watch.valuations.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Valuations")
-                    
+
                     ForEach(watch.valuations) { entry in
                         HStack(alignment: .top, spacing: AppSpacing.md) {
                             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
@@ -479,16 +479,16 @@ public struct WatchV2DetailView: View {
                                         .fontWeight(.medium)
                                         .foregroundStyle(AppColors.textPrimary)
                                 }
-                                
+
                                 if let source = entry.source {
                                     Text(source.asString().capitalized)
                                         .font(.caption)
                                         .foregroundStyle(AppColors.textSecondary)
                                 }
                             }
-                            
+
                             Spacer()
-                            
+
                             if let value = entry.valueAmount {
                                 Text(WatchFieldFormatters.formatCurrency(value, currencyCode: entry.valueCurrency) ?? "")
                                     .font(.body)
@@ -497,7 +497,7 @@ public struct WatchV2DetailView: View {
                             }
                         }
                         .padding(.vertical, AppSpacing.sm)
-                        
+
                         if entry.id != watch.valuations.last?.id {
                             Divider()
                         }
@@ -506,13 +506,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var strapInventorySection: some View {
         Group {
             if !watch.straps.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     DetailSectionHeader(title: "Strap Inventory")
-                    
+
                     ForEach(watch.straps) { strap in
                         VStack(alignment: .leading, spacing: AppSpacing.xs) {
                             HStack(spacing: AppSpacing.sm) {
@@ -522,32 +522,32 @@ public struct WatchV2DetailView: View {
                                         .fontWeight(.medium)
                                         .foregroundStyle(AppColors.textPrimary)
                                 }
-                                
+
                                 if let material = strap.material {
                                     Text("• \(material)")
                                         .font(.subheadline)
                                         .foregroundStyle(AppColors.textSecondary)
                                 }
-                                
+
                                 if let color = strap.color {
                                     Text("• \(color)")
                                         .font(.subheadline)
                                         .foregroundStyle(AppColors.textSecondary)
                                 }
-                                
+
                                 if let width = strap.widthMM {
                                     Text("• \(width)mm")
                                         .font(.subheadline)
                                         .foregroundStyle(AppColors.textSecondary)
                                 }
                             }
-                            
+
                             if let claspType = strap.claspType {
                                 Text("Clasp: \(claspType.asString().capitalized)")
                                     .font(.caption)
                                     .foregroundStyle(AppColors.textSecondary)
                             }
-                            
+
                             if strap.quickRelease {
                                 Text("Quick Release")
                                     .font(.caption)
@@ -555,7 +555,7 @@ public struct WatchV2DetailView: View {
                             }
                         }
                         .padding(.vertical, AppSpacing.sm)
-                        
+
                         if strap.id != watch.straps.last?.id {
                             Divider()
                         }
@@ -564,13 +564,13 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var achievementsSection: some View {
         Group {
             if !watchAchievements.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
                     DetailSectionHeader(title: "Achievements")
-                    
+
                     FlowLayout(spacing: AppSpacing.md) {
                         ForEach(watchAchievements, id: \.achievement.id) { item in
                             AchievementBadge(
@@ -583,19 +583,19 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-    
+
     private var watchAchievements: [(achievement: Achievement, state: AchievementState?)] {
         // Filter to only show unlocked achievements related to this watch
         achievements.filter { $0.state?.isUnlocked == true }
     }
-    
+
     // MARK: - Data Loading
-    
+
     private func loadData() async {
         await loadStatistics()
         await loadAchievements()
     }
-    
+
     private func loadStatistics() async {
         do {
             wearCount = try await watchRepository.wearCountForWatch(watchId: watch.id)
@@ -604,16 +604,16 @@ public struct WatchV2DetailView: View {
             print("Failed to load statistics: \(error)")
         }
     }
-    
+
     private func loadAchievements() async {
         do {
             // Initialize achievement states if needed
             try await achievementRepository.initializeUserStates()
-            
+
             // Load achievements - for now, load watch-specific achievements
             // like "Favorite Watch" (worn 10 times), "True Love" (worn 50 times), etc.
             let allAchievements = try await achievementRepository.fetchAchievementsWithStates()
-            
+
             // Filter to achievements that could be related to this specific watch
             achievements = allAchievements.filter { item in
                 // Include single-watch wear count achievements if this watch has enough wears
@@ -639,8 +639,7 @@ public struct WatchV2DetailView: View {
                     ForEach(Array(watch.photos.enumerated()), id: \.offset) { idx, photo in
                         let img = PhotoStoreV2.loadImage(at: (try? PhotoStoreV2.originalURL(watchId: watch.id, photoId: photo.id)) ?? URL(fileURLWithPath: "/dev/null"))
                         Group {
-                            if let img { Image(uiImage: img).resizable().scaledToFill() }
-                            else { Rectangle().fill(Color.secondary.opacity(0.2)) }
+                            if let img { Image(uiImage: img).resizable().scaledToFill() } else { Rectangle().fill(Color.secondary.opacity(0.2)) }
                         }
                         .tag(idx)
                     }

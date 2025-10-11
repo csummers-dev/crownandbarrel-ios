@@ -5,9 +5,8 @@ import Foundation
 /// - Why: Ensures consistent date presentation matching user expectations (e.g., "3 days ago" vs "Jan 15, 2025").
 /// - How: Uses Calendar and DateFormatter with locale-aware formatting and relative date calculations.
 public enum DateFormatters {
-    
     // MARK: - Smart Formatting (Relative/Absolute)
-    
+
     /// Formats a date using relative format for recent dates (< 7 days) and absolute format for older dates.
     /// - Parameters:
     ///   - date: The date to format
@@ -21,7 +20,7 @@ public enum DateFormatters {
         calendar: Calendar = .current
     ) -> String {
         let daysDifference = calendar.dateComponents([.day], from: date, to: referenceDate).day ?? 0
-        
+
         // Use relative format for dates within the last 7 days
         if daysDifference >= 0 && daysDifference < 7 {
             return relativeFormat(date, relativeTo: referenceDate, calendar: calendar)
@@ -29,9 +28,9 @@ public enum DateFormatters {
             return absoluteFormat(date)
         }
     }
-    
+
     // MARK: - Relative Formatting
-    
+
     /// Formats a date as a relative string (e.g., "Today", "Yesterday", "3 days ago").
     /// - Parameters:
     ///   - date: The date to format
@@ -46,7 +45,7 @@ public enum DateFormatters {
         let startOfDate = calendar.startOfDay(for: date)
         let startOfReference = calendar.startOfDay(for: referenceDate)
         let daysDifference = calendar.dateComponents([.day], from: startOfDate, to: startOfReference).day ?? 0
-        
+
         switch daysDifference {
         case 0:
             return "Today"
@@ -63,9 +62,9 @@ public enum DateFormatters {
             return absoluteFormat(date)
         }
     }
-    
+
     // MARK: - Absolute Formatting
-    
+
     /// Formats a date as an absolute date string (e.g., "Jan 15, 2025").
     /// - Parameters:
     ///   - date: The date to format
@@ -83,7 +82,7 @@ public enum DateFormatters {
         formatter.timeStyle = .none
         return formatter.string(from: date)
     }
-    
+
     /// Formats a date as a short absolute date string (e.g., "1/15/25").
     /// - Parameters:
     ///   - date: The date to format
@@ -93,9 +92,9 @@ public enum DateFormatters {
         _ date: Date,
         locale: Locale = .current
     ) -> String {
-        return absoluteFormat(date, style: .short, locale: locale)
+        absoluteFormat(date, style: .short, locale: locale)
     }
-    
+
     /// Formats a date as a long absolute date string (e.g., "January 15, 2025").
     /// - Parameters:
     ///   - date: The date to format
@@ -105,11 +104,11 @@ public enum DateFormatters {
         _ date: Date,
         locale: Locale = .current
     ) -> String {
-        return absoluteFormat(date, style: .long, locale: locale)
+        absoluteFormat(date, style: .long, locale: locale)
     }
-    
+
     // MARK: - Specialized Formatting
-    
+
     /// Formats a date showing only the month and year (e.g., "January 2025", "Mar 2023").
     /// - Parameters:
     ///   - date: The date to format
@@ -126,7 +125,7 @@ public enum DateFormatters {
         formatter.dateFormat = abbreviated ? "MMM yyyy" : "MMMM yyyy"
         return formatter.string(from: date)
     }
-    
+
     /// Formats a date showing only the year (e.g., "2025").
     /// - Parameters:
     ///   - date: The date to format
@@ -141,9 +140,9 @@ public enum DateFormatters {
         formatter.dateFormat = "yyyy"
         return formatter.string(from: date)
     }
-    
+
     // MARK: - Duration Formatting
-    
+
     /// Calculates and formats the duration between two dates (e.g., "3 months", "2 years").
     /// - Parameters:
     ///   - startDate: The start date
@@ -156,7 +155,7 @@ public enum DateFormatters {
         calendar: Calendar = .current
     ) -> String {
         let components = calendar.dateComponents([.year, .month, .day], from: startDate, to: endDate)
-        
+
         if let years = components.year, years > 0 {
             return years == 1 ? "1 year" : "\(years) years"
         } else if let months = components.month, months > 0 {
@@ -167,7 +166,7 @@ public enum DateFormatters {
             return "Today"
         }
     }
-    
+
     /// Calculates total days between two dates.
     /// - Parameters:
     ///   - startDate: The start date
@@ -183,4 +182,3 @@ public enum DateFormatters {
         return components.day ?? 0
     }
 }
-

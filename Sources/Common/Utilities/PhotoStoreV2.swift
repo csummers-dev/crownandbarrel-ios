@@ -80,7 +80,7 @@ public enum PhotoTransformsV2 {
         }
     }
 
-    public static func thumbnail(_ image: UIImage, size: CGFloat = 1000) -> UIImage {
+    public static func thumbnail(_ image: UIImage, size: CGFloat = 1_000) -> UIImage {
         let square = squareCropped(image)
         let newSize = CGSize(width: size, height: size)
         let renderer = UIGraphicsImageRenderer(size: newSize)
@@ -89,5 +89,3 @@ public enum PhotoTransformsV2 {
         }
     }
 }
-
-

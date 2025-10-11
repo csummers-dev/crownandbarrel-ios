@@ -8,15 +8,15 @@ import SwiftUI
 public struct AchievementUnlockNotification: View {
     public let achievement: Achievement
     public let isPresented: Binding<Bool>
-    
+
     @Environment(\.themeToken) private var themeToken
     @State private var offset: CGFloat = -200
-    
+
     public init(achievement: Achievement, isPresented: Binding<Bool>) {
         self.achievement = achievement
         self.isPresented = isPresented
     }
-    
+
     public var body: some View {
         if isPresented.wrappedValue {
             VStack {
@@ -30,18 +30,18 @@ public struct AchievementUnlockNotification: View {
                     .onAppear {
                         // Trigger haptic feedback
                         Haptics.success()
-                        
+
                         // Animate in
                         withAnimation(.spring(response: 0.6, dampingFraction: 0.7)) {
                             offset = AppSpacing.md
                         }
-                        
+
                         // Auto-dismiss after 3 seconds
                         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                             dismiss()
                         }
                     }
-                
+
                 Spacer()
             }
             .transition(.move(edge: .top).combined(with: .opacity))
@@ -49,9 +49,9 @@ public struct AchievementUnlockNotification: View {
             .id(themeToken)
         }
     }
-    
+
     // MARK: - Subviews
-    
+
     private var notificationContent: some View {
         HStack(spacing: AppSpacing.md) {
             // Achievement image
@@ -70,35 +70,35 @@ public struct AchievementUnlockNotification: View {
                     .padding(AppSpacing.sm)
                     .accessibilityHidden(true)
             }
-            
+
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 // "Achievement Unlocked!" header
                 HStack(spacing: AppSpacing.xs) {
                     Image(systemName: "sparkles")
                         .font(.caption)
                         .foregroundStyle(AppColors.accent)
-                    
+
                     Text("Achievement Unlocked!")
                         .font(.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(AppColors.accent)
                 }
-                
+
                 // Achievement name
                 Text(achievement.name)
                     .font(.headline)
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
-                
+
                 // Achievement description
                 Text(achievement.description)
                     .font(.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(2)
             }
-            
+
             Spacer()
-            
+
             // Dismiss button
             Button(action: dismiss) {
                 Image(systemName: "xmark.circle.fill")
@@ -126,14 +126,14 @@ public struct AchievementUnlockNotification: View {
                 }
         )
     }
-    
+
     // MARK: - Actions
-    
+
     private func dismiss() {
         withAnimation(.easeInOut(duration: 0.3)) {
             offset = -200
         }
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             isPresented.wrappedValue = false
         }
@@ -154,7 +154,7 @@ public extension View {
     ) -> some View {
         ZStack {
             self
-            
+
             if let achievement = achievement {
                 AchievementUnlockNotification(
                     achievement: achievement,

@@ -1,6 +1,6 @@
-import XCTest
 @testable import CrownAndBarrel
 import UIKit
+import XCTest
 
 final class ThemeDefaultingTests: XCTestCase {
     func testDefaultThemeIdMapping() {
@@ -9,5 +9,3 @@ final class ThemeDefaultingTests: XCTestCase {
         XCTAssertEqual(ThemeManager.defaultThemeId(for: .unspecified), "light-default")
     }
 }
-
-

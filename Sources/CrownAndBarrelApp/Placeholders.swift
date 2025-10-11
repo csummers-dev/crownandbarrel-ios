@@ -1,6 +1,6 @@
 import SwiftUI
-@preconcurrency import WebKit
 import UIKit
+@preconcurrency import WebKit
 
 /// Remaining placeholder static pages
 
@@ -9,7 +9,7 @@ import UIKit
 /// - Why: Keeps content editable without a code change; supports rich formatting.
 /// - How: Wraps a `WKWebView` inside SwiftUI and loads the HTML string.
 struct PrivacyPolicyView: View {
-    @State private var htmlContent: String? = nil
+    @State private var htmlContent: String?
 
     var body: some View {
         Group {
@@ -186,5 +186,3 @@ private extension AboutView {
         .listRowBackground(AppColors.background)
     }
 }
-
-

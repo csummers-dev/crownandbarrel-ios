@@ -8,5 +8,3 @@ enum Brand {
     static let appDisplayName: String = "Crown & Barrel"
     static let bundleIdentifier: String = "com.crownandbarrel.app"
 }
-
-

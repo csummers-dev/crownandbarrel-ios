@@ -7,7 +7,7 @@ import Foundation
 public enum DateUtils {
     /// Normalizes a date to the start of the day in the current calendar and time zone.
     public static func startOfDay(_ date: Date, calendar: Calendar = .current) -> Date {
-        return calendar.startOfDay(for: date)
+        calendar.startOfDay(for: date)
     }
 
     /// Formats a date for display using a medium style.
@@ -19,5 +19,3 @@ public enum DateUtils {
         return formatter.string(from: date)
     }
 }
-
-

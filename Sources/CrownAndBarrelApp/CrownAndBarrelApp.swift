@@ -1,6 +1,6 @@
+import GRDB
 import SwiftUI
 import UIKit
-import GRDB
 
 /// Centralized UIAppearance configuration for themed UI.
 /// - What: Applies tab bar, navigation bar, list/collection backgrounds, and common tints.
@@ -20,23 +20,23 @@ enum Appearance {
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = UIColor(AppColors.background)
         appearance.shadowColor = UIColor(AppColors.tabBarHairline)
-        
+
         // Configure tab bar item colors directly on the appearance object
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
         appearance.stackedLayoutAppearance.selected.iconColor = UIColor(AppColors.accent)
         appearance.stackedLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
-        
+
         appearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
         appearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
         appearance.inlineLayoutAppearance.selected.iconColor = UIColor(AppColors.accent)
         appearance.inlineLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
-        
+
         appearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(AppColors.accent)]
         appearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(AppColors.textSecondary)]
         appearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(AppColors.accent)
         appearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(AppColors.textSecondary)
-        
+
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().tintColor = UIColor(AppColors.accent)
@@ -96,13 +96,13 @@ enum Appearance {
         UIButton.appearance().tintColor = UIColor(AppColors.accent)
         UILabel.appearance(whenContainedInInstancesOf: [UICalendarView.self]).textColor = UIColor(AppColors.textPrimary)
     }
-    
+
     private static func applySearchTextFieldAppearance() {
         // APPROACH 1: Direct search text field configuration
         UISearchBar.appearance().searchTextField.backgroundColor = UIColor(AppColors.secondaryBackground)
         UISearchBar.appearance().searchTextField.textColor = UIColor(AppColors.textPrimary)
         UISearchBar.appearance().searchTextField.tintColor = UIColor(AppColors.accent)
-        
+
         // APPROACH 2: Direct layer styling on search text field for iOS 26.0 Liquid Glass
         UISearchBar.appearance().searchTextField.layer.backgroundColor = UIColor(AppColors.secondaryBackground).cgColor
         UISearchBar.appearance().searchTextField.layer.cornerRadius = 18.0
@@ -135,25 +135,25 @@ enum Appearance {
             string: "Search",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor(AppColors.textSecondary)]
         )
-        
+
         // CRITICAL: Force runtime color application to prevent system default override
         DispatchQueue.main.async {
             forceSearchFieldColorRefresh()
         }
     }
-    
+
     /// Forces search field colors to be applied at runtime while preserving Liquid Glass shape.
     /// - What: Applies theme colors to existing search fields without affecting corner radius.
     /// - Why: System defaults can override appearance-based colors, but shape is preserved.
     /// - How: Finds and updates existing UISearchBar instances with fresh theme colors.
     static func forceSearchFieldColorRefresh() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
-        
+
         for window in windowScene.windows {
             updateSearchFieldColors(in: window)
         }
     }
-    
+
     /// Recursively updates search field colors in view hierarchy.
     /// - Parameter view: The root view to search for UISearchBar instances.
     private static func updateSearchFieldColors(in view: UIView) {
@@ -162,18 +162,17 @@ enum Appearance {
             searchBar.searchTextField.backgroundColor = UIColor(AppColors.secondaryBackground)
             searchBar.searchTextField.textColor = UIColor(AppColors.textPrimary)
             searchBar.searchTextField.tintColor = UIColor(AppColors.accent)
-            
+
             // Ensure layer background color matches without changing corner radius
             searchBar.searchTextField.layer.backgroundColor = UIColor(AppColors.secondaryBackground).cgColor
             // DO NOT modify layer.cornerRadius here - it's already perfect at 18pt
         }
-        
+
         // Continue recursively through all subviews
         for subview in view.subviews {
             updateSearchFieldColors(in: subview)
         }
     }
-    
 }
 
 /// The main application entry point.
@@ -190,7 +189,7 @@ struct CrownAndBarrelApp: App {
             UserDefaults.standard.removeObject(forKey: "selectedThemeId")
         }
         #endif
-        
+
         // On first launch, if no saved theme preference exists, choose a default
         // based on the current system appearance (light → Daytime, dark → Nighttime).
         let key = "selectedThemeId"
@@ -209,11 +208,11 @@ struct CrownAndBarrelApp: App {
             #else
             let detected = UITraitCollection.current.userInterfaceStyle
             #endif
-            
+
             let defaultId = ThemeManager.defaultThemeId(for: detected)
             UserDefaults.standard.set(defaultId, forKey: key)
         }
-        
+
         // Apply initial theme setup
         Appearance.applyAllAppearances()
 
@@ -221,7 +220,7 @@ struct CrownAndBarrelApp: App {
         _ = AppDatabase.shared
         // Run media cleanup in background
         MediaCleanupV2.run()
-        
+
         // Initialize and evaluate achievements on app launch
         Task {
             let achievementRepo = AchievementRepositoryGRDB()
@@ -230,7 +229,7 @@ struct CrownAndBarrelApp: App {
                 achievementRepository: achievementRepo,
                 watchRepository: watchRepo
             )
-            
+
             do {
                 // Initialize user states and evaluate existing data
                 _ = try await evaluator.evaluateExistingUserData()
@@ -238,7 +237,7 @@ struct CrownAndBarrelApp: App {
                 print("Failed to initialize achievements: \(error)")
             }
         }
-        
+
         #if DEBUG
         DevSeedV2.seedIfEmpty()
         #endif
@@ -265,7 +264,7 @@ struct CrownAndBarrelApp: App {
     }
 
     // MARK: - Private Methods
-    
+
     /// Handles app launch setup including splash animation and UI appearance configuration
     private func handleAppLaunch() {
         // Fade out the splash overlay shortly after first frame
@@ -275,17 +274,17 @@ struct CrownAndBarrelApp: App {
         // Apply themed appearances at launch
         Appearance.applyAllAppearances()
     }
-    
+
     /// Handles theme change with clean, minimal approach
     private func handleThemeChange() {
         // Single, clean appearance application
         Appearance.applyAllAppearances()
-        
+
         // Force search field color refresh to prevent system default override
         DispatchQueue.main.async {
             Appearance.forceSearchFieldColorRefresh()
         }
-        
+
         // SwiftUI will handle view updates via environment changes
     }
 

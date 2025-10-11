@@ -14,12 +14,10 @@ public enum SampleData {
                 modelName: models[idx % models.count],
                 movement: MovementSpec(type: .automatic),
                 ownership: WatchOwnership(
-                    purchasePriceAmount: Decimal(1000 + idx * 10),
-                    currentEstimatedValueAmount: Decimal(1200 + idx * 10)
+                    purchasePriceAmount: Decimal(1_000 + idx * 10),
+                    currentEstimatedValueAmount: Decimal(1_200 + idx * 10)
                 )
             )
         }
     }
 }
-
-

@@ -11,33 +11,33 @@ import GRDB
 public struct AchievementState: Identifiable, Hashable, Codable, Sendable, FetchableRecord, PersistableRecord {
     /// Unique identifier for this achievement state record
     public let id: UUID
-    
+
     /// Reference to the achievement definition this state belongs to
     public let achievementId: UUID
-    
+
     /// Whether this achievement has been unlocked by the user
     public var isUnlocked: Bool
-    
+
     /// Timestamp when the achievement was unlocked (nil if still locked)
     public var unlockedAt: Date?
-    
+
     /// Current progress toward unlocking the achievement
     /// - Note: For count-based achievements (e.g., "Own 10 watches"), this is the current count.
     ///         For streak achievements, this is the current or best streak length.
     ///         The meaning depends on the achievement's criteria type.
     public var currentProgress: Double
-    
+
     /// Target value required to unlock the achievement
     /// - Note: This is copied from Achievement.targetValue for convenience in queries and display.
     ///         It allows progress calculation without joining to the achievements table.
     public var progressTarget: Double
-    
+
     /// Timestamp when this state was created
     public let createdAt: Date
-    
+
     /// Timestamp when this state was last updated
     public var updatedAt: Date
-    
+
     public init(
         id: UUID = UUID(),
         achievementId: UUID,
@@ -57,12 +57,12 @@ public struct AchievementState: Identifiable, Hashable, Codable, Sendable, Fetch
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
-    
+
     // MARK: - GRDB Table and Column Mapping
-    
+
     /// Specifies the exact database table name (snake_case)
     public static let databaseTableName = "user_achievement_state"
-    
+
     /// Explicit CodingKeys to map Swift properties to snake_case database columns
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -85,16 +85,16 @@ public extension AchievementState {
         let target = Int(progressTarget)
         return "\(current)/\(target)"
     }
-    
+
     /// Returns the progress percentage as a value between 0.0 and 1.0
     var progressPercentage: Double {
         guard progressTarget > 0 else { return 0.0 }
         return min(currentProgress / progressTarget, 1.0)
     }
-    
+
     /// Returns true if the current progress meets or exceeds the target
     var isProgressComplete: Bool {
-        return currentProgress >= progressTarget
+        currentProgress >= progressTarget
     }
 }
 
@@ -106,21 +106,21 @@ public extension AchievementState {
         self.currentProgress = newProgress
         self.updatedAt = Date()
     }
-    
+
     /// Marks the achievement as unlocked with the current timestamp
     mutating func unlock() {
         self.isUnlocked = true
         self.unlockedAt = Date()
         self.updatedAt = Date()
     }
-    
+
     /// Creates a new state with updated progress (immutable version)
     func withProgress(_ newProgress: Double) -> AchievementState {
         var state = self
         state.updateProgress(newProgress)
         return state
     }
-    
+
     /// Creates a new unlocked state (immutable version)
     func withUnlocked() -> AchievementState {
         var state = self

@@ -35,5 +35,3 @@ public enum AppError: LocalizedError, Equatable {
         }
     }
 }
-
-

@@ -1,17 +1,16 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 // Collections sections
-
 
 public struct WatchV2FormView: View {
     @StateObject private var viewModel: WatchV2FormViewModel
     @State private var showPhotoPicker: Bool = false
     @State private var selectedItem: PhotosPickerItem?
     @State private var showPhotosDeniedAlert: Bool = false
-    @State private var errorMessage: String? = nil
+    @State private var errorMessage: String?
     @State private var isNewWatch: Bool
     @Environment(\.dismiss) private var dismiss
-    
+
     private let repository: WatchRepositoryV2 = WatchRepositoryGRDB()
 
     public init(watch: WatchV2) {
@@ -122,7 +121,7 @@ public struct WatchV2FormView: View {
             Task { @MainActor in
                 do {
                     print("📸 Photo picker item selected")
-                    
+
                     // Save watch first if it's new (photos need a persisted watch)
                     if isNewWatch && !viewModel.watch.manufacturer.isEmpty && !viewModel.watch.modelName.isEmpty {
                         print("📸 Saving new watch before photo upload")
@@ -141,25 +140,24 @@ public struct WatchV2FormView: View {
                             }
                         }
                     }
-                    
+
                     print("📸 Loading image data from picker")
                     guard let data = try await item.loadTransferable(type: Data.self) else {
                         print("❌ Failed to load image data")
                         errorMessage = "Failed to load image data"
                         return
                     }
-                    
+
                     print("📸 Creating UIImage from data, size: \(data.count) bytes")
                     guard let image = UIImage(data: data) else {
                         print("❌ Failed to create UIImage")
                         errorMessage = "Failed to create image from data"
                         return
                     }
-                    
+
                     print("📸 Calling addPhoto with image size: \(image.size)")
                     viewModel.addPhoto(from: image)
                     print("📸 Photo add completed")
-                    
                 } catch {
                     print("❌ Photo onChange error: \(error)")
                     errorMessage = "Photo error: \(error.localizedDescription)"
@@ -176,8 +174,7 @@ public struct WatchV2FormView: View {
                 Button(action: {
                     guard viewModel.watch.photos.count < 10 else { return }
                     PhotosPermissionV2.ensureAuthorized { ok in
-                        if ok { showPhotoPicker = true }
-                        else { showPhotosDeniedAlert = true }
+                        if ok { showPhotoPicker = true } else { showPhotosDeniedAlert = true }
                     }
                 }) {
                     Label("Add Photo", systemImage: "plus")
@@ -190,8 +187,7 @@ public struct WatchV2FormView: View {
                     ZStack(alignment: .topTrailing) {
                         let img = PhotoStoreV2.loadThumb(watchId: viewModel.watch.id, photoId: photo.id)
                         Group {
-                            if let img { Image(uiImage: img).resizable().scaledToFill() }
-                            else { Rectangle().fill(Color.secondary.opacity(0.2)) }
+                            if let img { Image(uiImage: img).resizable().scaledToFill() } else { Rectangle().fill(Color.secondary.opacity(0.2)) }
                         }
                         .frame(width: 100, height: 100)
                         .clipped()
@@ -242,13 +238,13 @@ public struct WatchV2FormView: View {
 
     private var detailsMovement: some View {
         CollapsibleSection(title: "Movement") {
-            Stepper(value: Binding(get: { viewModel.watch.movement.powerReserveHours ?? 0 }, set: { viewModel.watch.movement.powerReserveHours = $0 == 0 ? nil : Double($0) }), in: 0...2000) { Text("Power Reserve (h): \(viewModel.watch.movement.powerReserveHours.map { String(format: "%.0f", $0) } ?? "—")") }
+            Stepper(value: Binding(get: { viewModel.watch.movement.powerReserveHours ?? 0 }, set: { viewModel.watch.movement.powerReserveHours = $0 == 0 ? nil : Double($0) }), in: 0...2_000) { Text("Power Reserve (h): \(viewModel.watch.movement.powerReserveHours.map { String(format: "%.0f", $0) } ?? "—")") }
         }
     }
 
     private var detailsWater: some View {
         CollapsibleSection(title: "Water & Crown") {
-            Stepper(value: Binding(get: { viewModel.watch.water.waterResistanceM ?? 0 }, set: { viewModel.watch.water.waterResistanceM = $0 == 0 ? nil : Int($0) }), in: 0...2000) { Text("Water Resistance (m): \(viewModel.watch.water.waterResistanceM.map(String.init) ?? "—")") }
+            Stepper(value: Binding(get: { viewModel.watch.water.waterResistanceM ?? 0 }, set: { viewModel.watch.water.waterResistanceM = $0 == 0 ? nil : Int($0) }), in: 0...2_000) { Text("Water Resistance (m): \(viewModel.watch.water.waterResistanceM.map(String.init) ?? "—")") }
         }
     }
 
@@ -264,8 +260,7 @@ public struct WatchV2FormView: View {
                 .labelsHidden()
                 .opacity(viewModel.watch.ownership.dateAcquired == nil ? 0.5 : 1.0)
             Button(viewModel.watch.ownership.dateAcquired == nil ? "Set Date" : "Clear Date") {
-                if viewModel.watch.ownership.dateAcquired == nil { viewModel.watch.ownership.dateAcquired = Date() }
-                else { viewModel.watch.ownership.dateAcquired = nil }
+                if viewModel.watch.ownership.dateAcquired == nil { viewModel.watch.ownership.dateAcquired = Date() } else { viewModel.watch.ownership.dateAcquired = nil }
             }
             EnumPickerWithOther(title: "Condition",
                                 selection: Binding(get: { viewModel.watch.ownership.condition }, set: { viewModel.watch.ownership.condition = $0 }),
@@ -275,14 +270,14 @@ public struct WatchV2FormView: View {
                                 isOther: { if case .other = $0 { return true } else { return false } })
         }
     }
-    
+
     // MARK: - Actions
-    
+
     private func saveWatch() async {
         do {
             // Normalize and validate
             viewModel.normalizeTags()
-            
+
             // Save to repository
             if isNewWatch {
                 do {
@@ -300,12 +295,10 @@ public struct WatchV2FormView: View {
             } else {
                 try repository.update(viewModel.watch)
             }
-            
+
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
         }
     }
 }
-
-

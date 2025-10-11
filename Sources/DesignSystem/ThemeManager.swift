@@ -37,5 +37,3 @@ extension ThemeManager {
         }
     }
 }
-
-

@@ -8,9 +8,9 @@ public struct StatisticRow: View {
     public let label: String
     public let value: String
     public let icon: String?
-    
+
     @Environment(\.themeToken) private var themeToken
-    
+
     /// Creates a statistic row with label, value, and optional SF Symbol icon.
     /// - Parameters:
     ///   - label: The descriptive label (e.g., "Times Worn", "Last Worn")
@@ -21,7 +21,7 @@ public struct StatisticRow: View {
         self.value = value
         self.icon = icon
     }
-    
+
     public var body: some View {
         HStack(spacing: AppSpacing.sm) {
             // Icon (optional)
@@ -31,19 +31,19 @@ public struct StatisticRow: View {
                     .foregroundStyle(AppColors.accent)
                     .frame(width: 24, height: 24)
             }
-            
+
             // Label and Value
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(label)
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textSecondary)
-                
+
                 Text(value)
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundStyle(AppColors.textPrimary)
             }
-            
+
             Spacer()
         }
         .padding(.vertical, AppSpacing.sm)
@@ -57,43 +57,42 @@ public struct StatisticRow: View {
 #Preview("Statistic Rows") {
     VStack(spacing: AppSpacing.md) {
         DetailSectionHeader(title: "Statistics")
-        
+
         StatisticRow(
             label: "Times Worn",
             value: "42",
             icon: "clock.fill"
         )
-        
+
         StatisticRow(
             label: "Last Worn",
             value: "Jan 15, 2025",
             icon: "calendar"
         )
-        
+
         StatisticRow(
             label: "Achievements",
             value: "5 of 12 unlocked",
             icon: "trophy.fill"
         )
-        
+
         Divider()
             .padding(.vertical, AppSpacing.sm)
-        
+
         // Example without icons
         StatisticRow(
             label: "Purchase Date",
             value: "March 2023"
         )
-        
+
         StatisticRow(
             label: "Days Owned",
             value: "587"
         )
-        
+
         Spacer()
     }
     .padding()
     .background(AppColors.background)
 }
 #endif
-

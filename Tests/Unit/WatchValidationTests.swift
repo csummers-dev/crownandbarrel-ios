@@ -1,5 +1,5 @@
-import XCTest
 @testable import CrownAndBarrel
+import XCTest
 
 final class WatchValidationTests: XCTestCase {
     func testTagSlugging() {
@@ -10,8 +10,8 @@ final class WatchValidationTests: XCTestCase {
 
     func testProductionYear() {
         XCTAssertTrue(WatchValidation.validateProductionYear(nil))
-        XCTAssertTrue(WatchValidation.validateProductionYear(1900))
-        XCTAssertFalse(WatchValidation.validateProductionYear(1899))
+        XCTAssertTrue(WatchValidation.validateProductionYear(1_900))
+        XCTAssertFalse(WatchValidation.validateProductionYear(1_899))
         XCTAssertTrue(WatchValidation.validateProductionYear(Calendar.current.component(.year, from: Date())))
         XCTAssertFalse(WatchValidation.validateProductionYear(Calendar.current.component(.year, from: Date()) + 1))
     }
@@ -22,14 +22,14 @@ final class WatchValidationTests: XCTestCase {
     }
 
     func testMovementRanges() {
-        XCTAssertTrue(WatchValidation.validateMovement(powerReserveHours: 48.0, frequencyVPH: 28800, jewelCount: 25, accuracyPPD: -5.0))
+        XCTAssertTrue(WatchValidation.validateMovement(powerReserveHours: 48.0, frequencyVPH: 28_800, jewelCount: 25, accuracyPPD: -5.0))
         XCTAssertTrue(WatchValidation.validateMovement(powerReserveHours: nil, frequencyVPH: 0, jewelCount: 0, accuracyPPD: nil))
-        XCTAssertFalse(WatchValidation.validateMovement(powerReserveHours: 3000.0, frequencyVPH: 12345, jewelCount: 100, accuracyPPD: 0))
+        XCTAssertFalse(WatchValidation.validateMovement(powerReserveHours: 3_000.0, frequencyVPH: 12_345, jewelCount: 100, accuracyPPD: 0))
     }
 
     func testWaterResistance() {
         XCTAssertTrue(WatchValidation.validateWaterResistance(200))
-        XCTAssertTrue(WatchValidation.validateWaterResistance(1500))
+        XCTAssertTrue(WatchValidation.validateWaterResistance(1_500))
         XCTAssertFalse(WatchValidation.validateWaterResistance(25))
     }
 
@@ -42,5 +42,3 @@ final class WatchValidationTests: XCTestCase {
         XCTAssertFalse(WatchValidation.validatePhotoLimit(Array(repeating: a, count: 11)))
     }
 }
-
-

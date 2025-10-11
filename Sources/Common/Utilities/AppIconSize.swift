@@ -17,39 +17,38 @@ import Foundation
 /// - Light mode: {IconName}.png (e.g., Icon-20@2x.png, AppIcon-1024.png)
 /// - Dark mode: {IconName}-dark.png (e.g., Icon-20@2x-dark.png, AppIcon-1024-dark.png)
 enum AppIconSize: String, CaseIterable {
-    
     // MARK: - iPhone App Icon Sizes
-    
+
     /// 20x20 point size, 2x scale (40x40 pixels)
     case icon20x2x = "Icon-20@2x"
-    
+
     /// 20x20 point size, 3x scale (60x60 pixels)
     case icon20x3x = "Icon-20@3x"
-    
+
     /// 29x29 point size, 2x scale (58x58 pixels)
     case icon29x2x = "Icon-29@2x"
-    
+
     /// 29x29 point size, 3x scale (87x87 pixels)
     case icon29x3x = "Icon-29@3x"
-    
+
     /// 40x40 point size, 2x scale (80x80 pixels)
     case icon40x2x = "Icon-40@2x"
-    
+
     /// 40x40 point size, 3x scale (120x120 pixels)
     case icon40x3x = "Icon-40@3x"
-    
+
     /// 60x60 point size, 2x scale (120x120 pixels)
     case icon60x2x = "Icon-60@2x"
-    
+
     /// 60x60 point size, 3x scale (180x180 pixels)
     case icon60x3x = "Icon-60@3x"
-    
+
     /// iOS Marketing icon (1024x1024 pixels)
     /// Dark mode variant: AppIcon-1024-dark.png
     case marketing = "AppIcon-1024"
-    
+
     // MARK: - Computed Properties
-    
+
     /// The actual pixel dimensions for each icon size
     var pixelSize: CGSize {
         switch self {
@@ -70,10 +69,10 @@ enum AppIconSize: String, CaseIterable {
         case .icon60x3x:
             return CGSize(width: 180, height: 180)
         case .marketing:
-            return CGSize(width: 1024, height: 1024)
+            return CGSize(width: 1_024, height: 1_024)
         }
     }
-    
+
     /// The logical point size for each icon
     var pointSize: CGSize {
         switch self {
@@ -86,10 +85,10 @@ enum AppIconSize: String, CaseIterable {
         case .icon60x2x, .icon60x3x:
             return CGSize(width: 60, height: 60)
         case .marketing:
-            return CGSize(width: 1024, height: 1024)
+            return CGSize(width: 1_024, height: 1_024)
         }
     }
-    
+
     /// The scale factor for each icon size
     var scale: Int {
         switch self {
@@ -101,9 +100,9 @@ enum AppIconSize: String, CaseIterable {
             return 1
         }
     }
-    
+
     // MARK: - File Naming
-    
+
     /// Generates the filename for a specific icon size and theme
     /// - Parameter theme: The theme variant (light/dark)
     /// - Returns: The complete filename including extension
@@ -115,15 +114,15 @@ enum AppIconSize: String, CaseIterable {
             return "\(rawValue)-dark.png"
         }
     }
-    
+
     /// Generates the filename for the light theme (default)
     var lightFilename: String {
-        return filename(for: .light)
+        filename(for: .light)
     }
-    
+
     /// Generates the filename for the dark theme
     var darkFilename: String {
-        return filename(for: .dark)
+        filename(for: .dark)
     }
 }
 
@@ -132,7 +131,7 @@ enum AppIconSize: String, CaseIterable {
 enum AppIconTheme: String, CaseIterable {
     case light = "light"
     case dark = "dark"
-    
+
     /// Human-readable display name for the theme
     var displayName: String {
         switch self {
@@ -147,35 +146,33 @@ enum AppIconTheme: String, CaseIterable {
 // MARK: - Extensions
 
 extension AppIconSize {
-    
     /// All iPhone-specific icon sizes (excludes marketing)
     static var iPhoneIcons: [AppIconSize] {
-        return allCases.filter { $0 != .marketing }
+        allCases.filter { $0 != .marketing }
     }
-    
+
     /// All marketing icons
     static var marketingIcons: [AppIconSize] {
-        return [.marketing]
+        [.marketing]
     }
-    
+
     /// Provides a description of the icon size for debugging
     var description: String {
-        return "\(rawValue) (\(Int(pixelSize.width))x\(Int(pixelSize.height))px)"
+        "\(rawValue) (\(Int(pixelSize.width))x\(Int(pixelSize.height))px)"
     }
 }
 
 // MARK: - Validation
 
 extension AppIconSize {
-    
     /// Validates that the icon size meets Apple's requirements
     var isValidForAppStore: Bool {
         // All our defined sizes are valid for App Store submission
-        return true
+        true
     }
-    
+
     /// Checks if this size is required for iPhone apps
     var isRequiredForiPhone: Bool {
-        return AppIconSize.iPhoneIcons.contains(self)
+        AppIconSize.iPhoneIcons.contains(self)
     }
 }

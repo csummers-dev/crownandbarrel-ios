@@ -46,5 +46,3 @@ public struct ValuationsSection: View {
         }
     }
 }
-
-

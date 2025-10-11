@@ -21,11 +21,11 @@ import UniformTypeIdentifiers
 struct AppDataView: View {
     @Environment(\.themeToken) private var themeToken
     /// Transient error message presented in an alert when operations fail.
-    @State private var errorMessage: String? = nil
+    @State private var errorMessage: String?
     /// Controls presentation of the file exporter once an export URL is ready.
     @State private var isExporting: Bool = false
     /// Holds the exported file URL to be handed to the exporter.
-    @State private var exportURL: URL? = nil
+    @State private var exportURL: URL?
     /// Controls presentation of the importer sheet.
     @State private var isImporting: Bool = false
     /// First confirmation step for destructive delete.
@@ -36,15 +36,15 @@ struct AppDataView: View {
     private let backup: BackupRepository = BackupRepositoryGRDB()
     /// Concrete repository for seeding sample data during debug.
     private let repo: WatchRepositoryV2 = WatchRepositoryGRDB()
-    @State private var infoMessage: String? = nil
+    @State private var infoMessage: String?
 
     var body: some View {
         Form {
             headerRow("Backup")
             Section {
-                Button("Export backup") { 
+                Button("Export backup") {
                     Haptics.dataInteraction(.exportInitiated)
-                    Task { await export() } 
+                    Task { await export() }
                 }
                     .fileExporter(
                         isPresented: $isExporting,
@@ -54,26 +54,26 @@ struct AppDataView: View {
                     ) { _ in }
                     .listRowBackground(AppColors.background)
                 #if DEBUG
-                Button("Load sample data") { 
+                Button("Load sample data") {
                     Haptics.dataInteraction(.seedDataInitiated)
-                    Task { await seedSampleData() } 
+                    Task { await seedSampleData() }
                 }
                     .listRowBackground(AppColors.background)
                 #endif
             } header: { EmptyView() }
             headerRow("Restore")
             Section {
-                Button("Import backup") { 
+                Button("Import backup") {
                     Haptics.dataInteraction(.importInitiated)
-                    isImporting = true 
+                    isImporting = true
                 }
                     .listRowBackground(AppColors.background)
             } header: { EmptyView() }
             headerRow("Danger zone")
             Section {
-                Button(role: .destructive) { 
+                Button(role: .destructive) {
                     Haptics.dataInteraction(.deleteInitiated)
-                    confirmDeleteStep1 = true 
+                    confirmDeleteStep1 = true
                 } label: { Text("Delete all data") }
                     .listRowBackground(AppColors.background)
             } header: { EmptyView() }
@@ -140,16 +140,14 @@ struct AppDataView: View {
 
     /// Triggers backup export via repository and presents the exporter sheet.
     private func export() async {
-        do { exportURL = try await backup.exportBackup(); isExporting = true }
-        catch { errorMessage = error.localizedDescription }
+        do { exportURL = try await backup.exportBackup(); isExporting = true } catch { errorMessage = error.localizedDescription }
     }
 
     /// Imports a previously exported archive. Uses replace-only semantics to
     /// prevent merges, honoring the product decision to keep data authoritative
     /// to the backup.
     private func importBackup(_ url: URL) async {
-        do { try await backup.importBackup(from: url, replace: true) }
-        catch { errorMessage = error.localizedDescription }
+        do { try await backup.importBackup(from: url, replace: true) } catch { errorMessage = error.localizedDescription }
     }
 
     /// Seeds a handful of watches in debug to speed up UI iteration and tests.
@@ -162,8 +160,7 @@ struct AppDataView: View {
 
     /// Deletes all persisted data after a two-step confirmation.
     private func deleteAll() async {
-        do { try await backup.deleteAll() }
-        catch { errorMessage = error.localizedDescription }
+        do { try await backup.deleteAll() } catch { errorMessage = error.localizedDescription }
     }
 }
 
@@ -212,5 +209,3 @@ private struct ExportedFile: FileDocument {
     init(configuration: ReadConfiguration) throws { self.url = URL(fileURLWithPath: "") }
     func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { try FileWrapper(url: url, options: .immediate) }
 }
-
-

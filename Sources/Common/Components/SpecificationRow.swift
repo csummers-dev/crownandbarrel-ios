@@ -7,9 +7,9 @@ import SwiftUI
 public struct SpecificationRow: View {
     public let label: String
     public let value: String
-    
+
     @Environment(\.themeToken) private var themeToken
-    
+
     /// Creates a specification row that only displays when value is present.
     /// - Parameters:
     ///   - label: The specification label (e.g., "Material", "Diameter")
@@ -23,7 +23,7 @@ public struct SpecificationRow: View {
         self.label = label
         self.value = value
     }
-    
+
     /// Creates a specification row with guaranteed non-nil value.
     /// - Parameters:
     ///   - label: The specification label
@@ -32,15 +32,15 @@ public struct SpecificationRow: View {
         self.label = label
         self.value = value
     }
-    
+
     public var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: AppSpacing.md) {
             Text(label)
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textSecondary)
-            
+
             Spacer()
-            
+
             Text(value)
                 .font(.body)
                 .foregroundStyle(AppColors.textPrimary)
@@ -59,7 +59,7 @@ public extension SpecificationRow {
         guard let value = value else { return nil }
         self.init(label: label, value: String(value))
     }
-    
+
     /// Creates a specification row from an optional Double value with formatting.
     /// - Parameters:
     ///   - label: The specification label
@@ -68,12 +68,12 @@ public extension SpecificationRow {
     init?(label: String, value: Double?, precision: Int = 1) {
         guard let value = value else { return nil }
         // Show decimals only if non-zero
-        let formatted = value.truncatingRemainder(dividingBy: 1) == 0 
+        let formatted = value.truncatingRemainder(dividingBy: 1) == 0
             ? String(format: "%.0f", value)
             : String(format: "%.\(precision)f", value)
         self.init(label: label, value: formatted)
     }
-    
+
     /// Creates a specification row from an optional Bool value (only shows if true).
     /// - Parameters:
     ///   - label: The specification label
@@ -83,7 +83,7 @@ public extension SpecificationRow {
         guard let value = value, value == true else { return nil }
         self.init(label: label, value: trueText)
     }
-    
+
     /// Creates a specification row from a RawRepresentable enum (e.g., enums with string raw values).
     init?<T: RawRepresentable>(label: String, enum value: T?) where T.RawValue == String {
         guard let value = value else { return nil }
@@ -99,7 +99,7 @@ public extension SpecificationRow {
     ScrollView {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             DetailSectionHeader(title: "Case Specifications")
-            
+
             VStack(spacing: 0) {
                 SpecificationRow(label: "Material", value: "Stainless Steel")
                 SpecificationRow(label: "Finish", value: "Brushed")
@@ -117,9 +117,9 @@ public extension SpecificationRow {
                     row
                 }
             }
-            
+
             DetailSectionHeader(title: "Water Resistance")
-            
+
             VStack(spacing: 0) {
                 SpecificationRow(label: "Water Resistance", value: "100m")
                 SpecificationRow(label: "Crown Type", value: "Screw-down")
@@ -127,9 +127,9 @@ public extension SpecificationRow {
                     row
                 }
             }
-            
+
             DetailSectionHeader(title: "Movement")
-            
+
             VStack(spacing: 0) {
                 SpecificationRow(label: "Type", value: "Automatic")
                 SpecificationRow(label: "Caliber", value: "ETA 2824-2")
@@ -139,12 +139,12 @@ public extension SpecificationRow {
                     row
                 }
             }
-            
+
             Text("Note: Empty/nil values are automatically hidden")
                 .font(.caption)
                 .foregroundStyle(AppColors.textSecondary)
                 .padding(.top, AppSpacing.lg)
-            
+
             Spacer()
         }
         .padding()
@@ -152,4 +152,3 @@ public extension SpecificationRow {
     .background(AppColors.background)
 }
 #endif
-

@@ -18,12 +18,10 @@ public final class WatchV2ListViewModel: ObservableObject {
         do {
             let list = try repo.list(sortedBy: sort, filters: filters)
             self.watches = list
-            self.lastLoadMs = Int(Date().timeIntervalSince(start) * 1000)
+            self.lastLoadMs = Int(Date().timeIntervalSince(start) * 1_000)
         } catch {
             self.watches = []
             self.lastLoadMs = -1
         }
     }
 }
-
-

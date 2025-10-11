@@ -147,7 +147,7 @@ extension Color {
         let parts = params.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
         guard parts.count == 4,
               let r = Double(parts[0]), let g = Double(parts[1]), let b = Double(parts[2]), let a = Double(parts[3]) else { return nil }
-        self = Color(red: r/255.0, green: g/255.0, blue: b/255.0, opacity: a)
+        self = Color(red: r / 255.0, green: g / 255.0, blue: b / 255.0, opacity: a)
     }
 }
 
@@ -168,5 +168,3 @@ public enum ThemeAccess {
         return ThemeCatalog.shared.themesById[id] ?? ThemeCatalog.shared.themesById[ThemeCatalog.shared.defaultThemeId]!
     }
 }
-
-

@@ -15,7 +15,7 @@ struct WatchEntryContent: View {
     let manufacturer: String
     let modelName: String
     let nickname: String?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             // Manufacturer - Large and bold for visual prominence
@@ -24,14 +24,14 @@ struct WatchEntryContent: View {
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .truncationMode(.tail)
-            
+
             // Model - Medium size, regular weight
             Text(modelName)
                 .font(.system(size: 14, weight: .regular))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .truncationMode(.tail)
-            
+
             // Nickname - Small size, lighter weight, secondary color
             if let nickname = nickname {
                 Text(nickname)
@@ -49,15 +49,15 @@ struct WatchEntryContent: View {
 /// Grid card component for displaying a watch entry in grid view
 public struct WatchGridCard: View {
     let watch: WatchV2
-    
+
     // Fixed square dimensions for consistent grid layout
     // Calculation: (iPhone screen width ~393pt - horizontal padding 32pt - column spacing 8pt) / 2 = 176.5pt
     private let cardSize: CGFloat = 176
-    
+
     public init(watch: WatchV2) {
         self.watch = watch
     }
-    
+
     public var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             // Photo - Takes up about 60% of card height for proper balance
@@ -82,7 +82,7 @@ public struct WatchGridCard: View {
                             .foregroundStyle(.secondary)
                     )
             }
-            
+
             // Text Content - Use shared component for consistency
             WatchEntryContent(
                 manufacturer: watch.manufacturer,
@@ -90,7 +90,7 @@ public struct WatchGridCard: View {
                 nickname: watch.nickname
             )
             .padding(.horizontal, AppSpacing.xs)
-            
+
             Spacer(minLength: 0)
         }
         .frame(width: cardSize, height: cardSize)
@@ -103,15 +103,15 @@ public struct WatchGridCard: View {
 /// List row component for displaying a watch entry in list view
 public struct WatchListRow: View {
     let watch: WatchV2
-    
+
     // Fixed height for consistent list item sizing
     // Height accommodates image (56pt) plus vertical padding
     private let rowHeight: CGFloat = 72
-    
+
     public init(watch: WatchV2) {
         self.watch = watch
     }
-    
+
     public var body: some View {
         HStack(spacing: AppSpacing.md) {
             // Photo - Rectangular shape matching grid view proportions
@@ -134,18 +134,17 @@ public struct WatchListRow: View {
                             .foregroundStyle(.secondary)
                     )
             }
-            
+
             // Text Content - Use shared component for consistency
             WatchEntryContent(
                 manufacturer: watch.manufacturer,
                 modelName: watch.modelName,
                 nickname: watch.nickname
             )
-            
+
             Spacer()
         }
         .frame(height: rowHeight)
         .padding(.vertical, AppSpacing.xs)
     }
 }
-
