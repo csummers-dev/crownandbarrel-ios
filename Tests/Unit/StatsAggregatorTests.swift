@@ -73,7 +73,7 @@ extension StatsAggregatorTests {
         let d1 = dateInLA(year: 2025, month: 3, day: 8)
         let d2 = dateInLA(year: 2025, month: 3, day: 9)
 
-        try AppDatabase.shared.dbQueue.write { db in
+        try await AppDatabase.shared.dbQueue.write { db in
             try WearEntry(watchId: watch.id, date: d1).insert(db)
             try WearEntry(watchId: watch.id, date: d2).insert(db)
         }
@@ -97,7 +97,7 @@ extension StatsAggregatorTests {
         let d1 = dateInLA(year: 2025, month: 11, day: 1)
         let d2 = dateInLA(year: 2025, month: 11, day: 2)
 
-        try AppDatabase.shared.dbQueue.write { db in
+        try await AppDatabase.shared.dbQueue.write { db in
             try WearEntry(watchId: watch.id, date: d1).insert(db)
             try WearEntry(watchId: watch.id, date: d2).insert(db)
         }
