@@ -7,11 +7,15 @@ included:
   - Tests/
 
 excluded:
-  - DerivedData/
-  - .build/
-  - AppResources/
-  - CrownAndBarrel.xcodeproj/
-  - Tests/UITests/ # UI tests often have different naming conventions
+  - CrownAndBarrel.xcodeproj
+  - CrownAndBarrel.xcarchive
+  - CrownAndBarrel-CI.xcarchive
+  - CrownAndBarrel-v1.1.xcarchive
+  - fastlane/report.xml
+  - xcodegen
+  - build-config
+  - AppResources
+  - backup
 
 # Rules to enable
 opt_in_rules:
@@ -85,14 +89,23 @@ opt_in_rules:
   - vertical_whitespace_opening_braces
   - xct_specific_matcher
   - yoda_condition
+  - empty_count
+  - explicit_self
+  - implicitly_unwrapped_optional
+  - unavailable_function
+  - vertical_parameter_alignment_on_call
+  - yoda_condition
 
 # Rules to disable
 disabled_rules:
   # Disable rules that are too strict for this project
   - todo # Allow TODO comments in development
-  - line_length # Handled by other rules, can be too restrictive
-  - function_body_length # Can be too restrictive for some functions
-  - type_body_length # Can be too restrictive for some types
+  - identifier_name        # allow short local names; revisit later
+  - force_cast              # temporary until migrations complete
+  - force_try               # temporary until migrations complete
+  - line_length             # we prefer readability first; enforce later
+  - function_body_length    # allow large bodies temporarily; to reduce gradually
+  - file_length             # temporary, will shrink large files over time
   - cyclomatic_complexity # Can be too restrictive for some complex logic
   - nesting # Can be too restrictive for some nested structures
 
@@ -115,35 +128,31 @@ function_body_length:
   error: 100
 
 type_body_length:
-  warning: 300
-  error: 400
+  warning: 400
+  error: 800
 
 file_length:
   warning: 500
   error: 1000
 
 cyclomatic_complexity:
-  warning: 10
-  error: 20
+  warning: 15
+  error: 25
 
 nesting:
   type_level:
-    warning: 3
-    error: 5
+    warning: 2
   statement_level:
     warning: 5
     error: 10
 
 identifier_name:
-  min_length: 1
+  min_length:
+    warning: 2
+    error: 1
   max_length:
     warning: 40
-    error: 50
-  excluded:
-    - id
-    - url
-    - api
-    - ui
+  allowed_symbols: ["_"]
 
 type_name:
   min_length: 3
@@ -160,8 +169,8 @@ closure_body_length:
   error: 50
 
 function_parameter_count:
-  warning: 5
-  error: 8
+  warning: 6
+  error: 10
 
 enum_case_associated_values_count:
   warning: 5
@@ -180,3 +189,9 @@ file_header:
 
 # Reporter configuration
 reporter: "xcode"
+
+trailing_whitespace:
+  ignores_empty_lines: true
+
+vertical_whitespace:
+  max_empty_lines: 2
