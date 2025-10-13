@@ -19,12 +19,28 @@ platform :ios do
 
   desc "Push a new beta build to TestFlight"
   lane :beta do
+    # Get the latest build number from TestFlight and increment
+    # Comment out the line below if you want to manually control build numbers
     increment_build_number
+    
     build_app(
       scheme: "CrownAndBarrel",
       export_method: "app-store"
     )
-    upload_to_testflight
+    
+    # Upload to TestFlight using App Store Connect API Key
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      duration: 1200, # optional (maximum 1200)
+      in_house: false # optional but may be required if using match/sigh
+    )
+    
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
   end
 
   desc "Deploy to App Store"
@@ -34,7 +50,18 @@ platform :ios do
       scheme: "CrownAndBarrel",
       export_method: "app-store"
     )
+    
+    # Upload to App Store using App Store Connect API Key
+    api_key = app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+      key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+      duration: 1200,
+      in_house: false
+    )
+    
     upload_to_app_store(
+      api_key: api_key,
       force: true,
       skip_metadata: false,
       skip_screenshots: false

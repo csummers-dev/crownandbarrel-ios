@@ -7,7 +7,7 @@ public struct WatchV2DetailView: View {
     @State private var achievements: [(achievement: Achievement, state: AchievementState?)] = []
     @State private var wearCount: Int = 0
     @State private var lastWorn: Date?
-
+    
     private let achievementRepository: AchievementRepository = AchievementRepositoryGRDB()
     private let watchRepository: WatchRepositoryV2 = WatchRepositoryGRDB()
 
@@ -583,7 +583,7 @@ public struct WatchV2DetailView: View {
             }
         }
     }
-
+    
     private var watchAchievements: [(achievement: Achievement, state: AchievementState?)] {
         // Filter to only show unlocked achievements related to this watch
         achievements.filter { $0.state?.isUnlocked == true }
@@ -604,16 +604,16 @@ public struct WatchV2DetailView: View {
             print("Failed to load statistics: \(error)")
         }
     }
-
+    
     private func loadAchievements() async {
         do {
             // Initialize achievement states if needed
             try await achievementRepository.initializeUserStates()
-
+            
             // Load achievements - for now, load watch-specific achievements
             // like "Favorite Watch" (worn 10 times), "True Love" (worn 50 times), etc.
             let allAchievements = try await achievementRepository.fetchAchievementsWithStates()
-
+            
             // Filter to achievements that could be related to this specific watch
             achievements = allAchievements.filter { item in
                 // Include single-watch wear count achievements if this watch has enough wears

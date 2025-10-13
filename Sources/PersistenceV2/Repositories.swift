@@ -78,6 +78,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             try upsertChildren(db: db, watchId: watch.id, watch: watch)
             try updateHasPhotosFlag(db: db, watchId: watch.id)
         }
+        // Invalidate stats caches (handled by higher-level precompute hooks)
     }
 
     public func update(_ watch: WatchV2) throws {
@@ -90,6 +91,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
             try upsertChildren(db: db, watchId: watch.id, watch: watch)
             try updateHasPhotosFlag(db: db, watchId: watch.id)
         }
+        // Invalidate stats caches (handled by higher-level precompute hooks)
     }
 
     public func delete(id: UUID) throws {
@@ -99,6 +101,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
 
             _ = try Row.fetchOne(db, sql: "DELETE FROM watches WHERE id = ?", arguments: [id.uuidString])
         }
+        // Invalidate stats caches (handled by higher-level precompute hooks)
     }
 
     public func fetch(id: UUID) throws -> WatchV2? {
@@ -429,6 +432,7 @@ public final class WatchRepositoryGRDB: WatchRepositoryV2 {
                 try entry.insert(db)
             }
         }
+        // Invalidate stats caches (handled by higher-level precompute hooks)
     }
 
     public func fetchAll() async throws -> [WatchV2] {

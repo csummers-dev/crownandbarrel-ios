@@ -76,9 +76,7 @@ struct RootView: View {
             .tag(Tab.collection)
 
             NavigationStack {
-                StatsView()
-                    .navigationTitle("Stats")
-                    .navigationBarTitleDisplayMode(.inline)
+                StatsSingleView()
                     .toolbar {
                         settingsToolbar
                     }

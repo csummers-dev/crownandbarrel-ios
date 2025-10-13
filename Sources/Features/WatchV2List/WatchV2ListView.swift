@@ -140,6 +140,9 @@ public struct WatchV2ListView: View {
                 .onTapGesture {
                     isSearchFocused = false
                 }
+                .refreshable {
+                    viewModel.load()
+                }
             }
             .onAppear { viewModel.load() }
             .onChange(of: searchText) { _, newValue in
